@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
-    "target": "ES2018",
+    "target": "esnext", // "ES2018",
     "module": "commonjs",
     "lib": [
-      "es2018"
+      // "es2018"
+      "es6"
     ],
     "declaration": true,
     "strict": true,
@@ -21,10 +22,14 @@
     "strictPropertyInitialization": false,
     "typeRoots": [
       "./node_modules/@types"
-    ]
+    ],
+    "esModuleInterop": true, /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */
+    "resolveJsonModule": true,
   },
   "exclude": [
     "node_modules",
-    "cdk.out"
+    "cdk.out",
+    "babel.config.js",
+    "jest.config.js"
   ]
 }
