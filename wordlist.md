@@ -6,9 +6,13 @@
 
 ### Flag
 
+### Pole
+
 ### Moving average (vad görs med detta)
 
 ### ADR 
+
+
 
 
 
