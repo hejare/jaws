@@ -1,5 +1,5 @@
 ### Breakout(s)
-
+When the price goes outside / above the current identified span of values and by that not following the trend.
 
 ### Ticker
 Is referring to a comapny listed at a broker. (the Ticker actually is a psoydonym for "symbol" which is the shortened name for a listed company at a broker. It is often tre to four character lng and in uppercase)
