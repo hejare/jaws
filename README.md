@@ -9,11 +9,15 @@ This is a blank project for Jaws with TypeScript.
 * `yarn run test`    perform the jest unit tests
 * `yarn dev`         start the development server
 
+
+### [Alpaca API](https://broker-app.alpaca.markets/dev) login details
+#### [Docs](https://alpaca.markets/docs/api-references/broker-api/)
+#### hej@hejare.se, ask Anna or Leo for password. 
+
 ## _Further Documentation_
 
 - [Wordlist](docs/wordlist.md)
 - [Atomic Driven Design pattern](docs/adr.md)
 
 
-## [Alpaca API](https://broker-app.alpaca.markets/dev) login details
-### hej@hejare.se, ask Anna or Leo for password. 
+
