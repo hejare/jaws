@@ -6,7 +6,8 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "tsc",
+    "build": "next build",
+    "lint": "next lint",
     "watch": "tsc -w",
     "test": "jest"
   },
