@@ -10,9 +10,9 @@ This is a blank project for Jaws with TypeScript.
 * `yarn dev`         start the development server
 
 
-### [Alpaca API](https://broker-app.alpaca.markets/dev) login details
-#### [Docs](https://alpaca.markets/docs/api-references/broker-api/)
-#### hej@hejare.se, ask Anna or Leo for password. 
+## [Alpaca API](https://broker-app.alpaca.markets/dev) login details
+* [Docs](https://alpaca.markets/docs/api-references/broker-api/)
+* hej@hejare.se, ask Anna or Leo for password. 
 
 ## _Further Documentation_
 
