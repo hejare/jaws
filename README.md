@@ -8,3 +8,8 @@ This is a blank project for Jaws with TypeScript.
 * `yarn run watch`   watch for changes and compile
 * `yarn run test`    perform the jest unit tests
 * `yarn dev`         start the development server
+
+## _Further Documentation_
+
+- [Wordlist](docs/wordlist.md)
+- [Atomic Driven Design pattern](docs/adr.md)
