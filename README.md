@@ -19,6 +19,7 @@ This is a blank project for Jaws with TypeScript.
 - [Wordlist](docs/wordlist.md)
 - [Atomic Driven Design pattern](docs/adr.md)
 - [Managing Netlify](docs/netlify.md)
+- [Alpaca API learnings/quick facts](https://github.com/hejare/jaws/tree/main/docs)
 ### HejHejare Github
 Read about this in the projects common document on the drive:
 https://docs.google.com/document/d/1TH65nCqeNXUf9YC2UzaN9GPmo0goyH4fQQZpBcwnTdo/edit#heading=h.1mxg2mhnkz13
