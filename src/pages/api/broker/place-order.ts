@@ -12,8 +12,6 @@ const buff = Buffer.from(
 );
 const base64EncodedKeys = buff.toString("base64");
 
-console.log(base64EncodedKeys);
-
 const convertResult = async (result: Response) => {
   const text = await result.text();
   try {
@@ -34,32 +32,39 @@ const handleResult = async (result: Response) => {
   }
 };
 
+const account_id = 1212
 const baseUrl = "https://broker-api.sandbox.alpaca.markets/v1"
-const accountsEndpoint =  "/accounts";
-const calendarEndpoint = "/calendar"; //  full list of market days from 1970 to 2029
-const clockEndpoint = "/clock"; // the current market timestamp, whether or not the market is currently open, as well as the times of the next market open and close.
 
-const getAlpacaAccounts = async () => {
-  try {
-    const res = await fetch(
-      `${baseUrl}${clockEndpoint}`,
-      {
-        headers: {
-          Authorization: `Basic ${base64EncodedKeys}`,
+const postOrder = async () => {
+    try {
+      const res = await fetch(
+        `${baseUrl}/trading/accounts/${account_id}/orders`,
+        {
+            method: 'POST',
+            headers: {
+            Authorization: `Basic ${base64EncodedKeys}`,
+          },
+          // TODO this is the body type
+        //   body: {
+        //     "symbol": "ETHUSD",
+        //     "qty": "4.125",
+        //     "side": "buy",
+        //     "type": "market",
+        //     "time_in_force": "gtc"
+        //   }
         },
-      },
-    );
-    return handleResult(res);
-  } catch (e) {
-    throw Error("An intuitive error msg");
-  }
-};
+      );
+      return handleResult(res);
+    } catch (e) {
+      throw Error("An intuitive error msg");
+    }
+  };
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>,
 ) {
-  let data: Response = await getAlpacaAccounts();
+  let data: Response = await postOrder();
   res.status(200).json({ data: data });
 }
 
