@@ -29,9 +29,9 @@ const OrderList = () => {
   return (
     orders && (
       <>
-        {orders.map((order) => {
+        {orders.map((order, i) => {
           return (
-            <div
+            <div key={i}
               style={{
                 display: "flex",
                 flexDirection: "row",
