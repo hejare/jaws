@@ -36,7 +36,6 @@ const account_id = "b75acdbc-3fb6-3fb3-b253-b0bf7d86b8bb";
 const baseUrl = "https://broker-api.sandbox.alpaca.markets/v1";
 
 const getOrders = async () => {
-  console.log("getting getting getting");
   try {
     const res = await fetch(
       `${baseUrl}/trading/accounts/${account_id}/orders?status=all`,

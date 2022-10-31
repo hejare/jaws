@@ -12,8 +12,6 @@ const buff = Buffer.from(
 );
 const base64EncodedKeys = buff.toString("base64");
 
-console.log(base64EncodedKeys);
-
 const convertResult = async (result: Response) => {
   const text = await result.text();
   try {
@@ -34,21 +32,18 @@ const handleResult = async (result: Response) => {
   }
 };
 
-const baseUrl = "https://broker-api.sandbox.alpaca.markets/v1"
-const accountsEndpoint =  "/accounts";
+const baseUrl = "https://broker-api.sandbox.alpaca.markets/v1";
+const accountsEndpoint = "/accounts";
 const calendarEndpoint = "/calendar"; //  full list of market days from 1970 to 2029
 const clockEndpoint = "/clock"; // the current market timestamp, whether or not the market is currently open, as well as the times of the next market open and close.
 
 const getAlpacaAccounts = async () => {
   try {
-    const res = await fetch(
-      `${baseUrl}${clockEndpoint}`,
-      {
-        headers: {
-          Authorization: `Basic ${base64EncodedKeys}`,
-        },
+    const res = await fetch(`${baseUrl}${clockEndpoint}`, {
+      headers: {
+        Authorization: `Basic ${base64EncodedKeys}`,
       },
-    );
+    });
     return handleResult(res);
   } catch (e) {
     throw Error("An intuitive error msg");
@@ -62,4 +57,3 @@ export default async function handler(
   let data: Response = await getAlpacaAccounts();
   res.status(200).json({ data: data });
 }
-
