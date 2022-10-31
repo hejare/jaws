@@ -35,25 +35,15 @@ const handleResult = async (result: Response) => {
 const account_id = "b75acdbc-3fb6-3fb3-b253-b0bf7d86b8bb";
 const baseUrl = "https://broker-api.sandbox.alpaca.markets/v1";
 
-const postOrder = async (ticker: string | string[]) => {
-  // ! fix typing | string[] not allowed
-  const body: BodyInit = JSON.stringify({
-    symbol: ticker,
-    notional: "1",
-    side: "buy",
-    type: "market",
-    time_in_force: "day",
-  });
-
+const getOrders = async () => {
+  console.log("getting getting getting");
   try {
     const res = await fetch(
-      `${baseUrl}/trading/accounts/${account_id}/orders`,
+      `${baseUrl}/trading/accounts/${account_id}/orders?status=all`,
       {
-        method: "POST",
         headers: {
           Authorization: `Basic ${base64EncodedKeys}`,
         },
-        body,
       },
     );
     return handleResult(res);
@@ -66,10 +56,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>,
 ) {
-  const ticker = req.query?.ticker;
-
-  if (ticker) {
-    let data: Response = await postOrder(ticker);
-    res.status(200).json({ data: data });
-  }
+  let data: Response = await getOrders();
+  res.status(200).json({ data: data });
 }
