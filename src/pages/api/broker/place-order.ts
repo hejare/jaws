@@ -35,7 +35,7 @@ const handleResult = async (result: Response) => {
 const account_id = 'b75acdbc-3fb6-3fb3-b253-b0bf7d86b8bb'
 const baseUrl = "https://broker-api.sandbox.alpaca.markets/v1"
 
-const postOrder = async (ticker: string) => {
+const postOrder = async (ticker: string | undefined | string[]) => { // ! fix typing, | undefined | string[] not allowed
   const body: BodyInit = JSON.stringify({
       symbol: ticker,
       notional: "1",
@@ -65,8 +65,11 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>,
 ) {
-  const ticker = "TSLA" // req.param??
-  let data: Response = await postOrder(ticker);
-  res.status(200).json({ data: data });
+  const ticker = req.query?.ticker;
+
+  if (ticker) {
+    let data: Response = await postOrder(ticker);
+    res.status(200).json({ data: data }); 
+  }
 }
 

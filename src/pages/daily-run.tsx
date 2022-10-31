@@ -43,10 +43,13 @@ const DailyRun: NextPage = () => {
     <>
       <button onClick={brokerService}>Broker service trigger</button>
       {data.tickers.map((ticker, id) => {
-        return <TickerCard key={id} {...ticker} />;
+        return <TickerCard  key={id} {...ticker} />;
       })}
     </>
   );
 };
 
 export default DailyRun;
+
+
+
