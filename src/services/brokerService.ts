@@ -13,7 +13,13 @@ const convertResult = async (result: Response) => {
 };
 
 export const brokerService = async () => {
-  const resp = await fetch(`http://localhost:3000/api/broker`);
+  const resp = await fetch(`http://localhost:3000/api/broker/place-order`);
   const data = await convertResult(resp);
   console.log("data ", data);
 };
+
+export const handlePostOrder = async (ticker: string) => {
+  const resp = await fetch(`http://localhost:3000/api/broker/place-order/${ticker}`);
+  const data = await convertResult(resp);
+  console.log("data ", data);
+}
