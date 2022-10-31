@@ -19,7 +19,7 @@ export const brokerService = async () => {
 };
 
 export const handlePostOrder = async (ticker: string) => {
-  const resp = await fetch(`http://localhost:3000/api/broker/place-order/${ticker}`);
+  const resp = await fetch(`http://localhost:3000/api/broker/place-order/?ticker=${ticker}`, {method: 'POST'});
   const data = await convertResult(resp);
   console.log("data ", data);
 }
