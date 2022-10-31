@@ -35,8 +35,7 @@ const handleResult = async (result: Response) => {
 const account_id = "b75acdbc-3fb6-3fb3-b253-b0bf7d86b8bb";
 const baseUrl = "https://broker-api.sandbox.alpaca.markets/v1";
 
-const postOrder = async (ticker: string | string[]) => {
-  // ! fix typing | string[] not allowed
+const postOrder = async (ticker: string) => {
   const body: BodyInit = JSON.stringify({
     symbol: ticker,
     notional: "1",
@@ -68,7 +67,7 @@ export default async function handler(
 ) {
   const ticker = req.query?.ticker;
 
-  if (ticker) {
+  if (ticker && !(ticker instanceof Array)) {
     let data: Response = await postOrder(ticker);
     res.status(200).json({ data: data });
   }
