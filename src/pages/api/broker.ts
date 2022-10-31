@@ -46,7 +46,7 @@ const getAlpacaAccounts = async () => {
     });
     return handleResult(res);
   } catch (e) {
-    throw Error("An intuitive error msg");
+    throw Error(`Unable to get info - ${e}`);
   }
 };
 

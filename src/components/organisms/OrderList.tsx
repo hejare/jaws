@@ -31,7 +31,8 @@ const OrderList = () => {
       <>
         {orders.map((order, i) => {
           return (
-            <div key={i}
+            <div
+              key={i}
               style={{
                 display: "flex",
                 flexDirection: "row",

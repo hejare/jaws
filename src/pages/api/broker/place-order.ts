@@ -1,4 +1,3 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 import fetch, { BodyInit, Response } from "node-fetch";
 
@@ -32,7 +31,7 @@ const handleResult = async (result: Response) => {
   }
 };
 
-const account_id = "b75acdbc-3fb6-3fb3-b253-b0bf7d86b8bb";
+const account_id = "b75acdbc-3fb6-3fb3-b253-b0bf7d86b8bb"; // public info
 const baseUrl = "https://broker-api.sandbox.alpaca.markets/v1";
 
 const postOrder = async (ticker: string) => {
@@ -57,7 +56,7 @@ const postOrder = async (ticker: string) => {
     );
     return handleResult(res);
   } catch (e) {
-    throw Error("An intuitive error msg");
+    throw Error(`Unable to post order - ${e}`);
   }
 };
 
