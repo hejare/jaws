@@ -1,6 +1,7 @@
 import type { NextPage } from "next";
 import TickerCard from "../components/molecules/TickerCard";
 import { brokerService } from "../services/brokerService";
+import OrderList from "../components/organisms/OrderList";
 interface Data {
   tickers: Ticker[];
   config: Config;
@@ -41,15 +42,15 @@ const DailyRun: NextPage = () => {
   };
   return (
     <>
-      <button onClick={brokerService}>Broker service trigger</button>
+      <h1>TODAYS RUN</h1>
+      <button onClick={brokerService}>Broker service test trigger</button>
       {data.tickers.map((ticker, id) => {
-        return <TickerCard  key={id} {...ticker} />;
+        return <TickerCard key={id} {...ticker} />;
       })}
+      <h1>Order list</h1>
+      <OrderList />
     </>
   );
 };
 
 export default DailyRun;
-
-
-
