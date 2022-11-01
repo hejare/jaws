@@ -17,7 +17,6 @@ const baseUrl = "https://broker-api.sandbox.alpaca.markets/v1";
 
 const deleteOrder = async (orderId: string) => {
   try {
-    console.log('trying id', orderId)
     const res = await fetch(
       `${baseUrl}/trading/accounts/${accountId}/orders/${orderId}`,
       {
@@ -27,10 +26,8 @@ const deleteOrder = async (orderId: string) => {
         },
       },
     );
-    console.log(res.status)
     return handleResult(res);
   } catch (e) {
-    console.log('ERRORIMENTI')
     throw Error('Unable to delete order');
   }
 };
