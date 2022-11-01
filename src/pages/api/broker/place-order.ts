@@ -12,7 +12,7 @@ const buff = Buffer.from(
 );
 const base64EncodedKeys = buff.toString("base64");
 
-const account_id = "b75acdbc-3fb6-3fb3-b253-b0bf7d86b8bb"; // public info
+const accountId = "b75acdbc-3fb6-3fb3-b253-b0bf7d86b8bb"; // public info
 const baseUrl = "https://broker-api.sandbox.alpaca.markets/v1";
 
 const postOrder = async (ticker: string) => {
@@ -26,7 +26,7 @@ const postOrder = async (ticker: string) => {
 
   try {
     const res = await fetch(
-      `${baseUrl}/trading/accounts/${account_id}/orders`,
+      `${baseUrl}/trading/accounts/${accountId}/orders`,
       {
         method: "POST",
         headers: {
