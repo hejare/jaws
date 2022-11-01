@@ -1,6 +1,5 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
-import fetch, { Response } from "node-fetch";
+import fetch, { BodyInit, Response } from "node-fetch";
 
 type Data = {
   data: Response;
@@ -32,21 +31,32 @@ const handleResult = async (result: Response) => {
   }
 };
 
+const account_id = "b75acdbc-3fb6-3fb3-b253-b0bf7d86b8bb"; // public info
 const baseUrl = "https://broker-api.sandbox.alpaca.markets/v1";
-const accountsEndpoint = "/accounts";
-const calendarEndpoint = "/calendar"; //  full list of market days from 1970 to 2029
-const clockEndpoint = "/clock"; // the current market timestamp, whether or not the market is currently open, as well as the times of the next market open and close.
 
-const getAlpacaAccounts = async () => {
+const postOrder = async (ticker: string) => {
+  const body: BodyInit = JSON.stringify({
+    symbol: ticker,
+    notional: "1",
+    side: "buy",
+    type: "market",
+    time_in_force: "day",
+  });
+
   try {
-    const res = await fetch(`${baseUrl}${clockEndpoint}`, {
-      headers: {
-        Authorization: `Basic ${base64EncodedKeys}`,
+    const res = await fetch(
+      `${baseUrl}/trading/accounts/${account_id}/orders`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${base64EncodedKeys}`,
+        },
+        body,
       },
-    });
+    );
     return handleResult(res);
   } catch (e) {
-    throw Error(`Unable to get info - ${e}`);
+    throw Error(`Unable to post order - ${e}`);
   }
 };
 
@@ -54,6 +64,10 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>,
 ) {
-  let data: Response = await getAlpacaAccounts();
-  res.status(200).json({ data: data });
+  const ticker = req.query?.ticker;
+
+  if (ticker && !(ticker instanceof Array)) {
+    let data: Response = await postOrder(ticker);
+    res.status(200).json({ data: data });
+  }
 }
