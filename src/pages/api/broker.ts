@@ -1,6 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 import fetch, { Response } from "node-fetch";
+import { convertResult } from "../../util/convertResult";
 
 type Data = {
   data: Response;
@@ -11,15 +12,6 @@ const buff = Buffer.from(
   "utf-8",
 );
 const base64EncodedKeys = buff.toString("base64");
-
-const convertResult = async (result: Response) => {
-  const text = await result.text();
-  try {
-    return JSON.parse(text);
-  } catch {
-    return text;
-  }
-};
 
 const handleResult = async (result: Response) => {
   try {
