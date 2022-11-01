@@ -1,7 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 import fetch, { Response } from "node-fetch";
-import { convertResult } from "../../util/convertResult";
+import { handleResult } from "../../util";
 
 type Data = {
   data: Response;
@@ -12,17 +12,6 @@ const buff = Buffer.from(
   "utf-8",
 );
 const base64EncodedKeys = buff.toString("base64");
-
-const handleResult = async (result: Response) => {
-  try {
-    const data = await convertResult(result);
-    const reason = { error: data };
-    return result.ok ? Promise.resolve(data) : Promise.reject(reason);
-  } catch (error) {
-    const reason = { error };
-    return Promise.reject(reason);
-  }
-};
 
 const baseUrl = "https://broker-api.sandbox.alpaca.markets/v1";
 const accountsEndpoint = "/accounts";
