@@ -15,12 +15,20 @@ export const handlePostOrder = async (ticker: string) => {
   const data = await convertResult(resp);
 };
 
+export const handleDeleteOrder = async (order_id: string) => {
+  const resp = await fetch(
+    `/api/broker/place-order/?orderId=${order_id}`,
+    { method: "DELETE" },
+  );
+  const data = await convertResult(resp);
+};
+
 export const handleGetTrades = async () => {
   const resp = await fetch(`/api/broker/get-orders`);
   const data = await convertResult(resp);
   const response = data.orders.map((order: Order) => {
-    const { symbol, status, notional, created_at, filled_at, side } = order;
-    return { symbol, status, notional, created_at, filled_at, side };
+    const { symbol, order_id, status, notional, created_at, filled_at, side } = order;
+    return { symbol, order_id, status, notional, created_at, filled_at, side };
   });
   return response;
 };

@@ -8,6 +8,7 @@ export interface Order {
   created_at: string;
   filled_at?: string;
   side: string;
+  order_id: string;
 }
 
 const OrderList = () => {
