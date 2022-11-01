@@ -1,6 +1,7 @@
 import type { NextPage } from "next";
 import TickerCard from "../components/molecules/TickerCard";
 import { brokerService } from "../services/brokerService";
+import { postSlackMessage } from "../services/slackService";
 import OrderList from "../components/organisms/OrderList";
 interface Data {
   tickers: Ticker[];
@@ -47,6 +48,8 @@ const DailyRun: NextPage = () => {
       {data.tickers.map((ticker, id) => {
         return <TickerCard key={id} {...ticker} />;
       })}
+      <h1>Send message to slack</h1>
+      <button onClick={postSlackMessage}>Slack service test trigger</button>
       <h1>Order list</h1>
       <OrderList />
     </>
