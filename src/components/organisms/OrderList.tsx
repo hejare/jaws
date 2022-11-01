@@ -1,14 +1,14 @@
-import { useEffect, useState, useCallback } from "react";
-import { handleGetTrades } from "../../services/brokerService";
+import { useEffect, useState } from "react";
+import { handleDeleteOrder, handleGetTrades } from "../../services/brokerService";
 
 export interface Order {
   symbol: string;
+  id: string;
   status: string;
   notional: string;
   created_at: string;
   filled_at?: string;
   side: string;
-  order_id: string;
 }
 
 const OrderList = () => {
@@ -43,14 +43,17 @@ const OrderList = () => {
               }}
             >
               <div>{order.symbol}</div>
-              <div>{order.status}</div>
-              <div>{order.notional}</div>
+              <div>{order.side.toLocaleUpperCase()}</div>
+              <div> ${order.notional}</div>
+              <div>Status: {order.status}</div>
               <div> Created: {convertDateString(order.created_at)}</div>
               <div>
                 {"Filled: "}
                 {order.filled_at ? convertDateString(order.filled_at) : ""}
               </div>
-              <div>{order.side}</div>
+              
+              <button disabled={order.filled_at ? true : false} onClick={() => handleDeleteOrder(order.id)}>Delete Order</button>
+
             </div>
           );
         })}

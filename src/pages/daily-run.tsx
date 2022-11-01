@@ -44,7 +44,6 @@ const DailyRun: NextPage = () => {
   return (
     <>
       <h1>TODAYS RUN</h1>
-      <button onClick={brokerService}>Broker service test trigger</button>
       {data.tickers.map((ticker, id) => {
         return <TickerCard key={id} {...ticker} />;
       })}
