@@ -14,6 +14,11 @@ This is a blank project for Jaws with TypeScript.
 * [Docs](https://alpaca.markets/docs/api-references/broker-api/)
 * hej@hejare.se, ask Anna or Leo for password. 
 
+
+## Cron jobs
+* Cron jobs for triggering jaws are setup with [cron-job.org](https://console.cron-job.org/). 
+* Login with hej@hejare.se email adress to view, edit and create new cron jobs
+
 ## _Further Documentation_
 
 - [Wordlist](docs/wordlist.md)
