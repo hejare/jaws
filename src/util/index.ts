@@ -1,2 +1,2 @@
-export * from './convertResult'
+export * from './handleResult'
 export * from './isDev'
