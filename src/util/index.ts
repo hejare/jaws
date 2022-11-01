@@ -1,2 +1,2 @@
 export * from './convertResult'
-export * from './hostUrl'
+export * from './isDev'
