@@ -1,11 +1,11 @@
 import fetch from "node-fetch";
-import { BodyInit } from "node-fetch";
-import { convertResult } from "../util/convertResult";
+import { convertResult, hostUrl } from "../util";
 
 export const postSlackMessage = async () => {
+  const baseUrl = hostUrl()
 
   const resp = await fetch(
-    `http://localhost:3000/api/slack/slack`,
+    `${baseUrl}/api/slack/slack`,
     {
       method: "POST",
     },
