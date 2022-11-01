@@ -12,13 +12,13 @@ const buff = Buffer.from(
 );
 const base64EncodedKeys = buff.toString("base64");
 
-const account_id = "b75acdbc-3fb6-3fb3-b253-b0bf7d86b8bb"; // public info
+const accountId = "b75acdbc-3fb6-3fb3-b253-b0bf7d86b8bb"; // public info
 const baseUrl = "https://broker-api.sandbox.alpaca.markets/v1";
 
 const getOrders = async () => {
   try {
     const res = await fetch(
-      `${baseUrl}/trading/accounts/${account_id}/orders?status=all`,
+      `${baseUrl}/trading/accounts/${accountId}/orders?status=all`,
       {
         headers: {
           Authorization: `Basic ${base64EncodedKeys}`,

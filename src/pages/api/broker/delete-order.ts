@@ -12,13 +12,13 @@ const buff = Buffer.from(
 );
 const base64EncodedKeys = buff.toString("base64");
 
-const account_id = "b75acdbc-3fb6-3fb3-b253-b0bf7d86b8bb"; // public info
+const accountId = "b75acdbc-3fb6-3fb3-b253-b0bf7d86b8bb"; // public info
 const baseUrl = "https://broker-api.sandbox.alpaca.markets/v1";
 
-const deleteOrder = async (order_id: string) => {
+const deleteOrder = async (orderId: string) => {
   try {
     const res = await fetch(
-      `${baseUrl}/trading/accounts/${account_id}/orders/${order_id}`,
+      `${baseUrl}/trading/accounts/${accountId}/orders/${orderId}`,
       {
         method: "DELETE",
         headers: {
@@ -36,10 +36,10 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>,
 ) {
-  const ticker = req.query?.ticker;
+  const orderId = req.query?.orderId;
 
-  if (ticker && !(ticker instanceof Array)) {
-    let data: Response = await deleteOrder(ticker);
+  if (orderId && !(orderId instanceof Array)) {
+    let data: Response = await deleteOrder(orderId);
     res.status(200).json({ data: data });
   }
 }
