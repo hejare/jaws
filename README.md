@@ -14,6 +14,9 @@ This is a blank project for Jaws with TypeScript.
 * [Docs](https://alpaca.markets/docs/api-references/broker-api/)
 * hej@hejare.se, ask Anna or Leo for password. 
 
+## Firebase Cloud Firestore
+- Link to [project console](https://console.firebase.google.com/u/0/project/jaws-sharkster/overview)
+- hej@hejare.se
 
 ## Cron jobs
 * Cron jobs for triggering jaws are setup with [cron-job.org](https://console.cron-job.org/). 
