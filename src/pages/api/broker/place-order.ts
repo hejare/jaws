@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import fetch, { BodyInit, Response } from "node-fetch";
-import { convertResult } from "../../../util/convertResult";
+import { handleResult } from "../../../util";
 
 type Data = {
   data: Response;
@@ -12,18 +12,7 @@ const buff = Buffer.from(
 );
 const base64EncodedKeys = buff.toString("base64");
 
-const handleResult = async (result: Response) => {
-  try {
-    const data = await convertResult(result);
-    const reason = { error: data };
-    return result.ok ? Promise.resolve(data) : Promise.reject(reason);
-  } catch (error) {
-    const reason = { error };
-    return Promise.reject(reason);
-  }
-};
-
-const account_id = "b75acdbc-3fb6-3fb3-b253-b0bf7d86b8bb"; // public info
+const accountId = "b75acdbc-3fb6-3fb3-b253-b0bf7d86b8bb"; // public info
 const baseUrl = "https://broker-api.sandbox.alpaca.markets/v1";
 
 const postOrder = async (ticker: string) => {
@@ -37,7 +26,7 @@ const postOrder = async (ticker: string) => {
 
   try {
     const res = await fetch(
-      `${baseUrl}/trading/accounts/${account_id}/orders`,
+      `${baseUrl}/trading/accounts/${accountId}/orders`,
       {
         method: "POST",
         headers: {
