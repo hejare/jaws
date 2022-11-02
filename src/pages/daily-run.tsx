@@ -3,6 +3,7 @@ import TickerCard from "../components/molecules/TickerCard";
 import { brokerService } from "../services/brokerService";
 import { postSlackMessage } from "../services/slackService";
 import OrderList from "../components/organisms/OrderList";
+import {getSharks} from "../services/dbService";
 interface Data {
   tickers: Ticker[];
   config: Config;
@@ -44,6 +45,8 @@ const DailyRun: NextPage = () => {
   return (
     <>
       <h1>TODAYS RUN</h1>
+      <button onClick={brokerService}>Broker service test trigger</button>
+      <button onClick={getSharks}>🦈  Get sharks from DB 🦈</button>
       {data.tickers.map((ticker, id) => {
         return <TickerCard key={id} {...ticker} />;
       })}
