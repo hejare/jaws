@@ -18,5 +18,3 @@ type Data = {
     const resp: SharksData[] = await getSharks()
     res.status(200).json({ sharks: resp });
   }
-  
-
