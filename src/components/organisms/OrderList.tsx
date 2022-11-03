@@ -54,7 +54,7 @@ return (
         <TableCell align="right">Filled at</TableCell>
         <TableCell align="right">Notional</TableCell>
         <TableCell align="right">Status</TableCell>
-        <TableCell align="right">Delete</TableCell>
+        <TableCell align="right">Cancel</TableCell>
       </TableRow>
     </TableHead>
     <TableBody>
@@ -68,7 +68,7 @@ return (
           <TableCell align="right">{row.notional}</TableCell>
           <TableCell align="right">{row.status}</TableCell>
           <TableCell align="right">
-            <Button variant="contained" size="small" disabled={(nonCancellableOrderStatus as unknown as string[]).includes(row.status)} onClick={() => handleDeleteOrder(row.id)}>Delete Order</Button>
+            <Button variant="contained" size="small" disabled={(nonCancellableOrderStatus as unknown as string[]).includes(row.status)} onClick={() => handleDeleteOrder(row.id)}>Cancel Order</Button>
           </TableCell>
         </TableRow>
       ))}
