@@ -55,12 +55,11 @@ const DailyRun: NextPage = () => {
   return (
     <>
       <h1>TODAYS RUN</h1>
-      <button onClick={brokerService}>Broker service test trigger</button>
+      <Button onClick={postSlackMessage}>Slack service test trigger</Button>
+      <Button onClick={brokerService}>Broker service test trigger</Button>
       {data.tickers.map((ticker, id) => {
         return <TickerCard key={id} {...ticker} />;
       })}
-      <h1>Send message to slack</h1>
-      <Button onClick={postSlackMessage}>Slack service test trigger</Button>
       <h1>Order list</h1>
       <OrderList />
     </>
