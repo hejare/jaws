@@ -3,6 +3,8 @@ import TickerCard from "../components/molecules/TickerCard";
 import { brokerService } from "../services/brokerService";
 import { postSlackMessage } from "../services/slackService";
 import OrderList from "../components/organisms/OrderList";
+import {getSharks} from "../services/dbService";
+import { useEffect } from "react";
 interface Data {
   tickers: Ticker[];
   config: Config;
@@ -21,6 +23,14 @@ interface Config {
 }
 
 const DailyRun: NextPage = () => {
+
+  useEffect(() => {
+    const fetchData = async () => {
+      console.log(await getSharks())
+    };
+    fetchData();  
+  }, []);
+  
   const data: Data = {
     tickers: [
       {
@@ -44,6 +54,7 @@ const DailyRun: NextPage = () => {
   return (
     <>
       <h1>TODAYS RUN</h1>
+      <button onClick={brokerService}>Broker service test trigger</button>
       {data.tickers.map((ticker, id) => {
         return <TickerCard key={id} {...ticker} />;
       })}
