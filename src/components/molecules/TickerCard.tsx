@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { handlePostOrder } from "../../services/brokerService";
+import { handleBuyOrder, handleSellOrder } from "../../services/brokerService";
 
 interface Props {
   ticker: string;
@@ -16,7 +16,8 @@ const TickerCard = ({ price, name, ticker }: Props) => {
       <a href={`https://www.tradingview.com/symbols/${ticker}`} target="_blank">
         {ticker}
       </a>
-      <button onClick={() => handlePostOrder(ticker)}>BUY {name}</button>
+      <button onClick={() => handleBuyOrder(ticker)}>BUY $1 {name}</button>
+      <button onClick={() => handleSellOrder(ticker)}>SELL $1 {name}</button>
     </div>
   );
 };

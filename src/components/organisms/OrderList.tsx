@@ -1,14 +1,23 @@
 import { useEffect, useState } from "react";
 import { handleDeleteOrder, handleGetTrades } from "../../services/brokerService";
 
+
+export type OrderType = 'buy' | 'sell';
+
+const cancellableOrderStatus = ['new', 'partially_filled', 'done_for_day', 'accepted', 'pending_new', 'accepted_for_bidding'] as const;
+type CancellableOrderStatus = (typeof cancellableOrderStatus)[number]
+const nonCancellableOrderStatus = ['filled', 'canceled', 'expired', 'replaced', 'pending_cancel', 'pending_replace', 'stopped', 'rejected', 'suspended', 'calculated'] as const;
+type NonCancellableOrderStatus = (typeof nonCancellableOrderStatus)[number]
+export type OrderStatus = CancellableOrderStatus | NonCancellableOrderStatus;
+
 export interface Order {
   symbol: string;
   id: string;
-  status: string;
+  status: OrderStatus;
   notional: string;
   created_at: string;
   filled_at?: string;
-  side: string;
+  side: OrderType;
 }
 
 const OrderList = () => {
@@ -51,8 +60,7 @@ const OrderList = () => {
                 {"Filled: "}
                 {order.filled_at ? convertDateString(order.filled_at) : ""}
               </div>
-              
-              <button disabled={order.filled_at ? true : false} onClick={() => handleDeleteOrder(order.id)}>Delete Order</button>
+              <button disabled={(nonCancellableOrderStatus as unknown as string[]).includes(order.status)} onClick={() => handleDeleteOrder(order.id)}>Delete Order</button>
 
             </div>
           );
