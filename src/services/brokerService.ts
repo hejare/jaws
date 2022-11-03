@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import { Order } from "../components/organisms/OrderList";
+import { Order, OrderType } from "../components/organisms/OrderList";
 import { convertResult } from "../util";
 
 export const brokerService = async () => {
@@ -7,13 +7,16 @@ export const brokerService = async () => {
   const data = await convertResult(resp);
 };
 
-export const handlePostOrder = async (ticker: string) => {
+const handlePostOrder = async (ticker: string, orderType: OrderType) => {
   const resp = await fetch(
-    `/api/broker/place-order/?ticker=${ticker}`,
+    `/api/broker/place-order/?ticker=${ticker}&orderType=${orderType}`,
     { method: "POST" },
   );
   const data = await convertResult(resp);
 };
+
+export const handleBuyOrder = (ticker: string) => handlePostOrder(ticker, 'buy')
+export const handleSellOrder = (ticker: string) => handlePostOrder(ticker, 'sell')
 
 export const handleDeleteOrder = async (order_id: string) => {
   const resp = await fetch(

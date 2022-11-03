@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import fetch, { BodyInit, Response } from "node-fetch";
+import { OrderType } from "../../../components/organisms/OrderList";
 import { handleResult } from "../../../util";
 
 type Data = {
@@ -15,11 +16,11 @@ const base64EncodedKeys = buff.toString("base64");
 const accountId = "b75acdbc-3fb6-3fb3-b253-b0bf7d86b8bb"; // public info
 const baseUrl = "https://broker-api.sandbox.alpaca.markets/v1";
 
-const postOrder = async (ticker: string) => {
+const postOrder = async (ticker: string, orderType: string) => {
   const body: BodyInit = JSON.stringify({
     symbol: ticker,
     notional: "1",
-    side: "buy",
+    side: orderType,
     type: "market",
     time_in_force: "day",
   });
@@ -45,10 +46,9 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>,
 ) {
-  const ticker = req.query?.ticker;
+  const ticker: string = (req.query?.ticker as string);
+  const orderType: OrderType = (req.query?.orderType as OrderType);
 
-  if (ticker && !(ticker instanceof Array)) {
-    let data: Response = await postOrder(ticker);
-    res.status(200).json({ data: data });
-  }
+  let data: Response = await postOrder(ticker, orderType);
+  res.status(200).json({ data: data });
 }
