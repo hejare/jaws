@@ -68,7 +68,7 @@ return (
           <TableCell align="right">{row.notional}</TableCell>
           <TableCell align="right">{row.status}</TableCell>
           <TableCell align="right">
-            <Button variant="contained" size="small" disabled={row.filled_at ? true : false} onClick={() => handleDeleteOrder(row.id)}>Delete Order</Button>
+            <Button variant="contained" size="small" disabled={(nonCancellableOrderStatus as unknown as string[]).includes(row.status)} onClick={() => handleDeleteOrder(row.id)}>Delete Order</Button>
           </TableCell>
         </TableRow>
       ))}

@@ -17,8 +17,8 @@ const TickerCard = ({ price, name, ticker }: Props) => {
       <a href={`https://www.tradingview.com/symbols/${ticker}`} target="_blank">
         {ticker}
       </a>
-      <Button onClick={() => handleBuyOrder(ticker)}>BUY $1 {name}</Button>
-      <Button onClick={() => handleSellOrder(ticker)}>SELL $1 {name}</Button>
+      <Button variant="contained" size="small" color="info" onClick={() => handleBuyOrder(ticker)}>BUY $1 {name}</Button>
+      <Button variant="contained" size="small" color="success" onClick={() => handleSellOrder(ticker)}>SELL $1 {name}</Button>
     </div>
   );
 };
