@@ -1,4 +1,5 @@
 import Button from '@mui/material/Button';
+import styled from 'styled-components';
 import type { NextPage } from "next";
 import TickerCard from "../components/molecules/TickerCard";
 import { brokerService } from "../services/brokerService";
@@ -22,6 +23,23 @@ interface Config {
   b: string;
   c: string;
 }
+
+
+const PageContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+`
+
+const ButtonsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+`
+
+const Heading = styled.h1`
+  display: block;
+  width: 100%;
+`
 
 const DailyRun: NextPage = () => {
 
@@ -53,16 +71,20 @@ const DailyRun: NextPage = () => {
     config: { a: "a", b: "b", c: "c" },
   };
   return (
-    <>
-      <h1>TODAYS RUN</h1>
-      <Button onClick={postSlackMessage}>Slack service test trigger</Button>
-      <Button onClick={brokerService}>Broker service test trigger</Button>
+    <PageContainer>
+       <ButtonsContainer>
+          <Button variant='outlined' onClick={postSlackMessage}>Slack service test trigger</Button>
+          <Button variant='outlined' onClick={brokerService}>Broker service test trigger</Button>
+        </ButtonsContainer>
+        <h1>TODAYS RUN</h1>
+
       {data.tickers.map((ticker, id) => {
         return <TickerCard key={id} {...ticker} />;
       })}
-      <h1>Order list</h1>
+     
+      <Heading>Order list</Heading>
       <OrderList />
-    </>
+    </PageContainer>
   );
 };
 
