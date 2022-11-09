@@ -1,10 +1,10 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import { flexbox } from '@mui/system';
 import styled from 'styled-components';
+import CircularButton from '../atoms/buttons/CircularButton';
 
 
 interface Props {
@@ -16,7 +16,6 @@ interface Props {
 }
 
 const GraphContainer = styled.div`
-    width: 100%;
     color: white;
     display: flex;
     align-items: center;
@@ -32,6 +31,13 @@ const Graph = styled.div`
     justify-content: center;
 ` 
 
+const ButtonContainer = styled.div`
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+`
+
 const style = {
   position: 'absolute' as 'absolute',
   top: '50%',
@@ -40,7 +46,6 @@ const style = {
   width: '70%',
   height: '70%',
   bgcolor: 'background.paper',
-  border: '2px solid #000',
   boxShadow: 24,
   p: 4,
 };
@@ -55,18 +60,25 @@ export default function ModalDialog({isOpen, handleClose, ticker, price, name}: 
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Daily pick {ticker} {name}
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Price {price}
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Nyckeltal 2
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Nyckeltal 3, ..., Nyckeltal n
-          </Typography>
+            <ButtonContainer>
+                <CircularButton handleClick={handleClose}>
+                    <>X</>
+                </CircularButton>
+            </ButtonContainer>
+        <div>
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+                Daily pick {ticker} {name}
+            </Typography>
+            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                Price {price}
+            </Typography>
+            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                Nyckeltal 2
+            </Typography>
+            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                Nyckeltal 3, ..., Nyckeltal n
+            </Typography>
+        </div>
           <GraphContainer>
             <Graph>Graph</Graph>
           </GraphContainer>
