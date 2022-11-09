@@ -24,6 +24,8 @@ const TickerCard = ({ price, name, ticker }: Props) => {
   const handleOpen = () => setIsModalOpen(true);
   const handleClose = () => setIsModalOpen(false);
 
+  const tickerInfo = {price, name, ticker}
+
   return (
     <div>
       <h2>
@@ -37,7 +39,7 @@ const TickerCard = ({ price, name, ticker }: Props) => {
         <Button variant="contained" size="small" color="info" onClick={() => handleBuyOrder(ticker)}>BUY $1 {name}</Button>
         <Button variant="contained" size="small" color="success" onClick={() => handleSellOrder(ticker)}>SELL $1 {name}</Button>
       </ButtonsContainer>
-      <ModalDialog isOpen={isModalOpen} handleClose={handleClose}/>
+      <ModalDialog isOpen={isModalOpen} handleClose={handleClose} {...tickerInfo}/>
     </div>
   );
 };

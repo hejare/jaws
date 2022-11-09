@@ -3,10 +3,14 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
+import { flexbox } from '@mui/system';
 
 interface Props {
     isOpen: boolean;
     handleClose: () => void;
+    ticker: string;
+    price: number;
+    name: string;
 }
 
 const style = {
@@ -22,7 +26,7 @@ const style = {
   p: 4,
 };
 
-export default function ModalDialog({isOpen, handleClose}: Props) {
+export default function ModalDialog({isOpen, handleClose, ticker, price, name}: Props) {
   return (
     <div>
       <Modal
@@ -33,10 +37,16 @@ export default function ModalDialog({isOpen, handleClose}: Props) {
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Text in a modal
+            Daily pick {ticker} {name}
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+            Price {price}
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            Nyckeltal 2
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            Nyckeltal 3, ..., Nyckeltal n
           </Typography>
         </Box>
       </Modal>
