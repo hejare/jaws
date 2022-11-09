@@ -2,10 +2,10 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
-import { flexbox } from '@mui/system';
 import styled from 'styled-components';
 import CircularButton from '../atoms/buttons/CircularButton';
-
+import Button from '@mui/material/Button';
+import { handleBuyOrder } from "../../services/brokerService";
 
 interface Props {
     isOpen: boolean;
@@ -20,6 +20,7 @@ const GraphContainer = styled.div`
     display: flex;
     align-items: center;
     justify-content: end;
+    padding: 15px 0 15px 0;
 ` 
 const Graph = styled.div`
     width: 50vh;
@@ -82,6 +83,7 @@ export default function ModalDialog({isOpen, handleClose, ticker, price, name}: 
           <GraphContainer>
             <Graph>Graph</Graph>
           </GraphContainer>
+          <Button variant="contained" size="small" color="info" onClick={() => handleBuyOrder(ticker)}>BUY $1 {name}</Button>
         </Box>
       </Modal>
     </div>
