@@ -1,7 +1,9 @@
 import Link from "next/link";
+import {useState} from "react"
 import styled from 'styled-components';
 import { handleBuyOrder, handleSellOrder } from "../../services/brokerService";
 import Button from '@mui/material/Button';
+import ModalDialog from "./ModalDialog";
 
 interface Props {
   ticker: string;
@@ -17,6 +19,11 @@ const ButtonsContainer = styled.div`
 `
 
 const TickerCard = ({ price, name, ticker }: Props) => {
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const handleOpen = () => setIsModalOpen(true);
+  const handleClose = () => setIsModalOpen(false);
+
   return (
     <div>
       <h2>
@@ -26,9 +33,11 @@ const TickerCard = ({ price, name, ticker }: Props) => {
         {ticker}
       </a>
       <ButtonsContainer>
+        <Button onClick={handleOpen} variant="outlined" size="small">More info</Button>
         <Button variant="contained" size="small" color="info" onClick={() => handleBuyOrder(ticker)}>BUY $1 {name}</Button>
         <Button variant="contained" size="small" color="success" onClick={() => handleSellOrder(ticker)}>SELL $1 {name}</Button>
       </ButtonsContainer>
+      <ModalDialog isOpen={isModalOpen} handleClose={handleClose}/>
     </div>
   );
 };
