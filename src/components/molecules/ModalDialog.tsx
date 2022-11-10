@@ -15,12 +15,20 @@ interface Props {
     name: string;
 }
 
+const ContentContainer = styled.div`
+    display: flex;
+`
+const InfoContainer = styled.div`
+    width: 50%;
+`
+
 const GraphContainer = styled.div`
     color: white;
     display: flex;
     align-items: center;
     justify-content: end;
     padding: 15px 0 15px 0;
+    width: 50%;
 ` 
 const Graph = styled.div`
     width: 50vh;
@@ -32,7 +40,7 @@ const Graph = styled.div`
     justify-content: center;
 ` 
 
-const ButtonContainer = styled.div`
+const CancelButtonContainer = styled.div`
     display: flex;
     justify-content: flex-end;
     align-items: center;
@@ -52,6 +60,7 @@ const style = {
 };
 
 export default function ModalDialog({isOpen, handleClose, ticker, price, name}: Props) {
+
   return (
     <div>
       <Modal
@@ -61,29 +70,46 @@ export default function ModalDialog({isOpen, handleClose, ticker, price, name}: 
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-            <ButtonContainer>
+            <CancelButtonContainer>
                 <CircularButton handleClick={handleClose}>
                     <>X</>
                 </CircularButton>
-            </ButtonContainer>
-        <div>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-                Daily pick {ticker} {name}
-            </Typography>
-            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                Price {price}
-            </Typography>
-            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                Nyckeltal 2
-            </Typography>
-            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                Nyckeltal 3, ..., Nyckeltal n
-            </Typography>
-        </div>
+            </CancelButtonContainer>
+        <ContentContainer>       
+            <InfoContainer>
+                <Typography id="modal-modal-title" variant="h6" component="h2">
+                    Daily pick {ticker} {name}
+                </Typography>
+                <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                    Price: {price}
+                </Typography>
+                <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                    Entry Date:
+                </Typography>
+                <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                    Symbol:
+                </Typography>
+                <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                    Chart at Entry:
+                </Typography>
+                <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                    Time:
+                </Typography>
+                <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                    Shares:
+                </Typography>
+                <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                    Entry Price:
+                </Typography>
+                <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                    Size:
+                </Typography>
+                <Button style={{marginTop: "15px"}} variant="contained" size="small" color="info" onClick={() => handleBuyOrder(ticker)}>BUY $1 {name}</Button>
+            </InfoContainer>
           <GraphContainer>
             <Graph>Graph</Graph>
           </GraphContainer>
-          <Button variant="contained" size="small" color="info" onClick={() => handleBuyOrder(ticker)}>BUY $1 {name}</Button>
+        </ContentContainer>   
         </Box>
       </Modal>
     </div>
