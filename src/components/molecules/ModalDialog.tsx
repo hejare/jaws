@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import styled from 'styled-components';
 import CircularButton from '../atoms/buttons/CircularButton';
-import Button from '@mui/material/Button';
+import RectangularButton from "../atoms/buttons/RectangularButton"
 import { handleBuyOrder } from "../../services/brokerService";
 
 interface Props {
@@ -104,7 +104,7 @@ export default function ModalDialog({isOpen, handleClose, ticker, price, name}: 
                 <Typography id="modal-modal-description" sx={{ mt: 2 }}>
                     Size:
                 </Typography>
-                <Button style={{marginTop: "15px"}} variant="contained" size="small" color="info" onClick={() => handleBuyOrder(ticker)}>BUY $1 {name}</Button>
+                <RectangularButton handleClick={() => handleBuyOrder(ticker)} label={`BUY $1 ${name}`} variant="contained" size="small" color="info"/>
             </InfoContainer>
           <GraphContainer>
             <Graph>Graph</Graph>

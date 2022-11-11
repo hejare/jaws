@@ -1,7 +1,7 @@
 import {useState} from "react"
 import styled from 'styled-components';
 import { handleBuyOrder, handleSellOrder } from "../../services/brokerService";
-import Button from '@mui/material/Button';
+import RectangularButton from "../atoms/buttons/RectangularButton";
 import ModalDialog from "./ModalDialog";
 
 interface Props {
@@ -34,9 +34,9 @@ const TickerCard = ({ price, name, ticker }: Props) => {
         {ticker}
       </a>
       <ButtonsContainer>
-        <Button onClick={handleOpen} variant="outlined" size="small">More info</Button>
-        <Button variant="contained" size="small" color="info" onClick={() => handleBuyOrder(ticker)}>BUY $1 {name}</Button>
-        <Button variant="contained" size="small" color="success" onClick={() => handleSellOrder(ticker)}>SELL $1 {name}</Button>
+        <RectangularButton handleClick={handleOpen} variant="outlined" size="small" label="More info"/>
+        <RectangularButton label={`BUY $1 ${name}`} variant="contained" size="small" color="info" handleClick={() => handleBuyOrder(ticker)}/>
+        <RectangularButton label={`SELL $1 ${name}`} variant="contained" size="small" color="success" handleClick={() => handleSellOrder(ticker)}/>
       </ButtonsContainer>
       <ModalDialog isOpen={isModalOpen} handleClose={handleClose} {...tickerInfo}/>
     </div>
