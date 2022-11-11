@@ -1,4 +1,3 @@
-import Button from '@mui/material/Button';
 import { useEffect, useState } from "react";
 import { handleDeleteOrder, handleGetTrades } from "../../services/brokerService";
 
@@ -9,6 +8,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import RectangularButton from '../atoms/buttons/RectangularButton';
 export type OrderType = 'buy' | 'sell';
 
 const cancellableOrderStatus = ['new', 'partially_filled', 'done_for_day', 'accepted', 'pending_new', 'accepted_for_bidding'] as const;
@@ -68,7 +68,7 @@ return (
           <TableCell align="right">{row.notional}</TableCell>
           <TableCell align="right">{row.status}</TableCell>
           <TableCell align="right">
-            <Button variant="contained" size="small" disabled={(nonCancellableOrderStatus as unknown as string[]).includes(row.status)} onClick={() => handleDeleteOrder(row.id)}>Cancel Order</Button>
+            <RectangularButton label={"Cancel Order"} variant="contained" size="small" disabled={(nonCancellableOrderStatus as unknown as string[]).includes(row.status)} handleClick={() => handleDeleteOrder(row.id)}/>
           </TableCell>
         </TableRow>
       ))}

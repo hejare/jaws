@@ -1,7 +1,8 @@
-import Link from "next/link";
-import styled from 'styled-components';
+import { useState } from "react";
+import styled from "styled-components";
 import { handleBuyOrder, handleSellOrder } from "../../services/brokerService";
-import Button from '@mui/material/Button';
+import RectangularButton from "../atoms/buttons/RectangularButton";
+import ModalDialog from "./ModalDialog";
 
 interface Props {
   ticker: string;
@@ -14,21 +15,47 @@ const ButtonsContainer = styled.div`
   flex-direction: column;
   max-width: 400px;
   gap: 5px;
-`
+`;
 
-const TickerCard = ({ price, name, ticker }: Props) => {
+const TickerCard = (props: Props) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const handleOpen = () => setIsModalOpen(true);
+  const handleClose = () => setIsModalOpen(false);
+
   return (
     <div>
       <h2>
-        {name} {price}
+        {props.name} {props.price}
       </h2>
-      <a href={`https://www.tradingview.com/symbols/${ticker}`} target="_blank">
-        {ticker}
+      <a
+        href={`https://www.tradingview.com/symbols/${props.ticker}`}
+        target="_blank"
+      >
+        {props.ticker}
       </a>
       <ButtonsContainer>
-        <Button variant="contained" size="small" color="info" onClick={() => handleBuyOrder(ticker)}>BUY $1 {name}</Button>
-        <Button variant="contained" size="small" color="success" onClick={() => handleSellOrder(ticker)}>SELL $1 {name}</Button>
+        <RectangularButton
+          handleClick={handleOpen}
+          variant="outlined"
+          size="small"
+          label="More info"
+        />
+        <RectangularButton
+          label={`BUY $1 ${props.name}`}
+          variant="contained"
+          size="small"
+          color="info"
+          handleClick={() => handleBuyOrder(props.ticker)}
+        />
+        <RectangularButton
+          label={`SELL $1 ${props.name}`}
+          variant="contained"
+          size="small"
+          color="success"
+          handleClick={() => handleSellOrder(props.ticker)}
+        />
       </ButtonsContainer>
+      <ModalDialog isOpen={isModalOpen} handleClose={handleClose} {...props} />
     </div>
   );
 };
