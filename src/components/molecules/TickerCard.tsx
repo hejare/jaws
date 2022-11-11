@@ -1,5 +1,5 @@
-import {useState} from "react"
-import styled from 'styled-components';
+import { useState } from "react";
+import styled from "styled-components";
 import { handleBuyOrder, handleSellOrder } from "../../services/brokerService";
 import RectangularButton from "../atoms/buttons/RectangularButton";
 import ModalDialog from "./ModalDialog";
@@ -15,30 +15,47 @@ const ButtonsContainer = styled.div`
   flex-direction: column;
   max-width: 400px;
   gap: 5px;
-`
+`;
 
-const TickerCard = ({ price, name, ticker }: Props) => {
-
+const TickerCard = (props: Props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleOpen = () => setIsModalOpen(true);
   const handleClose = () => setIsModalOpen(false);
 
-  const tickerInfo = {price, name, ticker}
-
   return (
     <div>
       <h2>
-        {name} {price}
+        {props.name} {props.price}
       </h2>
-      <a href={`https://www.tradingview.com/symbols/${ticker}`} target="_blank">
-        {ticker}
+      <a
+        href={`https://www.tradingview.com/symbols/${props.ticker}`}
+        target="_blank"
+      >
+        {props.ticker}
       </a>
       <ButtonsContainer>
-        <RectangularButton handleClick={handleOpen} variant="outlined" size="small" label="More info"/>
-        <RectangularButton label={`BUY $1 ${name}`} variant="contained" size="small" color="info" handleClick={() => handleBuyOrder(ticker)}/>
-        <RectangularButton label={`SELL $1 ${name}`} variant="contained" size="small" color="success" handleClick={() => handleSellOrder(ticker)}/>
+        <RectangularButton
+          handleClick={handleOpen}
+          variant="outlined"
+          size="small"
+          label="More info"
+        />
+        <RectangularButton
+          label={`BUY $1 ${props.name}`}
+          variant="contained"
+          size="small"
+          color="info"
+          handleClick={() => handleBuyOrder(props.ticker)}
+        />
+        <RectangularButton
+          label={`SELL $1 ${props.name}`}
+          variant="contained"
+          size="small"
+          color="success"
+          handleClick={() => handleSellOrder(props.ticker)}
+        />
       </ButtonsContainer>
-      <ModalDialog isOpen={isModalOpen} handleClose={handleClose} {...tickerInfo}/>
+      <ModalDialog isOpen={isModalOpen} handleClose={handleClose} {...props} />
     </div>
   );
 };
