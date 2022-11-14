@@ -13,6 +13,7 @@ type DailyRunBody = {
 
 const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
   console.log("pretend to store dailyRunData:", dailyRunBody)
+  console.log("...just the breakouts:", dailyRunBody.breakouts)
   // TODO: Store this data
   return;
 };
