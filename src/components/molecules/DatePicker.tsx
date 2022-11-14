@@ -10,7 +10,7 @@ interface Props {
 }
 
 const DatePicker = ({ setDateValue }: Props) => {
-  const [value, setValue] = useState<Dayjs | null>(dayjs("2022-04-07"));
+  const [value, setValue] = useState<Dayjs | null>(dayjs());
 
   const handleChange = (newValue: any) => {
     setValue(newValue);
@@ -20,7 +20,6 @@ const DatePicker = ({ setDateValue }: Props) => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DesktopDatePicker
-        label="Date desktop"
         inputFormat="DD-MM-YYYY"
         value={value}
         onChange={handleChange}

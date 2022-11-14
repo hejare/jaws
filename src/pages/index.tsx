@@ -18,7 +18,7 @@ const Home: NextPage = () => {
           </Link>
         </p>
         <p>
-          <Link href="/prev-runs">
+          <Link href="/previous-runs">
             <RectangularButton label={"Previous runs"} variant="contained" />
           </Link>
         </p>
