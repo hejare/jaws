@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { handleDeleteOrder, handleGetTrades } from "../../services/brokerService";
-
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -9,6 +8,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import RectangularButton from '../atoms/buttons/RectangularButton';
+
 export type OrderType = 'buy' | 'sell';
 
 const cancellableOrderStatus = ['new', 'partially_filled', 'done_for_day', 'accepted', 'pending_new', 'accepted_for_bidding'] as const;
