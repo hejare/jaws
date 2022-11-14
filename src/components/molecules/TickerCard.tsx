@@ -35,7 +35,7 @@ const TickerCard = (props: Props) => {
       </a>
       <ButtonsContainer>
         <RectangularButton
-          handleClick={handleOpen}
+          onClick={handleOpen}
           variant="outlined"
           size="small"
           label="More info"
@@ -45,14 +45,14 @@ const TickerCard = (props: Props) => {
           variant="contained"
           size="small"
           color="info"
-          handleClick={() => handleBuyOrder(props.ticker)}
+          onClick={() => handleBuyOrder(props.ticker)}
         />
         <RectangularButton
           label={`SELL $1 ${props.name}`}
           variant="contained"
           size="small"
           color="success"
-          handleClick={() => handleSellOrder(props.ticker)}
+          onClick={() => handleSellOrder(props.ticker)}
         />
       </ButtonsContainer>
       <ModalDialog isOpen={isModalOpen} handleClose={handleClose} {...props} />

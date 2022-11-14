@@ -94,7 +94,7 @@ export default function ModalDialog({
               <p>Entry Price:</p>
               <p>Size:</p>
               <RectangularButton
-                handleClick={() => handleBuyOrder(ticker)}
+                onClick={() => handleBuyOrder(ticker)}
                 label={`BUY $1 ${name}`}
                 variant="contained"
                 size="small"
