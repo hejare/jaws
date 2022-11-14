@@ -1,4 +1,5 @@
 import type { NextPage } from "next";
+import styled from "styled-components";
 import Link from "next/link";
 import Head from "next/head";
 import RectangularButton from "../components/atoms/buttons/RectangularButton";
@@ -26,10 +27,16 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
+        <PageContainer>
           <ContentContainer>
+            <Link href="/daily-run" passHref legacyBehavior>
               <RectangularButton label={"Todays run"} variant="contained" />
+            </Link>
+            <Link href="/previous-runs" passHref legacyBehavior>
               <RectangularButton label={"Previous runs"} variant="contained" />
+            </Link>
           </ContentContainer>
+        </PageContainer>
       </main>
     </div>
   );
