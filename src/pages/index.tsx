@@ -3,6 +3,20 @@ import Link from "next/link";
 import Head from "next/head";
 import RectangularButton from "../components/atoms/buttons/RectangularButton";
 
+const PageContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+`;
+
+const ContentContainer = styled.div`
+  display: flex;
+  gap: 15px;
+  flex-direction: column;
+`;
+
 const Home: NextPage = () => {
   return (
     <div>
@@ -12,16 +26,10 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <p>
-          <Link href="/daily-run">
-            <RectangularButton label={"Todays run"} variant="contained" />
-          </Link>
-        </p>
-        <p>
-          <Link href="/previous-runs">
-            <RectangularButton label={"Previous runs"} variant="contained" />
-          </Link>
-        </p>
+          <ContentContainer>
+              <RectangularButton label={"Todays run"} variant="contained" />
+              <RectangularButton label={"Previous runs"} variant="contained" />
+          </ContentContainer>
       </main>
     </div>
   );
