@@ -1,28 +1,28 @@
 const { initializeApp, cert, getApps } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
 
-interface SharksData {
-    name: string,
-    size: string
-}
+import { certJson } from "../db/firebaseCert";
 
 if (!(getApps().length)) {
   initializeApp({
-    credential: cert(process.env.PATH_TO_SERVICE_ACCOUNT_FILE)
+    credential: cert(certJson)
   });
 }
 
 const db = getFirestore();
 
-export async function getSharks() {
-  let sharks: SharksData[] = [];
-  const snapShot =  await db.collection('sharks').get()
-  snapShot.forEach((doc: any) => {
-    const {name, size} = doc.data()
-    sharks.push({name, size})
-})
+export async function getDailyRun(runId: string) {
+  const query = db.collection("daily-runs");
+  const results = await query.where("runId", "==", runId).get();
+  if (results.size === 0) {
+    return null;
+  }
 
-return sharks
+  const doc = results._docs()[0];
+  return {
+    ...doc.data(),
+    _ref: doc.ref.id, // Note: Using ref id to simplify the reference handling. Use doc.ref (DocumentReference) if more advanced logs is needed later on
+  }
 }
 
 export async function postDailyRun(runId: string) {
@@ -34,8 +34,20 @@ export async function postDailyRun(runId: string) {
     status: "ongoing",
   }
 
-  await db.collection('daily-runs').doc().set(data)
+  const ref = await db.collection('daily-runs').add(data)
+  return {
+    ...data,
+    _ref: ref.id
+  };
+}
 
+export type DailyRunDataType = {
+  status: "initiated" | "completed";
+  duration: number;
+  timeEnded: number;
+}
+export async function putDailyRun(refId: string, data: DailyRunDataType) {
+  return db.collection('daily-runs').doc(refId).set(data)
 }
 
 export async function postTicker() {
@@ -45,7 +57,7 @@ export async function postTicker() {
   const data = {
     symbol: "TSLA",
     comment: "Electric cars",
-    tradeViewLink: "https://tradingwiew_blabla.com" 
+    tradeViewLink: "https://tradingwiew_blabla.com"
   }
 
   await db.collection('tickers').doc().set(data)
@@ -70,7 +82,7 @@ async function getConfig() {
 }
 
 
-export async function postBreakout(runId: string ) {
+export async function postBreakout(runId: string) {
 
   // ? configRef and tickerRef from where? getConfig, getTicker -> givet runId
 

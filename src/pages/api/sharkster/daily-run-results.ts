@@ -1,5 +1,5 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
+import { getDailyRun, postDailyRun, putDailyRun } from "../db/db";
 
 interface Ticker {
   ticker: string;
@@ -7,6 +7,8 @@ interface Ticker {
 }
 
 type DailyRunBody = {
+  runId: string;
+  runTime: number;
   breakouts: Ticker[];
   config: {};
 };
@@ -14,7 +16,27 @@ type DailyRunBody = {
 const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
   console.log("pretend to store dailyRunData:", dailyRunBody)
   console.log("...just the breakouts:", dailyRunBody.breakouts)
-  // TODO: Store this data
+
+  const { runId, runTime } = dailyRunBody;
+
+  // update DailyRun 
+  let dailyRunRef = await getDailyRun(runId);
+
+  if (!dailyRunRef) {
+    dailyRunRef = await postDailyRun(runId);
+  }
+
+  await putDailyRun(dailyRunRef._ref, {
+    ...dailyRunRef,
+    status: "completed",
+    duration: runTime,
+    timeEnded: Date.now(),
+  });
+
+  // Get/Port config
+  // Get/Post Ticker for each breakout item
+  // Post Breakout for each breakout item
+
   return;
 };
 
