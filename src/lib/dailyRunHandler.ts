@@ -1,15 +1,20 @@
-import { getDailyRun, postBreakout, postDailyRun, putDailyRun } from "../services/firestoreService";
+import { BreakoutDataType, postBreakout } from "../db/breakoutsEntity";
+import { postConfig } from "../db/configsEntity";
+import { getDailyRun, postDailyRun, putDailyRun } from "../db/dailyRunsEntity";
+import { getTicker, postTicker } from "../db/tickersEntity";
 import { getSessions, triggerDailyRun } from "../services/sharksterService";
 
-interface Ticker {
-  ticker: string;
-  price: number;
+interface Breakout {
+  relative_strength: number;
+  breakout_level: number;
+  image: string;
+  symbol: string;
 }
 
 type DailyRunBody = {
   runId: string;
   runTime: number;
-  breakouts: Ticker[];
+  breakouts: Breakout[];
   config: {};
 };
 
@@ -53,11 +58,29 @@ export const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
   });
 
   // Get/Post config
+  const { _ref: configRef } = await postConfig(dailyRunBody.config);
 
-  // Get/Post Ticker for each breakout item
+  dailyRunBody.breakouts.forEach(async breakout => {
+    const { relative_strength, breakout_level, image, symbol } = breakout;
 
-  // Post Breakout for each breakout item
-  await postBreakout(runId)  // TODO breakouts related to daily run to DB (needs to reference a ticker & a config)
+    // Get/Post Ticker for each breakout item
+    let { _ref: tickerRef } = await getTicker(symbol);
+    if (!tickerRef) {
+      const ticker = await postTicker(symbol);
+      tickerRef = ticker._ref;
+    }
+
+    // Post Breakout for each breakout item
+    const breakoutData: BreakoutDataType = {
+      dailyRunRef,
+      configRef,
+      tickerRef,
+      relativeStrength: relative_strength,
+      breakoutValue: breakout_level,
+      image
+    };
+    await postBreakout(breakoutData);
+  })
 
   return;
 };
