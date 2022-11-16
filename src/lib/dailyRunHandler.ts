@@ -1,5 +1,5 @@
 import { BreakoutDataType, postBreakout } from "../db/breakoutsEntity";
-import { postConfig } from "../db/configsEntity";
+import { getLatestConfig, postConfig } from "../db/configsEntity";
 import { getDailyRun, postDailyRun, putDailyRun } from "../db/dailyRunsEntity";
 import { getTicker, postTicker } from "../db/tickersEntity";
 import { getSessions, triggerDailyRun } from "../services/sharksterService";
@@ -11,11 +11,12 @@ interface Breakout {
   symbol: string;
 }
 
+type Config = Record<string, string | number>;
 type DailyRunBody = {
   runId: string;
   runTime: number;
   breakouts: Breakout[];
-  config: {};
+  config: Config;
 };
 
 const isNotebookIdle = (sessions: [{ path: string, kernel: { execution_state: string } }]) => {
@@ -37,6 +38,22 @@ export const triggerDailyrun = async () => {
   return Promise.resolve(runId);
 }
 
+const isConfigDifferent = (latestConfig: Config, config: Config) => {
+
+  const configEntities = Object.keys(config);
+  const latestConfigEntities = Object.keys(latestConfig);
+
+  // Note: since latest config (the ones existing in Frestore) always get their _ref prop extended to iteself, the difference between incoming config and existing config should be 1, if objects are identical.
+  if ((latestConfigEntities.length - configEntities.length) !== 1) {
+    return false
+  }
+
+  const foundMissmatches = configEntities.reduce((result: any, configName) => {
+    return result + latestConfig[configName] !== config[configName];
+  }, 0);
+  return !!foundMissmatches;
+}
+
 export const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
   console.log("pretend to store dailyRunData:", dailyRunBody)
   console.log("...just the breakouts:", dailyRunBody.breakouts)
@@ -44,27 +61,37 @@ export const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
   const { runId, runTime, config, breakouts } = dailyRunBody;
 
   // update DailyRun 
-  let dailyRunRef = await getDailyRun(runId);
+  let dailyRun = await getDailyRun(runId);
 
-  if (!dailyRunRef) {
-    dailyRunRef = await postDailyRun(runId);
+  if (!dailyRun) {
+    dailyRun = await postDailyRun(runId);
   }
 
-  await putDailyRun(dailyRunRef._ref, {
-    ...dailyRunRef,
+  await putDailyRun(dailyRun._ref, {
+    ...dailyRun,
     status: "completed",
     duration: runTime,
     timeEnded: Date.now(),
   });
 
   // Get/Post config
-  const { _ref: configRef } = await postConfig(dailyRunBody.config);
+  const newConfig = {
+    ...config,
+    timestamp: Date.now(),
+  };
+  const latestConfig = await getLatestConfig();
+  let configRef: string = latestConfig?._ref;
+  if (!configRef || isConfigDifferent(latestConfig, newConfig)) {
+    const { _ref } = await postConfig(newConfig);
+    configRef = _ref;
+  }
 
-  dailyRunBody.breakouts.forEach(async breakout => {
+  breakouts.forEach(async breakout => {
     const { relative_strength, breakout_level, image, symbol } = breakout;
 
     // Get/Post Ticker for each breakout item
-    let { _ref: tickerRef } = await getTicker(symbol);
+    const ticker = await getTicker(symbol);
+    let tickerRef = ticker?._ref;
     if (!tickerRef) {
       const ticker = await postTicker(symbol);
       tickerRef = ticker._ref;
@@ -72,7 +99,7 @@ export const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
 
     // Post Breakout for each breakout item
     const breakoutData: BreakoutDataType = {
-      dailyRunRef,
+      dailyRunRef: dailyRun._ref,
       configRef,
       tickerRef,
       relativeStrength: relative_strength,
