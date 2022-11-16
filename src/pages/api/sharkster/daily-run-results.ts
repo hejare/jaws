@@ -1,22 +1,5 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
-
-interface Ticker {
-  ticker: string;
-  price: number;
-}
-
-type DailyRunBody = {
-  breakouts: Ticker[];
-  config: {};
-};
-
-const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
-  console.log("pretend to store dailyRunData:", dailyRunBody)
-  console.log("...just the breakouts:", dailyRunBody.breakouts)
-  // TODO: Store this data
-  return;
-};
+import { storeDailyRun } from "../../../lib/dailyRunHandler";
 
 export default async function handler(
   req: NextApiRequest,

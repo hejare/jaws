@@ -5,7 +5,6 @@ import TickerCard from "../components/molecules/TickerCard";
 import { brokerService } from "../services/brokerService";
 import { postSlackMessage } from "../services/slackService";
 import OrderList from "../components/organisms/OrderList";
-import { getSharks } from "../services/dbService";
 import { useEffect } from "react";
 interface Data {
   tickers: Ticker[];
@@ -41,13 +40,6 @@ const Heading = styled.h1`
 `;
 
 const DailyRun: NextPage = () => {
-  useEffect(() => {
-    const fetchData = async () => {
-      console.log(await getSharks());
-    };
-    fetchData();
-  }, []);
-
   const data: Data = {
     tickers: [
       {

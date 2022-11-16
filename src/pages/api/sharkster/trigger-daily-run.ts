@@ -1,10 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getSessions, triggerDailyRun } from "../../../services/sharksterService";
-
-const isNotebookIdle = (sessions: [{ path: string, kernel: { execution_state: string } }]) => {
-  const matchedSession = sessions.find(session => session.path.indexOf("get_todays_picks") > -1);
-  return matchedSession?.kernel.execution_state === "idle"
-}
+import { triggerDailyrun } from "../../../lib/dailyRunHandler";
 
 type ResponseDataType = {
   status: string;
@@ -21,19 +16,17 @@ export default async function handler(
     const responseData: ResponseDataType = { status: "INIT" };
     switch (method) {
       case "GET":
-        const sessions = await getSessions();
-        const isIdle = isNotebookIdle(sessions);
-
-        if (isIdle) {
-          const resp = await triggerDailyRun();
-          console.log(resp); // WIP
-          responseData.status = "OK";
-          responseData.meta = { resp };
-        } else {
-          responseData.status = "NOK";
-          responseData.message = "Process is not idle. Could be due to previous execution is still ongoing.";
-          responseData.meta = { sessions };
-        }
+        await triggerDailyrun()
+          .then(result => {
+            responseData.status = "OK";
+            responseData.meta = {
+              runId: result
+            };
+          })
+          .catch(e => {
+            responseData.status = "NOK";
+            responseData.message = e.message;
+          });
         break;
       default:
         throw new Error(`Unsupported method: ${method}`);
