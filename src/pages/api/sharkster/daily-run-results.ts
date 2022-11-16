@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getDailyRun, postDailyRun, putDailyRun } from "../db/db";
+import { getDailyRun, postDailyRun, putDailyRun } from "../../../services/firestoreService";
 
 interface Ticker {
   ticker: string;
@@ -17,7 +17,7 @@ const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
   console.log("pretend to store dailyRunData:", dailyRunBody)
   console.log("...just the breakouts:", dailyRunBody.breakouts)
 
-  const { runId, runTime } = dailyRunBody;
+  const { runId, runTime, config, breakouts } = dailyRunBody;
 
   // update DailyRun 
   let dailyRunRef = await getDailyRun(runId);
@@ -34,7 +34,9 @@ const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
   });
 
   // Get/Port config
+
   // Get/Post Ticker for each breakout item
+
   // Post Breakout for each breakout item
 
   return;

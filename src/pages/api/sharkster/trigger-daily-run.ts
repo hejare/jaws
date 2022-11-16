@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getSessions, triggerDailyRun } from "../../../services/sharksterService";
-import { postDailyRun, postBreakout, postTicker, postConfig } from "../db/db";
+import { postDailyRun, postBreakout, postTicker, postConfig } from "../../../services/firestoreService";
 
 const isNotebookIdle = (sessions: [{ path: string, kernel: { execution_state: string } }]) => {
   const matchedSession = sessions.find(session => session.path.indexOf("get_todays_picks") > -1);

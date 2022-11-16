@@ -1,7 +1,7 @@
 const { initializeApp, cert, getApps } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
 
-import { certJson } from "../db/firebaseCert";
+import { certJson } from "./firebaseCert";
 
 if (!(getApps().length)) {
   initializeApp({
@@ -99,9 +99,3 @@ export async function postBreakout(runId: string) {
   await db.collection('breakouts').doc().set(data)
 
 }
-
-
-
-
-
-
