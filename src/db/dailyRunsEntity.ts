@@ -4,7 +4,7 @@ type DailyRunDataType = {
   status: "initiated" | "completed";
   duration: number;
   timeEnded: number;
-}
+};
 
 export async function getDailyRun(runId: string) {
   const query = db.collection("daily-runs");
@@ -17,7 +17,7 @@ export async function getDailyRun(runId: string) {
   return {
     ...doc.data(),
     _ref: doc.ref.id, // Note: Using ref id to simplify the reference handling. Use doc.ref (DocumentReference) if more advanced logs is needed later on
-  }
+  };
 }
 
 export async function postDailyRun(runId: string) {
@@ -27,15 +27,25 @@ export async function postDailyRun(runId: string) {
     timeEnded: Date.now(),
     duration: 1000,
     status: "ongoing",
-  }
+  };
 
-  const ref = await db.collection('daily-runs').add(data)
+  const ref = await db.collection("daily-runs").add(data);
   return {
     ...data,
-    _ref: ref.id
+    _ref: ref.id,
   };
 }
 
 export async function putDailyRun(refId: string, data: DailyRunDataType) {
-  return db.collection('daily-runs').doc(refId).set(data)
+  return db.collection("daily-runs").doc(refId).set(data);
+}
+
+export async function getAllDailyRuns() {
+  const result: any = [];
+  const dailyRunRef = await db.collection("daily-runs").get();
+  dailyRunRef.forEach((doc: any) => {
+    result.push(doc.data());
+  });
+
+  return result;
 }

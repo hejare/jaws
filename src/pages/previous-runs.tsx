@@ -1,8 +1,10 @@
 import dayjs, { Dayjs } from "dayjs";
 import type { NextPage } from "next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import DatePicker from "../components/molecules/DatePicker";
+import fetch from "node-fetch";
+import { handleResult } from "../util/handleResult";
 
 const PageContainer = styled.div`
   display: flex;
@@ -14,10 +16,22 @@ const PageContainer = styled.div`
 
 const PreviousRuns: NextPage = () => {
   const [date, setDate] = useState<Dayjs | null>(dayjs());
+  const [dailyRuns, setDailyRuns] = useState();
 
   const handleDateChange = (newValue: any) => {
     setDate(newValue);
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const runs = await fetch("/api/data/daily-runs").then(handleResult);
+      setDailyRuns(runs);
+    };
+
+    fetchData();
+  }, []);
+
+  // TODO map over runs
 
   return (
     <PageContainer>
