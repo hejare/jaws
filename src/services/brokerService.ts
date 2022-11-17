@@ -15,14 +15,15 @@ const handlePostOrder = async (ticker: string, orderType: OrderType) => {
   const data = await convertResult(resp);
 };
 
-export const handleBuyOrder = (ticker: string) => handlePostOrder(ticker, 'buy')
-export const handleSellOrder = (ticker: string) => handlePostOrder(ticker, 'sell')
+export const handleBuyOrder = (ticker: string) =>
+  handlePostOrder(ticker, "buy");
+export const handleSellOrder = (ticker: string) =>
+  handlePostOrder(ticker, "sell");
 
 export const handleDeleteOrder = async (order_id: string) => {
-  const resp = await fetch(
-    `/api/broker/delete-order/?orderId=${order_id}`,
-    { method: "DELETE" }
-  );
+  const resp = await fetch(`/api/broker/delete-order/?orderId=${order_id}`, {
+    method: "DELETE",
+  });
   const data = await convertResult(resp);
 };
 

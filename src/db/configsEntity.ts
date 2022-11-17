@@ -1,7 +1,6 @@
 import { db } from "../services/firestoreService";
 
-type ConfigDataType = {
-}
+type ConfigDataType = {};
 
 export async function getConfig(refId: string) {
   const query = db.collection("configs");
@@ -14,12 +13,15 @@ export async function getConfig(refId: string) {
   return {
     ...doc.data(),
     _ref: doc.ref.id, // Note: Using ref id to simplify the reference handling. Use doc.ref (DocumentReference) if more advanced logs is needed later on
-  }
+  };
 }
 
 export async function getLatestConfig() {
-
-  const latestConfig = await db.collection("configs").orderBy("timestamp", "desc").limit(1).get()
+  const latestConfig = await db
+    .collection("configs")
+    .orderBy("timestamp", "desc")
+    .limit(1)
+    .get();
   if (latestConfig.size === 0) {
     return null;
   }
@@ -28,11 +30,11 @@ export async function getLatestConfig() {
   return {
     ...doc.data(),
     _ref: doc.ref.id, // Note: Using ref id to simplify the reference handling. Use doc.ref (DocumentReference) if more advanced logs is needed later on
-  }
+  };
 }
 
 export async function postConfig(data: ConfigDataType) {
-  const ref = await db.collection('configs').add(data)
+  const ref = await db.collection("configs").add(data);
   return {
     ...data,
     _ref: ref.id,
@@ -40,5 +42,5 @@ export async function postConfig(data: ConfigDataType) {
 }
 
 export async function putConfig(refId: string, data: ConfigDataType) {
-  return db.collection('configs').doc(refId).set(data)
+  return db.collection("configs").doc(refId).set(data);
 }

@@ -21,6 +21,7 @@ module.exports = {
   "plugins": [
     "react",
     "@typescript-eslint",
+    "prettier"
   ],
   "overrides": [
     {

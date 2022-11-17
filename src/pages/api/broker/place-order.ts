@@ -26,16 +26,13 @@ const postOrder = async (ticker: string, orderType: string) => {
   });
 
   try {
-    const res = await fetch(
-      `${baseUrl}/trading/accounts/${accountId}/orders`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Basic ${base64EncodedKeys}`,
-        },
-        body,
-      }
-    );
+    const res = await fetch(`${baseUrl}/trading/accounts/${accountId}/orders`, {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${base64EncodedKeys}`,
+      },
+      body,
+    });
     return await handleResult(res);
   } catch (e) {
     throw Error(`Unable to post order - ${e}`);
@@ -46,8 +43,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  const ticker: string = (req.query?.ticker as string);
-  const orderType: OrderType = (req.query?.orderType as OrderType);
+  const ticker: string = req.query?.ticker as string;
+  const orderType: OrderType = req.query?.orderType as OrderType;
 
   const data: Response = await postOrder(ticker, orderType);
   res.status(200).json({ data: data });

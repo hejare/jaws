@@ -19,48 +19,55 @@ type DailyRunBody = {
   config: Config;
 };
 
-const isNotebookIdle = (sessions: [{ path: string; kernel: { execution_state: string } }]) => {
-  const matchedSession = sessions.find(session => session.path.indexOf("get_todays_picks") > -1);
-  return matchedSession?.kernel.execution_state === "idle"
-}
+const isNotebookIdle = (
+  sessions: [{ path: string; kernel: { execution_state: string } }]
+) => {
+  const matchedSession = sessions.find(
+    (session) => session.path.indexOf("get_todays_picks") > -1
+  );
+  return matchedSession?.kernel.execution_state === "idle";
+};
 
 export const triggerDailyrun = async () => {
   const sessions = await getSessions();
   const isIdle = isNotebookIdle(sessions);
 
   if (!isIdle) {
-    return Promise.reject(new Error("Process is not idle. Could be due to previous execution is still ongoing."));
+    return Promise.reject(
+      new Error(
+        "Process is not idle. Could be due to previous execution is still ongoing."
+      ),
+    );
   }
 
   const resp = await triggerDailyRun();
-  const runId = resp.split('\n')[0].replace("run_id= ", "")
+  const runId = resp.split("\n")[0].replace("run_id= ", "");
   await postDailyRun(runId);
   return Promise.resolve(runId);
-}
+};
 
 const isConfigDifferent = (latestConfig: Config, config: Config) => {
-
   const configEntities = Object.keys(config);
   const latestConfigEntities = Object.keys(latestConfig);
 
   // Note: since latest config (the ones existing in Frestore) always get their _ref prop extended to iteself, the difference between incoming config and existing config should be 1, if objects are identical.
-  if ((latestConfigEntities.length - configEntities.length) !== 1) {
-    return false
+  if (latestConfigEntities.length - configEntities.length !== 1) {
+    return false;
   }
 
   const foundMissmatches = configEntities.reduce((result: any, configName) => {
     return result + latestConfig[configName] !== config[configName];
   }, 0);
   return !!foundMissmatches;
-}
+};
 
 export const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
-  console.log("pretend to store dailyRunData:", dailyRunBody)
-  console.log("...just the breakouts:", dailyRunBody.breakouts)
+  console.log("pretend to store dailyRunData:", dailyRunBody);
+  console.log("...just the breakouts:", dailyRunBody.breakouts);
 
   const { runId, runTime, config, breakouts } = dailyRunBody;
 
-  // update DailyRun 
+  // update DailyRun
   let dailyRun = await getDailyRun(runId);
 
   if (!dailyRun) {
@@ -86,7 +93,7 @@ export const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
     configRef = _ref;
   }
 
-  breakouts.forEach(async breakout => {
+  breakouts.forEach(async (breakout) => {
     const { relative_strength, breakout_level, image, symbol } = breakout;
 
     // Get/Post Ticker for each breakout item
@@ -107,7 +114,7 @@ export const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
       image,
     };
     await postBreakout(breakoutData);
-  })
+  });
 
   return;
 };

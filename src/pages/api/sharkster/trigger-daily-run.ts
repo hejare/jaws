@@ -5,7 +5,7 @@ type ResponseDataType = {
   status: string;
   message?: string;
   meta?: {};
-}
+};
 
 export default async function handler(
   req: NextApiRequest,
@@ -17,13 +17,13 @@ export default async function handler(
     switch (method) {
       case "GET":
         await triggerDailyrun()
-          .then(result => {
+          .then((result) => {
             responseData.status = "OK";
             responseData.meta = {
               runId: result,
             };
           })
-          .catch(e => {
+          .catch((e) => {
             responseData.status = "NOK";
             responseData.message = e.message;
           });

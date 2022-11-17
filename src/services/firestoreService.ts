@@ -1,9 +1,9 @@
-const { initializeApp, cert, getApps } = require('firebase-admin/app');
-const { getFirestore } = require('firebase-admin/firestore');
+const { initializeApp, cert, getApps } = require("firebase-admin/app");
+const { getFirestore } = require("firebase-admin/firestore");
 
 import { certJson } from "./firebaseCert";
 
-if (!(getApps().length)) {
+if (!getApps().length) {
   initializeApp({
     credential: cert(certJson),
   });

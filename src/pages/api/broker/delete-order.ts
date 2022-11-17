@@ -28,7 +28,7 @@ const deleteOrder = async (orderId: string) => {
     );
     return await handleResult(res);
   } catch (e) {
-    throw Error('Unable to delete order');
+    throw Error("Unable to delete order");
   }
 };
 

@@ -2,13 +2,12 @@ import fetch, { BodyInit, Response } from "node-fetch";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type Data = {
-    data: Response;
-  };
+  data: Response;
+};
 
 const postSlackMessage = async () => {
   const scarySharkImgUrl =
     "https://static.nationalgeographic.co.uk/files/styles/image_3200/public/shark-scary-animals.jpg?w=1600";
-
 
   const body: BodyInit = JSON.stringify({
     blocks: [
@@ -35,13 +34,13 @@ const postSlackMessage = async () => {
     }
   );
 
-  return resp
+  return resp;
 };
 
 export default async function handler(
-    req: NextApiRequest,
-    res: NextApiResponse<Data>
-  ) {
-    const data: Response = await postSlackMessage();
-    res.status(200).json({ data: data });
-  }
+  req: NextApiRequest,
+  res: NextApiResponse<Data>
+) {
+  const data: Response = await postSlackMessage();
+  res.status(200).json({ data: data });
+}

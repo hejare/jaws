@@ -29,7 +29,8 @@ const TickerCard = (props: Props) => {
       </h2>
       <a
         href={`https://www.tradingview.com/symbols/${props.ticker}`}
-        target="_blank" rel="noreferrer"
+        target="_blank"
+        rel="noreferrer"
       >
         {props.ticker}
       </a>
