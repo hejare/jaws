@@ -32,7 +32,7 @@ const postSlackMessage = async () => {
     {
       method: "POST",
       body,
-    },
+    }
   );
 
   return resp
@@ -40,8 +40,8 @@ const postSlackMessage = async () => {
 
 export default async function handler(
     req: NextApiRequest,
-    res: NextApiResponse<Data>,
+    res: NextApiResponse<Data>
   ) {
-    let data: Response = await postSlackMessage();
+    const data: Response = await postSlackMessage();
     res.status(200).json({ data: data });
   }

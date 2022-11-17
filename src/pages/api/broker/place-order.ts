@@ -9,7 +9,7 @@ type Data = {
 
 const buff = Buffer.from(
   `${process.env.ALPACA_API_KEY_ID}:${process.env.ALPACA_API_KEY_VALUE}`,
-  "utf-8",
+  "utf-8"
 );
 const base64EncodedKeys = buff.toString("base64");
 
@@ -34,9 +34,9 @@ const postOrder = async (ticker: string, orderType: string) => {
           Authorization: `Basic ${base64EncodedKeys}`,
         },
         body,
-      },
+      }
     );
-    return handleResult(res);
+    return await handleResult(res);
   } catch (e) {
     throw Error(`Unable to post order - ${e}`);
   }
@@ -44,11 +44,11 @@ const postOrder = async (ticker: string, orderType: string) => {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>,
+  res: NextApiResponse<Data>
 ) {
   const ticker: string = (req.query?.ticker as string);
   const orderType: OrderType = (req.query?.orderType as OrderType);
 
-  let data: Response = await postOrder(ticker, orderType);
+  const data: Response = await postOrder(ticker, orderType);
   res.status(200).json({ data: data });
 }

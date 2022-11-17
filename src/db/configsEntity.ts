@@ -35,7 +35,7 @@ export async function postConfig(data: ConfigDataType) {
   const ref = await db.collection('configs').add(data)
   return {
     ...data,
-    _ref: ref.id
+    _ref: ref.id,
   };
 }
 

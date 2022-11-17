@@ -18,7 +18,7 @@ const RectangularButton = React.forwardRef(
         {label}
       </Button>
     );
-  },
+  }
 );
 
 export default RectangularButton;

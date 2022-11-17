@@ -23,6 +23,6 @@ export async function postTicker(symbol: string) {
   const ref = await db.collection('tickers').add(data)
   return {
     ...data,
-    _ref: ref.id
+    _ref: ref.id,
   };
 }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   handleDeleteOrder,
-  handleGetTrades,
+  handleGetTrades
 } from "../../services/brokerService";
 
 import Table from "@mui/material/Table";

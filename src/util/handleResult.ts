@@ -13,7 +13,7 @@ export const handleResult = async (result: Response) => {
   try {
     const data = await convertResult(result);
     const reason = { error: data };
-    return result.ok ? Promise.resolve(data) : Promise.reject(reason);
+    return result.ok ? await Promise.resolve(data) : await Promise.reject(reason);
   } catch (error) {
     const reason = { error };
     return Promise.reject(reason);

@@ -17,6 +17,6 @@ export async function postBreakout(breakoutData: BreakoutDataType) {
   const ref = await db.collection('breakouts').add(data)
   return {
     ...data,
-    _ref: ref.id
+    _ref: ref.id,
   };
 }

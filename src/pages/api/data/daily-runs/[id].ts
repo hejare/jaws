@@ -3,7 +3,7 @@ import { getDailyRun } from "../../../../db/dailyRunsEntity";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse,
+  res: NextApiResponse
 ) {
   type RunId = string;
   const { query } = req;

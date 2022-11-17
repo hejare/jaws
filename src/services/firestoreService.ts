@@ -5,7 +5,7 @@ import { certJson } from "./firebaseCert";
 
 if (!(getApps().length)) {
   initializeApp({
-    credential: cert(certJson)
+    credential: cert(certJson),
   });
 }
 

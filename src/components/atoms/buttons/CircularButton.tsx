@@ -16,7 +16,7 @@ const Icon = styled.div`
     justify-content: center;
 `
 
-const CircularButton = ({handleClick, children}: Props) => {
+const CircularButton = ({ handleClick, children }: Props) => {
   return (
     <IconButton onClick={handleClick} aria-label="fingerprint">
         <Icon>

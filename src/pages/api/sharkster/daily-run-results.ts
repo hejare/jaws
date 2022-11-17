@@ -3,7 +3,7 @@ import { storeDailyRun } from "../../../lib/dailyRunHandler";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse,
+  res: NextApiResponse
 ) {
   const { method, body } = req;
   try {

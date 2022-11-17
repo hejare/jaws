@@ -8,7 +8,7 @@ type Data = {
 
 const buff = Buffer.from(
   `${process.env.ALPACA_API_KEY_ID}:${process.env.ALPACA_API_KEY_VALUE}`,
-  "utf-8",
+  "utf-8"
 );
 const base64EncodedKeys = buff.toString("base64");
 
@@ -24,9 +24,9 @@ const deleteOrder = async (orderId: string) => {
         headers: {
           Authorization: `Basic ${base64EncodedKeys}`,
         },
-      },
+      }
     );
-    return handleResult(res);
+    return await handleResult(res);
   } catch (e) {
     throw Error('Unable to delete order');
   }
@@ -34,12 +34,12 @@ const deleteOrder = async (orderId: string) => {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>,
+  res: NextApiResponse<Data>
 ) {
   const orderId = req.query?.orderId;
 
   if (orderId && !(orderId instanceof Array)) {
-    let data: Response = await deleteOrder(orderId);
+    const data: Response = await deleteOrder(orderId);
     res.status(200).json({ data: data });
   }
 }

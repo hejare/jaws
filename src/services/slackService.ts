@@ -7,7 +7,7 @@ export const postSlackMessage = async () => {
     `/api/slack/slack`,
     {
       method: "POST",
-    },
+    }
   );
 
   return convertResult(resp);

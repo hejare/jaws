@@ -8,7 +8,7 @@ type Data = {
 
 const buff = Buffer.from(
   `${process.env.ALPACA_API_KEY_ID}:${process.env.ALPACA_API_KEY_VALUE}`,
-  "utf-8",
+  "utf-8"
 );
 const base64EncodedKeys = buff.toString("base64");
 
@@ -23,9 +23,9 @@ const getOrders = async () => {
         headers: {
           Authorization: `Basic ${base64EncodedKeys}`,
         },
-      },
+      }
     );
-    return handleResult(res);
+    return await handleResult(res);
   } catch (e) {
     throw Error(`Unable to get orders - ${e}`);
   }
@@ -33,8 +33,8 @@ const getOrders = async () => {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>,
+  res: NextApiResponse<Data>
 ) {
-  let data: Response = await getOrders();
+  const data: Response = await getOrders();
   res.status(200).json({ orders: data });
 }

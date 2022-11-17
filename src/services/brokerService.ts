@@ -10,7 +10,7 @@ export const brokerService = async () => {
 const handlePostOrder = async (ticker: string, orderType: OrderType) => {
   const resp = await fetch(
     `/api/broker/place-order/?ticker=${ticker}&orderType=${orderType}`,
-    { method: "POST" },
+    { method: "POST" }
   );
   const data = await convertResult(resp);
 };
@@ -21,7 +21,7 @@ export const handleSellOrder = (ticker: string) => handlePostOrder(ticker, 'sell
 export const handleDeleteOrder = async (order_id: string) => {
   const resp = await fetch(
     `/api/broker/delete-order/?orderId=${order_id}`,
-    { method: "DELETE" },
+    { method: "DELETE" }
   );
   const data = await convertResult(resp);
 };

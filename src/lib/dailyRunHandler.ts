@@ -19,7 +19,7 @@ type DailyRunBody = {
   config: Config;
 };
 
-const isNotebookIdle = (sessions: [{ path: string, kernel: { execution_state: string } }]) => {
+const isNotebookIdle = (sessions: [{ path: string; kernel: { execution_state: string } }]) => {
   const matchedSession = sessions.find(session => session.path.indexOf("get_todays_picks") > -1);
   return matchedSession?.kernel.execution_state === "idle"
 }
@@ -104,7 +104,7 @@ export const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
       tickerRef,
       relativeStrength: relative_strength,
       breakoutValue: breakout_level,
-      image
+      image,
     };
     await postBreakout(breakoutData);
   })

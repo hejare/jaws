@@ -9,7 +9,7 @@ type ResponseDataType = {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse,
+  res: NextApiResponse
 ) {
   const { method } = req;
   try {
@@ -20,7 +20,7 @@ export default async function handler(
           .then(result => {
             responseData.status = "OK";
             responseData.meta = {
-              runId: result
+              runId: result,
             };
           })
           .catch(e => {
