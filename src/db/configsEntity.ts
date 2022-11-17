@@ -47,3 +47,13 @@ export async function putConfig(refId: string, data: ConfigDataType) {
   const res = await db.collection("configs").doc(refId).set(data);
   return res;
 }
+
+export async function getAllConfigs() {
+  const result: any = [];
+  const docs = await db.collection("configs").get();
+  docs.forEach((doc: any) => {
+    result.push(doc.data());
+  });
+
+  return result;
+}

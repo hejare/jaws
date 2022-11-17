@@ -3,15 +3,11 @@ import {
   handleDeleteOrder,
   handleGetTrades,
 } from "../../services/brokerService";
+import Table from "rc-table";
+import { getDateTime } from "../../lib/helpers";
+import Button from "../atoms/buttons/Button";
+import styled from "styled-components";
 
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import RectangularButton from "../atoms/buttons/RectangularButton";
 export type OrderType = "buy" | "sell";
 
 const cancellableOrderStatus = [
@@ -22,7 +18,9 @@ const cancellableOrderStatus = [
   "pending_new",
   "accepted_for_bidding",
 ] as const;
+
 type CancellableOrderStatus = typeof cancellableOrderStatus[number];
+
 const nonCancellableOrderStatus = [
   "filled",
   "canceled",
@@ -35,7 +33,9 @@ const nonCancellableOrderStatus = [
   "suspended",
   "calculated",
 ] as const;
+
 type NonCancellableOrderStatus = typeof nonCancellableOrderStatus[number];
+
 export type OrderStatus = CancellableOrderStatus | NonCancellableOrderStatus;
 
 export interface Order {
@@ -48,6 +48,12 @@ export interface Order {
   side: OrderType;
 }
 
+const StyledTable = styled(Table)`
+  th {
+    text-align: left;
+    text-decoration: underline;
+  }
+`;
 const OrderList = () => {
   const [orders, setOrders] = useState(Array<Order>);
 
@@ -59,57 +65,90 @@ const OrderList = () => {
       });
   }, []);
 
-  const convertDateString = (date: string) => {
-    const createdAtConvertedArray = date.split("T");
-    return createdAtConvertedArray[0];
+  const renderTitle = () => {
+    return <h2>Order list</h2>;
   };
 
+  const renderFooter = () => {
+    return <hr />;
+  };
+
+  const columns = [
+    {
+      title: "Symbol",
+      dataIndex: "symbol",
+      key: "symbol",
+      width: 100,
+    },
+    {
+      title: "Created at",
+      dataIndex: "created",
+      key: "created",
+      width: 200,
+    },
+    {
+      title: "Filled at",
+      dataIndex: "filled",
+      key: "filled",
+      width: 200,
+    },
+    {
+      title: "Notional",
+      dataIndex: "notional",
+      key: "notional",
+      width: 50,
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      width: 100,
+    },
+    {
+      title: "Operations",
+      dataIndex: "",
+      key: "operations",
+      render: (data: any) => {
+        const disabled = (
+          nonCancellableOrderStatus as unknown as string[]
+        ).includes(data.status);
+        return disabled ? (
+          ""
+        ) : (
+          <Button onClick={() => handleDeleteOrder(data.orderId)}>
+            Cancel
+          </Button>
+        );
+      },
+    },
+  ];
+
+  const data = orders.map((order: any) => {
+    return {
+      symbol: order.symbol,
+      created: getDateTime(order.created_at),
+      filled: order.filled_at
+        ? getDateTime(order.filled_at)
+        : nonCancellableOrderStatus.includes(order.status)
+        ? "n/a"
+        : "not yet",
+      notional: order.notional,
+      status: order.status,
+      orderId: order.id,
+    };
+  });
+
   return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableCell>Symbol</TableCell>
-            <TableCell align="right">Created at</TableCell>
-            <TableCell align="right">Filled at</TableCell>
-            <TableCell align="right">Notional</TableCell>
-            <TableCell align="right">Status</TableCell>
-            <TableCell align="right">Cancel</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {orders.map((row: any, idx) => (
-            <TableRow
-              key={idx}
-              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-            >
-              <TableCell component="th" scope="row">
-                {row.symbol}
-              </TableCell>
-              <TableCell align="right">
-                {convertDateString(row.created_at)}
-              </TableCell>
-              <TableCell align="right">
-                {row.filled_at ? convertDateString(row.filled_at) : ""}
-              </TableCell>
-              <TableCell align="right">{row.notional}</TableCell>
-              <TableCell align="right">{row.status}</TableCell>
-              <TableCell align="right">
-                <RectangularButton
-                  label={"Cancel Order"}
-                  variant="contained"
-                  size="small"
-                  disabled={(
-                    nonCancellableOrderStatus as unknown as string[]
-                  ).includes(row.status)}
-                  onClick={() => handleDeleteOrder(row.id)}
-                />
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <StyledTable
+      columns={columns}
+      data={data}
+      rowKey={() => Math.random()}
+      // rowKey={(dat) => {
+      //   console.log({ dat });
+      // }}
+      title={renderTitle}
+      footer={renderFooter}
+    />
   );
 };
 

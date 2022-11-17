@@ -3,7 +3,7 @@ import React from "react";
 
 interface Props extends ButtonProps {
   label: string;
-  onClick: () => void | Promise<void>;
+  onClick?: () => void | Promise<void>;
 }
 
 const RectangularButton = ({

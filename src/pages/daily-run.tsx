@@ -1,27 +1,14 @@
-import Button from "@mui/material/Button";
 import styled from "styled-components";
 import type { NextPage } from "next";
 import TickerCard from "../components/molecules/TickerCard";
 import { brokerService } from "../services/brokerService";
 import { postSlackMessage } from "../services/slackService";
 import OrderList from "../components/organisms/OrderList";
-
-interface Data {
-  tickers: Ticker[];
-  config: Config;
-}
-
-interface Ticker {
-  ticker: string;
-  price: number;
-  name: string;
-}
-
-interface Config {
-  a: string;
-  b: string;
-  c: string;
-}
+import Button from "../components/atoms/buttons/Button";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import fetch from "node-fetch";
+import { handleResult } from "../util";
 
 const PageContainer = styled.div`
   display: flex;
@@ -30,53 +17,53 @@ const PageContainer = styled.div`
 
 const ButtonsContainer = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 5px;
 `;
 
-const Heading = styled.h1`
-  display: block;
-  width: 100%;
-`;
+enum STATUS {
+  LOADING,
+  READY,
+}
 
 const DailyRun: NextPage = () => {
-  const data: Data = {
-    tickers: [
-      {
-        ticker: "TSLA",
-        price: 100,
-        name: "Tesla Coorperation",
-      },
-      {
-        ticker: "SPOT",
-        price: 50,
-        name: "Spotify Technology",
-      },
-      {
-        ticker: "NFLX",
-        price: 10,
-        name: "Netflix Inc",
-      },
-    ],
-    config: { a: "a", b: "b", c: "c" },
-  };
+  const router = useRouter();
+  const { date } = router.query;
+  const [status, setStatus] = useState(STATUS.LOADING);
+  const [dailyRuns, setDailyRuns] = useState([]);
+
+  useEffect(() => {
+    fetch(`/api/data/daily-runs?date=${date as string}`)
+      .then(handleResult)
+      .then((result) => {
+        setDailyRuns(result);
+        setStatus(STATUS.READY);
+      })
+      .catch(console.error);
+  }, [date]);
+  console.log({ dailyRuns });
   return (
     <PageContainer>
       <ButtonsContainer>
-        <Button variant="outlined" onClick={postSlackMessage}>
-          Slack service test trigger
-        </Button>
-        <Button variant="outlined" onClick={brokerService}>
-          Broker service test trigger
-        </Button>
+        <Button onClick={postSlackMessage}>Slack service test trigger</Button>
+        <Button onClick={brokerService}>Broker service test trigger</Button>
       </ButtonsContainer>
-      <h1>TODAYS RUN</h1>
+      <h1>DAILY RUN</h1>
+      <h3>Date: {date}</h3>
+      {status === STATUS.READY && (
+        <div>
+          {dailyRuns.map(
+            ({ duration, runId, status, timeEnded, timeInitiated }) => (
+              <span key={runId}>{runId}</span>
+            ),
+          )}
+        </div>
+      )}
 
-      {data.tickers.map((ticker, id) => {
+      {/* {data.tickers.map((ticker, id) => {
         return <TickerCard key={id} {...ticker} />;
-      })}
+      })} */}
 
-      <Heading>Order list</Heading>
       <OrderList />
     </PageContainer>
   );

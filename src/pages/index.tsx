@@ -1,8 +1,8 @@
 import type { NextPage } from "next";
 import styled from "styled-components";
-import Link from "next/link";
 import Head from "next/head";
-import RectangularButton from "../components/atoms/buttons/RectangularButton";
+import { getToday } from "../lib/helpers";
+import NavButton from "../components/atoms/buttons/NavButton";
 
 const PageContainer = styled.div`
   display: flex;
@@ -19,6 +19,8 @@ const ContentContainer = styled.div`
 `;
 
 const Home: NextPage = () => {
+  const today = getToday();
+
   return (
     <div>
       <Head>
@@ -29,12 +31,8 @@ const Home: NextPage = () => {
       <main>
         <PageContainer>
           <ContentContainer>
-            <Link href="/daily-run" passHref legacyBehavior>
-              <RectangularButton label={"Todays run"} variant="contained" />
-            </Link>
-            <Link href="/previous-runs" passHref legacyBehavior>
-              <RectangularButton label={"Previous runs"} variant="contained" />
-            </Link>
+            <NavButton href={`/daily-run?date=${today}`}>Todays run</NavButton>
+            <NavButton href="/previous-runs">Previous runs</NavButton>
           </ContentContainer>
         </PageContainer>
       </main>

@@ -26,3 +26,13 @@ export async function postTicker(symbol: string) {
     _ref: ref.id,
   };
 }
+
+export async function getAllTickers() {
+  const result: any = [];
+  const docs = await db.collection("tickers").get();
+  docs.forEach((doc: any) => {
+    result.push(doc.data());
+  });
+
+  return result;
+}

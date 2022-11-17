@@ -42,8 +42,8 @@ export async function putDailyRun(refId: string, data: DailyRunDataType) {
 
 export async function getAllDailyRuns() {
   const result: any = [];
-  const dailyRunRef = await db.collection("daily-runs").get();
-  dailyRunRef.forEach((doc: any) => {
+  const docs = await db.collection("daily-runs").get();
+  docs.forEach((doc: any) => {
     result.push(doc.data());
   });
 
