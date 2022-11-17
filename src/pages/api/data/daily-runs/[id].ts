@@ -5,12 +5,11 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  type RunId = string;
   const { query } = req;
   const { id } = query;
 
   if (typeof id !== "string") {
-    return res.status(404);
+    return res.status(404).json({});
   }
   const result = await getDailyRun(id);
   res.status(200).json(result);
