@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   handleDeleteOrder,
-  handleGetTrades
+  handleGetTrades,
 } from "../../services/brokerService";
 
 import Table from "@mui/material/Table";
@@ -52,12 +52,11 @@ const OrderList = () => {
   const [orders, setOrders] = useState(Array<Order>);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await handleGetTrades();
-      setOrders(data);
-    };
-
-    fetchData();
+    handleGetTrades()
+      .then((data) => setOrders(data))
+      .catch((e) => {
+        console.error(e);
+      });
   }, []);
 
   const convertDateString = (date: string) => {

@@ -20,10 +20,10 @@ type DailyRunBody = {
 };
 
 const isNotebookIdle = (
-  sessions: [{ path: string; kernel: { execution_state: string } }]
+  sessions: [{ path: string; kernel: { execution_state: string } }],
 ) => {
   const matchedSession = sessions.find(
-    (session) => session.path.indexOf("get_todays_picks") > -1
+    (session) => session.path.indexOf("get_todays_picks") > -1,
   );
   return matchedSession?.kernel.execution_state === "idle";
 };
@@ -35,7 +35,7 @@ export const triggerDailyrun = async () => {
   if (!isIdle) {
     return Promise.reject(
       new Error(
-        "Process is not idle. Could be due to previous execution is still ongoing."
+        "Process is not idle. Could be due to previous execution is still ongoing.",
       ),
     );
   }
@@ -55,8 +55,8 @@ const isConfigDifferent = (latestConfig: Config, config: Config) => {
     return false;
   }
 
-  const foundMissmatches = configEntities.reduce((result: any, configName) => {
-    return result + latestConfig[configName] !== config[configName];
+  const foundMissmatches = configEntities.reduce((result, configName) => {
+    return result + (latestConfig[configName] !== config[configName] ? 1 : 0);
   }, 0);
   return !!foundMissmatches;
 };
@@ -87,34 +87,46 @@ export const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
     timestamp: Date.now(),
   };
   const latestConfig = await getLatestConfig();
-  let configRef: string = latestConfig?._ref;
-  if (!configRef || isConfigDifferent(latestConfig, newConfig)) {
+  let configRef: string | undefined = latestConfig?._ref;
+  if (
+    !configRef ||
+    (latestConfig && isConfigDifferent(latestConfig, newConfig))
+  ) {
     const { _ref } = await postConfig(newConfig);
     configRef = _ref;
   }
 
-  breakouts.forEach(async (breakout) => {
-    const { relative_strength, breakout_level, image, symbol } = breakout;
+  await Promise.all(
+    breakouts.map((breakout) => {
+      return async () => {
+        const { relative_strength, breakout_level, image, symbol } = breakout;
 
-    // Get/Post Ticker for each breakout item
-    const ticker = await getTicker(symbol);
-    let tickerRef = ticker?._ref;
-    if (!tickerRef) {
-      const ticker = await postTicker(symbol);
-      tickerRef = ticker._ref;
-    }
+        // Get/Post Ticker for each breakout item
+        let ticker = await getTicker(symbol);
+        let tickerRef = ticker?._ref;
+        if (!tickerRef) {
+          ticker = await postTicker(symbol);
+          tickerRef = ticker._ref;
+        }
 
-    // Post Breakout for each breakout item
-    const breakoutData: BreakoutDataType = {
-      dailyRunRef: dailyRun._ref,
-      configRef,
-      tickerRef,
-      relativeStrength: relative_strength,
-      breakoutValue: breakout_level,
-      image,
-    };
-    await postBreakout(breakoutData);
-  });
+        // Please linting:
+        if (!configRef || !dailyRun) {
+          return;
+        }
+
+        // Post Breakout for each breakout item
+        const breakoutData: BreakoutDataType = {
+          dailyRunRef: dailyRun._ref,
+          configRef,
+          tickerRef,
+          relativeStrength: relative_strength,
+          breakoutValue: breakout_level,
+          image,
+        };
+        await postBreakout(breakoutData);
+      };
+    }),
+  );
 
   return;
 };

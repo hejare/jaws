@@ -5,6 +5,8 @@ type Data = {
   data: Response;
 };
 
+const { SLACK_WEBHOOK_API_KEY = "[NOT_DEFINED_IN_ENV]" } = process.env;
+
 const postSlackMessage = async () => {
   const scarySharkImgUrl =
     "https://static.nationalgeographic.co.uk/files/styles/image_3200/public/shark-scary-animals.jpg?w=1600";
@@ -27,11 +29,11 @@ const postSlackMessage = async () => {
   });
 
   const resp = await fetch(
-    `https://hooks.slack.com/services/${process.env.SLACK_WEBHOOK_API_KEY}`,
+    `https://hooks.slack.com/services/${SLACK_WEBHOOK_API_KEY}`,
     {
       method: "POST",
       body,
-    }
+    },
   );
 
   return resp;
@@ -39,7 +41,7 @@ const postSlackMessage = async () => {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: NextApiResponse<Data>,
 ) {
   const data: Response = await postSlackMessage();
   res.status(200).json({ data: data });

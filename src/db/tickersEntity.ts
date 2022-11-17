@@ -7,7 +7,7 @@ export async function getTicker(symbol: string) {
     return null;
   }
 
-  const doc = results._docs()[0];
+  const doc = results.docs[0];
   return {
     ...doc.data(),
     _ref: doc.ref.id, // Note: Using ref id to simplify the reference handling. Use doc.ref (DocumentReference) if more advanced logs is needed later on

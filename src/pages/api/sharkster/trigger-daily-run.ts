@@ -4,12 +4,12 @@ import { triggerDailyrun } from "../../../lib/dailyRunHandler";
 type ResponseDataType = {
   status: string;
   message?: string;
-  meta?: {};
+  meta?: Record<string, any>;
 };
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   const { method } = req;
   try {
@@ -29,7 +29,7 @@ export default async function handler(
           });
         break;
       default:
-        throw new Error(`Unsupported method: ${method}`);
+        throw new Error(`Unsupported method: ${method as string}`);
     }
 
     res.status(200).json(responseData);

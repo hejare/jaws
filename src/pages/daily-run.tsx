@@ -5,7 +5,7 @@ import TickerCard from "../components/molecules/TickerCard";
 import { brokerService } from "../services/brokerService";
 import { postSlackMessage } from "../services/slackService";
 import OrderList from "../components/organisms/OrderList";
-import { useEffect } from "react";
+
 interface Data {
   tickers: Ticker[];
   config: Config;

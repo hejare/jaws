@@ -7,9 +7,14 @@ type Data = {
   data: Response;
 };
 
+const {
+  ALPACA_API_KEY_ID = "[NOT_DEFINED_IN_ENV]",
+  ALPACA_API_KEY_VALUE = "[NOT_DEFINED_IN_ENV]",
+} = process.env;
+
 const buff = Buffer.from(
-  `${process.env.ALPACA_API_KEY_ID}:${process.env.ALPACA_API_KEY_VALUE}`,
-  "utf-8"
+  `${ALPACA_API_KEY_ID}:${ALPACA_API_KEY_VALUE}`,
+  "utf-8",
 );
 const base64EncodedKeys = buff.toString("base64");
 
@@ -35,13 +40,13 @@ const postOrder = async (ticker: string, orderType: string) => {
     });
     return await handleResult(res);
   } catch (e) {
-    throw Error(`Unable to post order - ${e}`);
+    throw Error(`Unable to post order - ${e as string}`);
   }
 };
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: NextApiResponse<Data>,
 ) {
   const ticker: string = req.query?.ticker as string;
   const orderType: OrderType = req.query?.orderType as OrderType;

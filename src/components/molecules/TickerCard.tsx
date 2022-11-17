@@ -22,6 +22,14 @@ const TickerCard = (props: Props) => {
   const handleOpen = () => setIsModalOpen(true);
   const handleClose = () => setIsModalOpen(false);
 
+  const buyButtonBlicked = async () => {
+    return handleBuyOrder(props.ticker);
+  };
+
+  const sellButtonClicked = async () => {
+    return handleSellOrder(props.ticker);
+  };
+
   return (
     <div>
       <h2>
@@ -46,14 +54,14 @@ const TickerCard = (props: Props) => {
           variant="contained"
           size="small"
           color="info"
-          onClick={() => handleBuyOrder(props.ticker)}
+          onClick={sellButtonClicked}
         />
         <RectangularButton
           label={`SELL $1 ${props.name}`}
           variant="contained"
           size="small"
           color="success"
-          onClick={() => handleSellOrder(props.ticker)}
+          onClick={buyButtonBlicked}
         />
       </ButtonsContainer>
       <ModalDialog isOpen={isModalOpen} handleClose={handleClose} {...props} />

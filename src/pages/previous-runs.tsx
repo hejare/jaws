@@ -23,12 +23,10 @@ const PreviousRuns: NextPage = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const runs = await fetch("/api/data/daily-runs").then(handleResult);
-      setDailyRuns(runs);
-    };
-
-    fetchData();
+    fetch("/api/data/daily-runs")
+      .then(handleResult)
+      .then(setDailyRuns)
+      .catch(console.error);
   }, []);
 
   // TODO map over runs

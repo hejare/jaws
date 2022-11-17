@@ -5,18 +5,21 @@ import { convertResult } from "../util";
 export const brokerService = async () => {
   const resp = await fetch(`/api/broker/place-order`);
   const data = await convertResult(resp);
+  console.log(data);
 };
 
 const handlePostOrder = async (ticker: string, orderType: OrderType) => {
   const resp = await fetch(
     `/api/broker/place-order/?ticker=${ticker}&orderType=${orderType}`,
-    { method: "POST" }
+    { method: "POST" },
   );
   const data = await convertResult(resp);
+  console.log(data);
 };
 
 export const handleBuyOrder = (ticker: string) =>
   handlePostOrder(ticker, "buy");
+
 export const handleSellOrder = (ticker: string) =>
   handlePostOrder(ticker, "sell");
 
@@ -25,6 +28,7 @@ export const handleDeleteOrder = async (order_id: string) => {
     method: "DELETE",
   });
   const data = await convertResult(resp);
+  console.log(data);
 };
 
 export const handleGetTrades = async () => {

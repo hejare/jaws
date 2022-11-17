@@ -3,7 +3,7 @@ import { storeDailyRun } from "../../../lib/dailyRunHandler";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   const { method, body } = req;
   try {
@@ -13,7 +13,7 @@ export default async function handler(
         await storeDailyRun(jsonBody);
         break;
       default:
-        throw new Error(`Unsupported method: ${method}`);
+        throw new Error(`Unsupported method: ${method as string}`);
     }
 
     res.status(200).json({});

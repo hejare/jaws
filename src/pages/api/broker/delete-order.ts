@@ -6,9 +6,14 @@ type Data = {
   data: Response;
 };
 
+const {
+  ALPACA_API_KEY_ID = "[NOT_DEFINED_IN_ENV]",
+  ALPACA_API_KEY_VALUE = "[NOT_DEFINED_IN_ENV]",
+} = process.env;
+
 const buff = Buffer.from(
-  `${process.env.ALPACA_API_KEY_ID}:${process.env.ALPACA_API_KEY_VALUE}`,
-  "utf-8"
+  `${ALPACA_API_KEY_ID}:${ALPACA_API_KEY_VALUE}`,
+  "utf-8",
 );
 const base64EncodedKeys = buff.toString("base64");
 
@@ -24,7 +29,7 @@ const deleteOrder = async (orderId: string) => {
         headers: {
           Authorization: `Basic ${base64EncodedKeys}`,
         },
-      }
+      },
     );
     return await handleResult(res);
   } catch (e) {
@@ -34,7 +39,7 @@ const deleteOrder = async (orderId: string) => {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: NextApiResponse<Data>,
 ) {
   const orderId = req.query?.orderId;
 
