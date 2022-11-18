@@ -64,7 +64,9 @@ const DailyRun: NextPage = () => {
   return (
     <PageContainer>
       <h1>DAILY RUN</h1>
-      <h3>Date: {date}</h3>
+      <h3>
+        Date: {date} (Time: {time})
+      </h3>
       {dailyRun && dataFetchStatus === STATUS.READY && (
         <div>
           <div>

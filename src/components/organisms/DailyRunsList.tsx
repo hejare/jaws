@@ -39,7 +39,7 @@ const DailyRunsList = ({ data }: Props) => {
       width: 100,
       render: (runId: string) => (
         <NavButton
-          href={`daily-runs/${runId.split("_")[0]}/${runId.split("_")[1]}`}
+          href={`/daily-runs/${runId.split("_")[0]}/${runId.split("_")[1]}`}
         >
           {runId}
         </NavButton>

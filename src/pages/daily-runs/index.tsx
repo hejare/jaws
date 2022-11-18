@@ -25,7 +25,7 @@ enum STATUS {
   READY,
 }
 
-const DailyRun: NextPage = () => {
+const DailyRuns: NextPage = () => {
   const [dataFetchStatus, setDataFetchStatus] = useState(STATUS.LOADING);
   const [data, setData] = useState([]);
 
@@ -67,4 +67,4 @@ const DailyRun: NextPage = () => {
   );
 };
 
-export default DailyRun;
+export default DailyRuns;
