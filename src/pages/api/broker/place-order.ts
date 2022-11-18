@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import fetch, { BodyInit, Response } from "node-fetch";
-import { OrderType } from "../../../components/organisms/OrderList";
+import { OrderType } from "../../../components/organisms/OrdersList";
 import { handleResult } from "../../../util";
 
 type Data = {

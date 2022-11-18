@@ -11,37 +11,72 @@ export type BreakoutDataType = {
 
 export async function getBreakout(refId: string) {
   const query = db.collection("breakouts");
-  const results = await query.doc(refId).get();
-
-  console.log("breakout:", results);
-  // if (results.size === 0) {
-  //   return null;
-  // }
-  // const doc = results.docs[0];
-  const doc = results;
+  const doc = await query.doc(refId).get();
+  if (!doc.data()) {
+    return null;
+  }
   return {
     ...doc.data(),
-    _ref: doc.ref.id, // Note: Using ref id to simplify the reference handling. Use doc.ref (DocumentReference) if more advanced logs is needed later on
+    _ref: doc.ref.id,
   };
 }
 
-export async function postBreakout(breakoutData: BreakoutDataType) {
+// export async function getBreakoutBySymbolAndRunId(
+//   dailyRunRef: string,
+//   tickerRef: string,
+// ) {
+//   const query = db
+//     .collection("breakouts")
+//     .where("dailyRunRef", "==", dailyRunRef)
+//     .where("tickerRef", "==", tickerRef);
+//   const results = await query.get();
+
+//   if (results.size === 0) {
+//     return null;
+//   }
+
+//   const doc = results.docs[0];
+//   return {
+//     ...doc.data(),
+//   };
+// }
+
+export async function putBreakout(refId: string, data: BreakoutDataType) {
+  return db.collection("breakouts").doc(refId).set(data);
+}
+
+// "upsert" ("update" or "insert") => inserts if not existsing. updates if it exists
+export async function upsertBreakout(breakoutData: BreakoutDataType) {
+  const refId = `${breakoutData.dailyRunRef}-${breakoutData.tickerRef}`;
   const data = {
     ...breakoutData,
-    date: Date.now(),
+    timestamp: Date.now(),
   };
-  const ref = await db.collection("breakouts").add(data);
-  return {
-    ...data,
-    _ref: ref.id,
-  };
+  return db.collection("breakouts").doc(refId).set(data);
 }
 
 export async function getAllBreakouts() {
   const result: any = [];
   const docs = await db.collection("breakouts").get();
   docs.forEach((doc: any) => {
-    result.push(doc.data());
+    result.push({
+      ...doc.data(),
+      _ref: doc.ref.id,
+    });
+  });
+
+  return result;
+}
+
+export async function getBreakoutsByDailyRun(dailyRunRef: string) {
+  const result: any = [];
+  const query = db.collection("breakouts");
+  const docs = await query.where("dailyRunRef", "==", dailyRunRef).get();
+
+  docs.forEach((doc: any) => {
+    result.push({
+      ...doc.data(),
+    });
   });
 
   return result;

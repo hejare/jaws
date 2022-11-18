@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { getBreakoutsByDailyRun } from "../../../../db/breakoutsEntity";
 import { getDailyRun } from "../../../../db/dailyRunsEntity";
 
 export default async function handler(
@@ -6,15 +7,20 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   const { query } = req;
-  const { id } = query;
+  const { runId } = query;
 
-  if (typeof id !== "string") {
+  if (typeof runId !== "string") {
     return res.status(404).json({});
   }
-  const result = await getDailyRun(id);
-  if (!result) {
+  const dailyRun = await getDailyRun(runId);
+  if (!dailyRun) {
     return res.status(404).json(null);
   }
 
-  res.status(200).json(result);
+  const breakouts = await getBreakoutsByDailyRun(runId);
+
+  res.status(200).json({
+    ...dailyRun,
+    breakouts,
+  });
 }

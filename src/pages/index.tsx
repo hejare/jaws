@@ -31,8 +31,9 @@ const Home: NextPage = () => {
       <main>
         <PageContainer>
           <ContentContainer>
-            <NavButton href={`/daily-run?date=${today}`}>Todays run</NavButton>
-            <NavButton href="/previous-runs">Previous runs</NavButton>
+            <NavButton href={`/daily-runs/${today}`}>Todays run</NavButton>
+            <NavButton href="/daily-runs">All runs</NavButton>
+            <NavButton href="/orders">All Orders</NavButton>
           </ContentContainer>
         </PageContainer>
       </main>

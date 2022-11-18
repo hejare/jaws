@@ -1,10 +1,5 @@
 import { db } from "../services/firestoreService";
-
-type DailyRunDataType = {
-  status: "initiated" | "completed";
-  duration: number;
-  timeEnded: number;
-};
+import { DailyRunDataType, DailyRunStatus } from "./dailyRunsMeta";
 
 export async function getDailyRun(runId: string) {
   const query = db.collection("daily-runs");
@@ -16,8 +11,7 @@ export async function getDailyRun(runId: string) {
   const doc = results.docs[0];
   return {
     ...doc.data(),
-    _ref: doc.ref.id, // Note: Using ref id to simplify the reference handling. Use doc.ref (DocumentReference) if more advanced logs is needed later on
-  };
+  } as DailyRunDataType;
 }
 
 export async function postDailyRun(runId: string) {
@@ -26,14 +20,12 @@ export async function postDailyRun(runId: string) {
     timeInitiated: Date.now(),
     timeEnded: Date.now(),
     duration: 1000,
-    status: "ongoing",
+    status: DailyRunStatus.INITIATED,
   };
-
-  const ref = await db.collection("daily-runs").add(data);
+  await db.collection("daily-runs").doc(runId).set(data);
   return {
     ...data,
-    _ref: ref.id,
-  };
+  } as DailyRunDataType;
 }
 
 export async function putDailyRun(refId: string, data: DailyRunDataType) {
@@ -44,7 +36,10 @@ export async function getAllDailyRuns() {
   const result: any = [];
   const docs = await db.collection("daily-runs").get();
   docs.forEach((doc: any) => {
-    result.push(doc.data());
+    result.push({
+      ...doc.data(),
+      _ref: doc.ref.id,
+    });
   });
 
   return result;

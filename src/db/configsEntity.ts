@@ -4,17 +4,13 @@ type ConfigDataType = Record<string, string | number>;
 
 export async function getConfig(refId: string) {
   const query = db.collection("configs");
-  const results = await query.doc(refId).get();
-
-  console.log("config:", results);
-  // if (results.size === 0) {
-  //   return null;
-  // }
-  // const doc = results.docs[0];
-  const doc = results;
+  const doc = await query.doc(refId).get();
+  if (!doc.data()) {
+    return null;
+  }
   return {
     ...doc.data(),
-    _ref: doc.ref.id, // Note: Using ref id to simplify the reference handling. Use doc.ref (DocumentReference) if more advanced logs is needed later on
+    _ref: doc.ref.id,
   };
 }
 
@@ -52,7 +48,10 @@ export async function getAllConfigs() {
   const result: any = [];
   const docs = await db.collection("configs").get();
   docs.forEach((doc: any) => {
-    result.push(doc.data());
+    result.push({
+      ...doc.data(),
+      _ref: doc.ref.id,
+    });
   });
 
   return result;

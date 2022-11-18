@@ -3,10 +3,9 @@ import {
   handleDeleteOrder,
   handleGetTrades,
 } from "../../services/brokerService";
-import Table from "rc-table";
 import { getDateTime } from "../../lib/helpers";
 import Button from "../atoms/buttons/Button";
-import styled from "styled-components";
+import Table from "../atoms/Table";
 
 export type OrderType = "buy" | "sell";
 
@@ -48,13 +47,7 @@ export interface Order {
   side: OrderType;
 }
 
-const StyledTable = styled(Table)`
-  th {
-    text-align: left;
-    text-decoration: underline;
-  }
-`;
-const OrderList = () => {
+const OrdersList = () => {
   const [orders, setOrders] = useState(Array<Order>);
 
   useEffect(() => {
@@ -139,17 +132,14 @@ const OrderList = () => {
   });
 
   return (
-    <StyledTable
+    <Table
       columns={columns}
       data={data}
       rowKey={() => Math.random()}
-      // rowKey={(dat) => {
-      //   console.log({ dat });
-      // }}
       title={renderTitle}
       footer={renderFooter}
     />
   );
 };
 
-export default OrderList;
+export default OrdersList;

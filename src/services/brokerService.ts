@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import { Order, OrderType } from "../components/organisms/OrderList";
+import { Order, OrderType } from "../components/organisms/OrdersList";
 import { convertResult } from "../util";
 
 export const brokerService = async () => {

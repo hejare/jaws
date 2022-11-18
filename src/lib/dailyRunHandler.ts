@@ -1,7 +1,8 @@
-import { BreakoutDataType, postBreakout } from "../db/breakoutsEntity";
+import { BreakoutDataType, upsertBreakout } from "../db/breakoutsEntity";
 import { getLatestConfig, postConfig } from "../db/configsEntity";
 import { getDailyRun, postDailyRun, putDailyRun } from "../db/dailyRunsEntity";
-import { getTicker, postTicker } from "../db/tickersEntity";
+import { DailyRunDataType, DailyRunStatus } from "../db/dailyRunsMeta";
+import { getTicker, upsertTicker } from "../db/tickersEntity";
 import { getSessions, triggerDailyRun } from "../services/sharksterService";
 
 interface Breakout {
@@ -62,21 +63,18 @@ const isConfigDifferent = (latestConfig: Config, config: Config) => {
 };
 
 export const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
-  console.log("pretend to store dailyRunData:", dailyRunBody);
-  console.log("...just the breakouts:", dailyRunBody.breakouts);
-
   const { runId, runTime, config, breakouts } = dailyRunBody;
 
   // update DailyRun
-  let dailyRun = await getDailyRun(runId);
+  let dailyRun: null | DailyRunDataType = await getDailyRun(runId);
 
-  if (!dailyRun) {
+  if (dailyRun === null) {
     dailyRun = await postDailyRun(runId);
   }
 
-  await putDailyRun(dailyRun._ref, {
+  await putDailyRun(runId, {
     ...dailyRun,
-    status: "completed",
+    status: DailyRunStatus.COMPLETED,
     duration: runTime,
     timeEnded: Date.now(),
   });
@@ -96,37 +94,29 @@ export const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
     configRef = _ref;
   }
 
-  await Promise.all(
-    breakouts.map((breakout) => {
-      return async () => {
-        const { relative_strength, breakout_level, image, symbol } = breakout;
+  const promises = breakouts.map((breakout) => {
+    async function handleBreakout() {
+      const { relative_strength, breakout_level, image, symbol } = breakout;
 
-        // Get/Post Ticker for each breakout item
-        let ticker = await getTicker(symbol);
-        let tickerRef = ticker?._ref;
-        if (!tickerRef) {
-          ticker = await postTicker(symbol);
-          tickerRef = ticker._ref;
-        }
+      await upsertTicker(symbol); // symbol === tickerRef
 
-        // Please linting:
-        if (!configRef || !dailyRun) {
-          return;
-        }
+      // Please linting:
+      if (!configRef) {
+        return;
+      }
 
-        // Post Breakout for each breakout item
-        const breakoutData: BreakoutDataType = {
-          dailyRunRef: dailyRun._ref,
-          configRef,
-          tickerRef,
-          relativeStrength: relative_strength,
-          breakoutValue: breakout_level,
-          image,
-        };
-        await postBreakout(breakoutData);
+      // Post Breakout for each breakout item
+      const breakoutData: BreakoutDataType = {
+        dailyRunRef: runId,
+        configRef,
+        tickerRef: symbol,
+        relativeStrength: relative_strength,
+        breakoutValue: breakout_level,
+        image,
       };
-    }),
-  );
-
-  return;
+      await upsertBreakout(breakoutData);
+    }
+    return handleBreakout();
+  });
+  await Promise.all(promises);
 };

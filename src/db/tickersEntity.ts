@@ -1,29 +1,28 @@
 import { db } from "../services/firestoreService";
 
-export async function getTicker(symbol: string) {
+export async function getTicker(refId: string) {
   const query = db.collection("tickers");
-  const results = await query.where("symbol", "==", symbol).get();
-  if (results.size === 0) {
+  const results = await query.doc(refId).get();
+
+  if (!results.data()) {
     return null;
   }
-
-  const doc = results.docs[0];
+  const doc = results;
   return {
     ...doc.data(),
-    _ref: doc.ref.id, // Note: Using ref id to simplify the reference handling. Use doc.ref (DocumentReference) if more advanced logs is needed later on
   };
 }
 
-export async function postTicker(symbol: string) {
+// "upsert" ("update" or "insert") => inserts if not existsing. updates if it exists
+export async function upsertTicker(symbol: string) {
+  // symbol is the ref
   const data = {
     symbol,
-    // tradeViewLink: `https://www.tradingview.com/symbols/${symbol}/`
+    // ... and more company info or notes or whatever
   };
-
-  const ref = await db.collection("tickers").add(data);
+  await db.collection("tickers").doc(symbol).set(data);
   return {
     ...data,
-    _ref: ref.id,
   };
 }
 
@@ -31,7 +30,9 @@ export async function getAllTickers() {
   const result: any = [];
   const docs = await db.collection("tickers").get();
   docs.forEach((doc: any) => {
-    result.push(doc.data());
+    result.push({
+      ...doc.data(),
+    });
   });
 
   return result;
