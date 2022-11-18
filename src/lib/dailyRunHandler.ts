@@ -64,10 +64,11 @@ const isConfigDifferent = (latestConfig: Config, config: Config) => {
 
 export const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
   const { runId, runTime, config, breakouts } = dailyRunBody;
-
+  console.log({ runId });
   // update DailyRun
   let dailyRun: null | DailyRunDataType = await getDailyRun(runId);
 
+  console.log("existing dailyRun", dailyRun);
   if (dailyRun === null) {
     dailyRun = await postDailyRun(runId);
   }

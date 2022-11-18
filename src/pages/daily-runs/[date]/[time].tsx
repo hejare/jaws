@@ -1,27 +1,18 @@
 import styled from "styled-components";
 import type { NextPage } from "next";
-import { brokerService } from "../../services/brokerService";
-import { postSlackMessage } from "../../services/slackService";
-import Button from "../../components/atoms/buttons/Button";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import fetch from "node-fetch";
-import { handleResult } from "../../util";
-import { DailyRunDataType } from "../../db/dailyRunsMeta";
-import { BreakoutDataType } from "../../db/breakoutsEntity";
+import { handleResult } from "../../../util";
+import { DailyRunDataType } from "../../../db/dailyRunsMeta";
+import { BreakoutDataType } from "../../../db/breakoutsEntity";
 import BreakoutsList, {
   PartialBreakoutDataType,
-} from "../../components/organisms/BreakoutsList";
+} from "../../../components/organisms/BreakoutsList";
 
 const PageContainer = styled.div`
   display: flex;
   flex-direction: column;
-`;
-
-const ButtonsContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: 5px;
 `;
 
 enum STATUS {
@@ -35,47 +26,40 @@ interface DailyRunFetchDataType extends DailyRunDataType {
 
 const DailyRun: NextPage = () => {
   const router = useRouter();
-  const { runId } = router.query;
+  const { date, time } = router.query;
   const [dataFetchStatus, setDataFetchStatus] = useState(STATUS.LOADING);
   const [dailyRun, setDailyRun] = useState<DailyRunDataType>();
   const [breakoutsData, setBreakoutsData] = useState<PartialBreakoutDataType[]>(
     [],
   );
 
-  let date: string;
-  if (Array.isArray(runId)) {
-    date = runId[0].split("_")[0];
-  } else {
-    date = runId?.split("_")[0] || "[Could not extract date]";
-  }
+  // const runId = `${date as string}_${time as string}`;
 
   useEffect(() => {
-    if (runId && !Array.isArray(runId)) {
-      fetch(`/api/data/daily-runs/${runId}`)
-        .then(handleResult)
-        .then((result: DailyRunFetchDataType) => {
-          setDailyRun(result);
-          const newBreakoutsData = result.breakouts.map(
-            ({
-              image,
-              tickerRef,
-              relativeStrength,
-              breakoutValue,
-              configRef,
-            }: BreakoutDataType) => ({
-              tickerRef,
-              relativeStrength,
-              breakoutValue,
-              configRef,
-              image,
-            }),
-          );
-          setBreakoutsData(newBreakoutsData);
-          setDataFetchStatus(STATUS.READY);
-        })
-        .catch(console.error);
-    }
-  }, [runId]);
+    fetch(`/api/data/daily-runs/${date as string}/${time as string}`)
+      .then(handleResult)
+      .then((result: DailyRunFetchDataType) => {
+        setDailyRun(result);
+        const newBreakoutsData = result.breakouts.map(
+          ({
+            image,
+            tickerRef,
+            relativeStrength,
+            breakoutValue,
+            configRef,
+          }: BreakoutDataType) => ({
+            tickerRef,
+            relativeStrength,
+            breakoutValue,
+            configRef,
+            image,
+          }),
+        );
+        setBreakoutsData(newBreakoutsData);
+        setDataFetchStatus(STATUS.READY);
+      })
+      .catch(console.error);
+  }, [date, time]);
 
   return (
     <PageContainer>

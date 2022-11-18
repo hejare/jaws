@@ -34,11 +34,15 @@ const DailyRunsList = ({ data }: Props) => {
   const columns = [
     {
       title: "RunId",
-      dataIndex: "id",
-      key: "id",
+      dataIndex: "runId",
+      key: "runId",
       width: 100,
       render: (runId: string) => (
-        <NavButton href={`daily-runs/${runId}`}>{runId}</NavButton>
+        <NavButton
+          href={`daily-runs/${runId.split("_")[0]}/${runId.split("_")[1]}`}
+        >
+          {runId}
+        </NavButton>
       ),
     },
     {

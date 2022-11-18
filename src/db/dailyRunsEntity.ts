@@ -14,6 +14,23 @@ export async function getDailyRun(runId: string) {
   } as DailyRunDataType;
 }
 
+export async function getDailyRunByDate(date: string) {
+  const result: any = [];
+  const docs = await db
+    .collection("daily-runs")
+    .where("runId", ">=", date)
+    .where("runId", "<", (parseInt(date) + 1).toString())
+    .get();
+  docs.forEach((doc: any) => {
+    result.push({
+      ...doc.data(),
+      _ref: doc.ref.id,
+    });
+  });
+
+  return result;
+}
+
 export async function postDailyRun(runId: string) {
   const data = {
     runId,

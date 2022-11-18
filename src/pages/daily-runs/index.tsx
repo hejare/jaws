@@ -3,7 +3,6 @@ import type { NextPage } from "next";
 import { brokerService } from "../../services/brokerService";
 import { postSlackMessage } from "../../services/slackService";
 import Button from "../../components/atoms/buttons/Button";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import fetch from "node-fetch";
 import { handleResult } from "../../util";
@@ -27,13 +26,11 @@ enum STATUS {
 }
 
 const DailyRun: NextPage = () => {
-  const router = useRouter();
-  const { date } = router.query;
   const [dataFetchStatus, setDataFetchStatus] = useState(STATUS.LOADING);
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch(`/api/data/daily-runs?date=${date as string}`)
+    fetch("/api/data/daily-runs")
       .then(handleResult)
       .then((result) => {
         const newData = result.map(
@@ -57,7 +54,7 @@ const DailyRun: NextPage = () => {
         setDataFetchStatus(STATUS.READY);
       })
       .catch(console.error);
-  }, [date]);
+  }, []);
 
   return (
     <PageContainer>
