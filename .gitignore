@@ -9,3 +9,5 @@ node_modules
 
 tsconfig.tsbuildinfo
 yarn-error.log
+# Sentry
+.sentryclirc
