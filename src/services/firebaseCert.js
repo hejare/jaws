@@ -1,8 +1,7 @@
 const { FIRESTORE_PRIVATE_KEY, FIRESTORE_PRIVATE_KEY_ID } = process.env;
 
-const FIRESTORE_PRIVATE_KEY_ADJUSTED = FIRESTORE_PRIVATE_KEY.replace("\\n", "\n");
+const FIRESTORE_PRIVATE_KEY_ADJUSTED = FIRESTORE_PRIVATE_KEY.replaceAll("\\n", "\n");
 
-console.log("FIRESTORE_PRIVATE_KEY_ADJUSTED=", FIRESTORE_PRIVATE_KEY_ADJUSTED)
 const FIRESTORE_PROJECT_ID = "jaws-sharkster";
 const FIRESTORE_CLIENT_EMAIL =
   "firebase-adminsdk-t8lhg@jaws-sharkster.iam.gserviceaccount.com";
