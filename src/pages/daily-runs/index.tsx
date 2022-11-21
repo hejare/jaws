@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import type { NextPage } from "next";
-import { brokerService } from "../../services/brokerService";
+import { brokerService } from "../../lib/brokerHandler";
 import { postSlackMessage } from "../../services/slackService";
 import Button from "../../components/atoms/buttons/Button";
 import { useEffect, useState } from "react";

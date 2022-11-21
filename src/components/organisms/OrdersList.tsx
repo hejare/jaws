@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  handleDeleteOrder,
-  handleGetTrades,
-} from "../../services/brokerService";
+import { handleDeleteOrder, handleGetTrades } from "../../lib/brokerHandler";
 import { getDateTime } from "../../lib/helpers";
 import Button from "../atoms/buttons/Button";
 import Table from "../atoms/Table";

@@ -4,7 +4,7 @@ import Table from "../atoms/Table";
 import { DailyRunStatus } from "../../db/dailyRunsMeta";
 import Ticker from "../atoms/Ticker";
 import NavButton from "../atoms/buttons/NavButton";
-import { handleBuyOrder } from "../../services/brokerService";
+import { handleBuyOrder } from "../../lib/brokerHandler";
 
 export type PartialBreakoutDataType = {
   image: string;

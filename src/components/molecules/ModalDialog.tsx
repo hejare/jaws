@@ -4,7 +4,7 @@ import Modal from "@mui/material/Modal";
 import styled from "styled-components";
 import CircularButton from "../atoms/buttons/CircularButton";
 import RectangularButton from "../atoms/buttons/RectangularButton";
-import { handleBuyOrder } from "../../services/brokerService";
+import { handleBuyOrder } from "../../lib/brokerHandler";
 
 interface Props {
   isOpen: boolean;
@@ -94,7 +94,7 @@ export default function ModalDialog({
               <p>Entry Price:</p>
               <p>Size:</p>
               <RectangularButton
-                onClick={() => handleBuyOrder(ticker)}
+                onClick={() => handleBuyOrder(ticker, 1)}
                 label={`BUY $1 ${name}`}
                 variant="contained"
                 size="small"
