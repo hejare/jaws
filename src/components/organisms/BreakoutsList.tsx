@@ -78,7 +78,7 @@ const BreakoutsList = ({ data }: Props) => {
             </Button>
             <NavButton
               href={`https://www.tradingview.com/symbols/${
-                item.symbol as string
+                item.tickerRef as string
               }`}
             >
               TradeView
