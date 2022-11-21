@@ -8,20 +8,24 @@ export const brokerService = async () => {
   console.log(data);
 };
 
-const handlePostOrder = async (ticker: string, orderType: OrderType) => {
+const handlePostOrder = async (
+  ticker: string,
+  breakoutValue: number,
+  orderType: OrderType,
+) => {
   const resp = await fetch(
-    `/api/broker/place-order/?ticker=${ticker}&orderType=${orderType}`,
+    `/api/broker/place-order/?ticker=${ticker}&orderType=${orderType}&breakoutValue=${breakoutValue}`,
     { method: "POST" },
   );
   const data = await convertResult(resp);
   console.log(data);
 };
 
-export const handleBuyOrder = (ticker: string) =>
-  handlePostOrder(ticker, "buy");
+export const handleBuyOrder = (ticker: string, breakoutValue: number) =>
+  handlePostOrder(ticker, breakoutValue, "buy");
 
 export const handleSellOrder = (ticker: string) =>
-  handlePostOrder(ticker, "sell");
+  handlePostOrder(ticker, 1, "sell"); // ?refactor handlepostorder to not need breakout value here
 
 export const handleDeleteOrder = async (order_id: string) => {
   const resp = await fetch(`/api/broker/delete-order/?orderId=${order_id}`, {

@@ -21,7 +21,11 @@ const base64EncodedKeys = buff.toString("base64");
 const accountId = "b75acdbc-3fb6-3fb3-b253-b0bf7d86b8bb"; // public info
 const baseUrl = "https://broker-api.sandbox.alpaca.markets/v1";
 
-const postOrder = async (ticker: string, orderType: string) => {
+const postOrder = async (
+  ticker: string,
+  orderType: string,
+  breakoutValue: string,
+) => {
   const body: BodyInit = JSON.stringify({
     symbol: ticker,
     notional: "1",
@@ -50,7 +54,7 @@ export default async function handler(
 ) {
   const ticker: string = req.query?.ticker as string;
   const orderType: OrderType = req.query?.orderType as OrderType;
-
-  const data: Response = await postOrder(ticker, orderType);
+  const breakoutValue: string = req.query?.breakoutValue as string;
+  const data: Response = await postOrder(ticker, orderType, breakoutValue);
   res.status(200).json({ data: data });
 }

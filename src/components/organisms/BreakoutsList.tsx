@@ -75,7 +75,7 @@ const BreakoutsList = ({ data }: Props) => {
             <Button
               onClick={async () => {
                 console.log(console.log("BUYING this breakout...:", item));
-                await handleBuyOrder(item.tickerRef);
+                await handleBuyOrder(item.tickerRef, item.breakoutValue);
               }}
             >
               Place Order
