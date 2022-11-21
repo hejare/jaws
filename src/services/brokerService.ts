@@ -1,4 +1,4 @@
-import fetch from "node-fetch";
+import fetch, { BodyInit } from "node-fetch";
 import { Order, OrderType } from "../components/organisms/OrdersList";
 import { convertResult } from "../util";
 
@@ -13,10 +13,17 @@ const handlePostOrder = async (
   breakoutValue: number,
   orderType: OrderType,
 ) => {
-  const resp = await fetch(
-    `/api/broker/place-order/?ticker=${ticker}&orderType=${orderType}&breakoutValue=${breakoutValue}`,
-    { method: "POST" },
-  );
+  const body: BodyInit = JSON.stringify({
+    ticker,
+    orderType,
+    breakoutValue,
+  });
+
+  const resp = await fetch("/api/broker/place-order/", {
+    method: "POST",
+    body,
+  });
+
   const data = await convertResult(resp);
   console.log(data);
 };

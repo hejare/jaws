@@ -55,9 +55,11 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>,
 ) {
-  const ticker: string = req.query?.ticker as string;
-  const orderType: OrderType = req.query?.orderType as OrderType;
-  const breakoutValue: string = req.query?.breakoutValue as string;
+  const body = JSON.parse(req.body);
+  const ticker: string = body.ticker as string;
+  const orderType: OrderType = body.orderType as OrderType;
+  const breakoutValue: string = body.breakoutValue as string;
+
   const data: Response = await postOrder(ticker, orderType, breakoutValue);
   res.status(200).json({ data: data });
 }
