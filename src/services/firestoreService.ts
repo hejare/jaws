@@ -7,6 +7,7 @@ import {
 import { getFirestore } from "firebase-admin/firestore";
 import { certJson } from "./firebaseCert";
 
+console.log("certJson:", certJson);
 if (!getApps().length) {
   initializeApp({
     credential: cert(<ServiceAccount>certJson),
