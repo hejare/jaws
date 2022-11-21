@@ -28,10 +28,11 @@ const postOrder = async (
 ) => {
   const body: BodyInit = JSON.stringify({
     symbol: ticker,
-    notional: "1",
+    notional: "1", // (get) wallet value, multiply by 0.1.
     side: orderType,
-    type: "market",
     time_in_force: "day",
+    type: "limit",
+    limit_price: breakoutValue,
   });
 
   try {
