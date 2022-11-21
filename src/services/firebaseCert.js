@@ -1,4 +1,7 @@
-const { FIRESTORE_PRIVATE_KEY_ID, FIRESTORE_PRIVATE_KEY } = process.env;
+const { FIRESTORE_PRIVATE_KEY, FIRESTORE_PRIVATE_KEY_ID } = process.env;
+
+const FIRESTORE_PRIVATE_KEY_ADJUSTED = FIRESTORE_PRIVATE_KEY.replace("\\n", "\n");
+
 const FIRESTORE_PROJECT_ID = "jaws-sharkster";
 const FIRESTORE_CLIENT_EMAIL =
   "firebase-adminsdk-t8lhg@jaws-sharkster.iam.gserviceaccount.com";
@@ -14,7 +17,7 @@ export const certJson = {
   type: "service_account",
   project_id: FIRESTORE_PROJECT_ID,
   private_key_id: FIRESTORE_PRIVATE_KEY_ID,
-  private_key: FIRESTORE_PRIVATE_KEY,
+  private_key: FIRESTORE_PRIVATE_KEY_ADJUSTED,
   client_email: FIRESTORE_CLIENT_EMAIL,
   client_id: FIRESTORE_CLIENT_ID,
   auth_uri: FIRESTORE_AUTH_URI,
