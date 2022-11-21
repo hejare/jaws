@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import fetch, { BodyInit, Response } from "node-fetch";
 import { OrderType } from "../../../components/organisms/OrdersList";
 import { handleResult } from "../../../util";
+import { handleLimitPrice } from "../../../util/handleLimitPrice";
 
 type Data = {
   data: Response;
@@ -28,11 +29,11 @@ const postOrder = async (
 ) => {
   const body: BodyInit = JSON.stringify({
     symbol: ticker,
-    notional: "1", // (get) wallet value, multiply by 0.1.
+    qty: 1, // todo qty: wallet balance * 0.1 * limit_price => rounded to nearest integer
     side: orderType,
     time_in_force: "day",
     type: "limit",
-    limit_price: breakoutValue,
+    limit_price: handleLimitPrice(breakoutValue),
   });
 
   try {
@@ -45,6 +46,7 @@ const postOrder = async (
     });
     return await handleResult(res);
   } catch (e) {
+    console.log(e);
     throw Error(`Unable to post order - ${e as string}`);
   }
 };
