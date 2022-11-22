@@ -35,7 +35,7 @@ export const handleSellOrder = (ticker: string) =>
   handlePostOrder(ticker, 1, "sell"); // ?refactor handlepostorder to not need breakout value here
 
 export const handleDeleteOrder = async (order_id: string) => {
-  const resp = await fetch(`/api/broker/order/?id=${order_id}`, {
+  const resp = await fetch(`/api/broker/order/${order_id}`, {
     method: "DELETE",
   });
   const data = await convertResult(resp);
