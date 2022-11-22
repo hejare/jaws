@@ -22,7 +22,6 @@ const GraphContainer = styled.div`
 const Graph = styled.div`
   width: 50vh;
   height: 50vh;
-  background-color: #3f433a;
   color: white;
   display: flex;
   align-items: center;

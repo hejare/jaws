@@ -9,7 +9,6 @@ const GraphContainer = styled.div`
 `;
 
 const Graph = styled.div`
-  background-color: #3f433a;
   color: white;
   display: flex;
   align-items: center;
