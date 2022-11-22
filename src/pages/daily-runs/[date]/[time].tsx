@@ -40,7 +40,7 @@ const DailyRun: NextPage = () => {
       .then(handleResult)
       .then((result: DailyRunFetchDataType) => {
         setDailyRun(result);
-        const newBreakoutsData = result.breakouts.map(
+        let newBreakoutsData = result.breakouts.map(
           ({
             image,
             tickerRef,
@@ -54,6 +54,9 @@ const DailyRun: NextPage = () => {
             configRef,
             image,
           }),
+        );
+        newBreakoutsData = newBreakoutsData.sort(
+          (a, b) => b.relativeStrength - a.relativeStrength,
         );
         setBreakoutsData(newBreakoutsData);
         setDataFetchStatus(STATUS.READY);
