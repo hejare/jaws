@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getWalletBalance } from "../../lib/brokerHandler";
-import TextDisplay from "../molecules/TextDisplay";
+import TextDisplay from "../atoms/TextDisplay";
 
 const DisplayWalletBalance = () => {
   const [walletBalance, setWalletBalance] = useState<string>("");
@@ -11,13 +11,24 @@ const DisplayWalletBalance = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const result = await getWalletBalance();
-      result && handleSetBalance(result);
+      try {
+        const result = await getWalletBalance();
+        handleSetBalance(result);
+      } catch {
+        console.log("Could not find wallet balance");
+      }
     };
     void fetchData();
   }, []);
 
-  return <TextDisplay content={["Wallet balance", walletBalance]} />;
+  return (
+    <TextDisplay
+      content={[
+        "Wallet balance",
+        walletBalance ? walletBalance : "Could not get wallet balance",
+      ]}
+    />
+  );
 };
 
 export default DisplayWalletBalance;
