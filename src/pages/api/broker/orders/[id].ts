@@ -1,9 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { Response } from "node-fetch";
+import { ResponseDataType } from "../../../../db/ResponseDataMeta";
 import { deleteOrder } from "../../../../services/alpacaService";
-
-//  ta in id
-// switch caase för annat än delete
 
 export default async function handler(
   req: NextApiRequest,
@@ -13,16 +10,25 @@ export default async function handler(
   const { id } = query;
 
   try {
+    const responseData: ResponseDataType = { status: "INIT" };
+
     switch (method) {
       case "DELETE":
         if (id && !(id instanceof Array)) {
-          const data: Response = await deleteOrder(id);
-          res.status(200).json({ data: data });
+          await deleteOrder(id)
+            .then(() => {
+              responseData.status = "OK";
+            })
+            .catch((e) => {
+              responseData.status = "NOK";
+              responseData.message = e.message;
+            });
         }
         break;
       default:
         throw new Error(`Unsupported method: ${method as string}`);
     }
+    res.status(200).json(responseData);
   } catch (e) {
     let message;
     if (e instanceof Error) {

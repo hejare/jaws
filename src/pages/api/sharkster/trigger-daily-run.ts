@@ -1,11 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { ResponseDataType } from "../../../db/ResponseDataMeta";
 import { triggerDailyrun } from "../../../lib/dailyRunHandler";
-
-type ResponseDataType = {
-  status: string;
-  message?: string;
-  meta?: Record<string, any>;
-};
 
 export default async function handler(
   req: NextApiRequest,
