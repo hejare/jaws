@@ -1,6 +1,6 @@
 import { useState } from "react";
 import styled from "styled-components";
-import { handleBuyOrder, handleSellOrder } from "../../lib/brokerHandler";
+import { handleSellOrder } from "../../lib/brokerHandler";
 import RectangularButton from "../atoms/buttons/RectangularButton";
 import ModalDialog from "./ModalDialog";
 
@@ -22,8 +22,9 @@ const TickerCard = (props: Props) => {
   const handleOpen = () => setIsModalOpen(true);
   const handleClose = () => setIsModalOpen(false);
 
-  const buyButtonBlicked = async () => {
-    return handleBuyOrder(props.ticker);
+  const buyButtonBlicked = () => {
+    console.log("Add logics for initiating a buy-order");
+    // return handleBuyOrder(props.ticker);
   };
 
   const sellButtonClicked = async () => {
