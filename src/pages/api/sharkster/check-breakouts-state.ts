@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { triggerDailyrun } from "../../../lib/dailyRunHandler";
+import { checkDailyRunIdle } from "../../../services/sharksterService";
 
 type ResponseDataType = {
   status: string;
-  runId?: string;
+  isIdle?: boolean;
   message?: string;
   meta?: Record<string, any>;
 };
@@ -17,10 +17,13 @@ export default async function handler(
     const responseData: ResponseDataType = { status: "INIT" };
     switch (method) {
       case "GET":
-        await triggerDailyrun()
-          .then((runId) => {
+        await checkDailyRunIdle()
+          .then(({ isIdle, text }) => {
             responseData.status = "OK";
-            responseData.runId = runId;
+            responseData.isIdle = isIdle;
+            if (!isIdle) {
+              responseData.message = text;
+            }
           })
           .catch((e) => {
             responseData.status = "NOK";

@@ -2,8 +2,12 @@ import { BreakoutDataType, upsertBreakout } from "../db/breakoutsEntity";
 import { getLatestConfig, postConfig } from "../db/configsEntity";
 import { getDailyRun, postDailyRun, putDailyRun } from "../db/dailyRunsEntity";
 import { DailyRunDataType, DailyRunStatus } from "../db/dailyRunsMeta";
-import { getTicker, upsertTicker } from "../db/tickersEntity";
-import { getSessions, triggerDailyRun } from "../services/sharksterService";
+import { upsertTicker } from "../db/tickersEntity";
+import {
+  getSessions,
+  triggerDailyRun,
+  checkDailyRunIdle,
+} from "../services/sharksterService";
 
 interface Breakout {
   relative_strength: number;
@@ -23,24 +27,24 @@ type DailyRunBody = {
 const isNotebookIdle = (
   sessions: [{ path: string; kernel: { execution_state: string } }],
 ) => {
-  const matchedSession = sessions.find(
-    (session) => session.path.indexOf("get_todays_picks") > -1,
+  const nonIdleSession = sessions.find(
+    (session) => session.kernel.execution_state !== "idle",
   );
-  return matchedSession?.kernel.execution_state === "idle";
+  return !nonIdleSession;
 };
 
 export const triggerDailyrun = async () => {
   const sessions = await getSessions();
   const isIdle = isNotebookIdle(sessions);
+  const { isIdle: isIdle2 } = await checkDailyRunIdle();
 
-  if (!isIdle) {
+  if (!isIdle || !isIdle2) {
     return Promise.reject(
       new Error(
         "Process is not idle. Could be due to previous execution is still ongoing.",
       ),
     );
   }
-
   const resp = await triggerDailyRun();
   const runId = resp.split("\n")[0].replace("run_id= ", "");
   await postDailyRun(runId);
