@@ -7,6 +7,7 @@ import fetch from "node-fetch";
 import { handleResult } from "../../util";
 import DailyRunsList from "../../components/organisms/DailyRunsList";
 import { DailyRunDataType } from "../../db/dailyRunsMeta";
+import TriggerDailyRunButton from "../../components/molecules/TriggerDailyRunButton";
 
 const PageContainer = styled.div`
   display: flex;
@@ -58,6 +59,7 @@ const DailyRuns: NextPage = () => {
   return (
     <PageContainer>
       <ButtonsContainer>
+        <TriggerDailyRunButton />
         <Button onClick={postSlackMessage}>Slack service test trigger</Button>
       </ButtonsContainer>
       {dataFetchStatus === STATUS.READY && <DailyRunsList data={data} />}
