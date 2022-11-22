@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Response } from "node-fetch";
-import { getOrders } from "../../../services/alpacaService";
+import { getOrders } from "../../../../services/alpacaService";
 
 type Data = {
   orders: Response;

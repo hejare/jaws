@@ -3,7 +3,7 @@ import { Order, OrderType } from "../components/organisms/OrdersList";
 import { convertResult } from "../util";
 
 export const brokerService = async () => {
-  const resp = await fetch(`/api/broker/place-order`);
+  const resp = await fetch(`/api/broker/order`);
   const data = await convertResult(resp);
   console.log(data);
 };
@@ -19,7 +19,7 @@ const handlePostOrder = async (
     breakoutValue,
   });
 
-  const resp = await fetch("/api/broker/place-order/", {
+  const resp = await fetch("/api/broker/order/", {
     method: "POST",
     body,
   });
@@ -35,7 +35,7 @@ export const handleSellOrder = (ticker: string) =>
   handlePostOrder(ticker, 1, "sell"); // ?refactor handlepostorder to not need breakout value here
 
 export const handleDeleteOrder = async (order_id: string) => {
-  const resp = await fetch(`/api/broker/delete-order/?orderId=${order_id}`, {
+  const resp = await fetch(`/api/broker/order/?id=${order_id}`, {
     method: "DELETE",
   });
   const data = await convertResult(resp);
@@ -43,7 +43,7 @@ export const handleDeleteOrder = async (order_id: string) => {
 };
 
 export const handleGetTrades = async () => {
-  const resp = await fetch(`/api/broker/get-orders`);
+  const resp = await fetch(`/api/broker/orders`);
   const data = await convertResult(resp);
   const response = data.orders.map((order: Order) => {
     const { symbol, id, status, notional, created_at, filled_at, side } = order;
