@@ -2,13 +2,14 @@ import RcTable from "rc-table";
 import styled from "styled-components";
 
 const StyledRcTable = styled(RcTable)`
+  text-align: -webkit-center;
   .row-0 {
     background-color: #123321;
   }
   th {
+    text-transform: uppercase;
     padding: 4px;
     text-align: left;
-    text-decoration: underline;
   }
   td {
     padding: 4px;
