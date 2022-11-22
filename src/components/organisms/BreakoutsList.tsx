@@ -5,6 +5,8 @@ import { DailyRunStatus } from "../../db/dailyRunsMeta";
 import Ticker from "../atoms/Ticker";
 import NavButton from "../atoms/buttons/NavButton";
 import { handleBuyOrder } from "../../lib/brokerHandler";
+import { useState } from "react";
+import IndicateLoadingButton from "../molecules/IndicateLoadingButton";
 
 export type PartialBreakoutDataType = {
   image: string;
@@ -69,17 +71,16 @@ const BreakoutsList = ({ data }: Props) => {
       dataIndex: "",
       key: "operations",
       render: (item: any) => {
-        console.log(item);
         return (
           <>
-            <Button
+            <IndicateLoadingButton
               onClick={async () => {
                 console.log(console.log("BUYING this breakout...:", item));
                 await handleBuyOrder(item.tickerRef, item.breakoutValue);
               }}
-            >
-              Place Order
-            </Button>
+              label={"Place Order"}
+            />
+
             <NavButton
               href={`https://www.tradingview.com/symbols/${
                 item.tickerRef as string
