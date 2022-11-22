@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import type { NextPage } from "next";
-import { brokerService } from "../../lib/brokerHandler";
 import { postSlackMessage } from "../../services/slackService";
 import Button from "../../components/atoms/buttons/Button";
 import { useEffect, useState } from "react";
@@ -60,7 +59,6 @@ const DailyRuns: NextPage = () => {
     <PageContainer>
       <ButtonsContainer>
         <Button onClick={postSlackMessage}>Slack service test trigger</Button>
-        <Button onClick={brokerService}>Broker service test trigger</Button>
       </ButtonsContainer>
       {dataFetchStatus === STATUS.READY && <DailyRunsList data={data} />}
     </PageContainer>

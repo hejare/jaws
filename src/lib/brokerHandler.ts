@@ -2,12 +2,6 @@ import fetch, { BodyInit } from "node-fetch";
 import { Order, OrderType } from "../components/organisms/OrdersList";
 import { convertResult } from "../util";
 
-export const brokerService = async () => {
-  const resp = await fetch(`/api/broker/order`);
-  const data = await convertResult(resp);
-  console.log(data);
-};
-
 const handlePostOrder = async (
   ticker: string,
   breakoutValue: number,
