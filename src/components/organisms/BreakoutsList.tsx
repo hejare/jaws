@@ -5,6 +5,10 @@ import { DailyRunStatus } from "../../db/dailyRunsMeta";
 import Ticker from "../atoms/Ticker";
 import NavButton from "../atoms/buttons/NavButton";
 import { handleBuyOrder } from "../../lib/brokerHandler";
+import { memo } from "react";
+import { useModal } from "use-modal-hook";
+import styled from "styled-components";
+import BreakoutModal from "../molecules/BreakoutModal";
 
 export type PartialBreakoutDataType = {
   image: string;
@@ -19,10 +23,27 @@ const nonCancellableStatus = [DailyRunStatus.COMPLETED] as const;
 const { publicRuntimeConfig } = getNextJSConfig();
 const { IMAGE_SERVICE_BASE_URL = "[NOT_DEFINED_IN_ENV]" } = publicRuntimeConfig;
 
+const StyledImage = styled.img`
+  cursor: pointer;
+  :hover {
+    border: 1px solid ${({ theme }) => theme.palette.actionHover.border};
+  }
+`;
 interface Props {
   data: PartialBreakoutDataType[];
 }
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  image: string;
+}
+
 const BreakoutsList = ({ data }: Props) => {
+  const MyModal = memo(({ isOpen, onClose, image }: ModalProps) => (
+    <BreakoutModal isOpen={isOpen} onClose={onClose} image={image} />
+  ));
+  const [showModal, hideModal] = useModal(MyModal, {});
+
   const renderTitle = () => {
     return <h2>Breakouts</h2>;
   };
@@ -43,12 +64,12 @@ const BreakoutsList = ({ data }: Props) => {
       width: 100,
       render: (tickerRef: string) => <Ticker id={tickerRef} />,
     },
-    {
-      title: "Relative Strength",
-      dataIndex: "relativeStrength",
-      key: "relativeStrength",
-      width: 200,
-    },
+    // {
+    //   title: "Relative Strength",
+    //   dataIndex: "relativeStrength",
+    //   key: "relativeStrength",
+    //   width: 200,
+    // },
     {
       title: "Breakout Value",
       dataIndex: "breakoutValue",
@@ -62,7 +83,12 @@ const BreakoutsList = ({ data }: Props) => {
       width: 50,
       className: "image",
       render: (image: string) => (
-        <img src={`${IMAGE_SERVICE_BASE_URL as string}/${image}`} />
+        <StyledImage
+          onClick={() =>
+            showModal({ image: `${IMAGE_SERVICE_BASE_URL as string}/${image}` })
+          }
+          src={`${IMAGE_SERVICE_BASE_URL as string}/${image}`}
+        />
       ),
     },
     {
