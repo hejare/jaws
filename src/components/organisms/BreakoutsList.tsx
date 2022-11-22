@@ -16,8 +16,7 @@ export type PartialBreakoutDataType = {
 const nonCancellableStatus = [DailyRunStatus.COMPLETED] as const;
 
 const { publicRuntimeConfig } = getNextJSConfig();
-const { SERVICE_SHARKSTER_IMAGE_SERVER_BASE_URL = "[NOT_DEFINED_IN_ENV]" } =
-  publicRuntimeConfig;
+const { IMAGE_SERVICE_BASE_URL = "[NOT_DEFINED_IN_ENV]" } = publicRuntimeConfig;
 
 interface Props {
   data: PartialBreakoutDataType[];
@@ -61,9 +60,7 @@ const BreakoutsList = ({ data }: Props) => {
       key: "image",
       width: 50,
       render: (image: string) => (
-        <img
-          src={`${SERVICE_SHARKSTER_IMAGE_SERVER_BASE_URL as string}/${image}`}
-        />
+        <img src={`${IMAGE_SERVICE_BASE_URL as string}/${image}`} />
       ),
     },
     {

@@ -9,7 +9,7 @@ const nextConfig = {
     styledComponents: true,
   },
   publicRuntimeConfig: {
-    SERVICE_SHARKSTER_IMAGE_SERVER_BASE_URL: process.env.SERVICE_SHARKSTER_IMAGE_SERVER_BASE_URL,
+    IMAGE_SERVICE_BASE_URL: process.env.IMAGE_SERVICE_BASE_URL,
   }
 }
 
