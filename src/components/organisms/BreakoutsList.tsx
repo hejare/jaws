@@ -1,6 +1,6 @@
 import getNextJSConfig from "next/config";
 import Button from "../atoms/buttons/Button";
-import Table from "../atoms/Table";
+import Table, { Operations } from "../atoms/Table";
 import { DailyRunStatus } from "../../db/dailyRunsMeta";
 import Ticker from "../atoms/Ticker";
 import NavButton from "../atoms/buttons/NavButton";
@@ -60,6 +60,7 @@ const BreakoutsList = ({ data }: Props) => {
       dataIndex: "image",
       key: "image",
       width: 50,
+      className: "image",
       render: (image: string) => (
         <img src={`${IMAGE_SERVICE_BASE_URL as string}/${image}`} />
       ),
@@ -68,28 +69,26 @@ const BreakoutsList = ({ data }: Props) => {
       title: "Operations",
       dataIndex: "",
       key: "operations",
-      render: (item: any) => {
-        console.log(item);
-        return (
-          <>
-            <Button
-              onClick={async () => {
-                console.log(console.log("BUYING this breakout...:", item));
-                await handleBuyOrder(item.tickerRef, item.breakoutValue);
-              }}
-            >
-              Place Order
-            </Button>
-            <NavButton
-              href={`https://www.tradingview.com/symbols/${
-                item.tickerRef as string
-              }`}
-            >
-              TradeView
-            </NavButton>
-          </>
-        );
-      },
+      className: "operations",
+      render: (item: any) => (
+        <Operations>
+          <Button
+            onClick={async () => {
+              console.log(console.log("BUYING this breakout...:", item));
+              await handleBuyOrder(item.tickerRef, item.breakoutValue);
+            }}
+          >
+            Place Order
+          </Button>
+          <NavButton
+            href={`https://www.tradingview.com/symbols/${
+              item.tickerRef as string
+            }`}
+          >
+            TradeView
+          </NavButton>
+        </Operations>
+      ),
     },
   ];
 
