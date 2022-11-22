@@ -4,6 +4,7 @@ import Table from "../atoms/Table";
 import { DailyRunStatus } from "../../db/dailyRunsMeta";
 import Ticker from "../atoms/Ticker";
 import NavButton from "../atoms/buttons/NavButton";
+import { handleBuyOrder } from "../../lib/brokerHandler";
 
 export type PartialBreakoutDataType = {
   image: string;
@@ -72,13 +73,16 @@ const BreakoutsList = ({ data }: Props) => {
         return (
           <>
             <Button
-              onClick={() => console.log("Try and BUY this breakout...:", item)}
+              onClick={async () => {
+                console.log(console.log("BUYING this breakout...:", item));
+                await handleBuyOrder(item.tickerRef, item.breakoutValue);
+              }}
             >
               Place Order
             </Button>
             <NavButton
               href={`https://www.tradingview.com/symbols/${
-                item.symbol as string
+                item.tickerRef as string
               }`}
             >
               TradeView

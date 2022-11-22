@@ -1,6 +1,6 @@
 import { useState } from "react";
 import styled from "styled-components";
-import { handleBuyOrder, handleSellOrder } from "../../services/brokerService";
+import { handleBuyOrder, handleSellOrder } from "../../lib/brokerHandler";
 import RectangularButton from "../atoms/buttons/RectangularButton";
 import ModalDialog from "./ModalDialog";
 
