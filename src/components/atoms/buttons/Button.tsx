@@ -48,6 +48,8 @@ const LoadingDiv = styled.div`
 `;
 
 const DisabledDiv = styled.div`
+  padding: 16px;
+  cursor: not-allowed;
   position: relative;
   align-items: center;
   justify-content: center;
@@ -62,6 +64,7 @@ interface Props {
   children: React.ReactNode;
   loading?: boolean;
   disabled?: boolean;
+  title?: string;
 }
 
 const Button = ({ children, loading, disabled, ...props }: Props) => {
