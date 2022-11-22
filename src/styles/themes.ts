@@ -62,6 +62,7 @@ const dark = {
       hover: colors.white,
       active: `${colors.white}50`,
       disabled: colors.mediumGrey,
+      backdrop: `${colors.black}80`,
     },
 
     text: {
