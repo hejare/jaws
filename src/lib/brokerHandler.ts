@@ -45,3 +45,9 @@ export const handleGetTrades = async () => {
   });
   return response;
 };
+
+export const getWalletBalance = async () => {
+  const resp = await fetch("/api/broker/account/balance");
+  const data = await convertResult(resp);
+  return data.meta.balance;
+};
