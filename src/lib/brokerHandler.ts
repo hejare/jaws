@@ -54,9 +54,7 @@ export const getWalletBalance = async () => {
     if (result.balance) {
       return result.balance;
     }
-    throw new Error(
-      "Could not get wallet balance, prop balance does not exist on response obj.",
-    );
+    throw new Error();
   } catch (e) {
     throw new Error("Could not get wallet balance");
   }
