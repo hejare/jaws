@@ -15,7 +15,7 @@ const DisplayWalletBalance = () => {
         const result = await getWalletBalance();
         handleSetBalance(result);
       } catch (e) {
-        handleSetBalance("Could not get wallet balance");
+        setWalletBalance("Could not get wallet balance");
         console.log(e);
       }
     };
