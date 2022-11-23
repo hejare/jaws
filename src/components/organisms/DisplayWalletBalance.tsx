@@ -6,7 +6,7 @@ const DisplayWalletBalance = () => {
   const [walletBalance, setWalletBalance] = useState<string>("checking...");
 
   const handleSetBalance = (balance: string) => {
-    setWalletBalance(parseFloat(balance).toFixed(2).toString());
+    setWalletBalance(parseFloat(balance).toFixed(2));
   };
 
   useEffect(() => {
