@@ -3,7 +3,7 @@ import { getWalletBalance } from "../../lib/brokerHandler";
 import TextDisplay from "../atoms/TextDisplay";
 
 const DisplayWalletBalance = () => {
-  const [walletBalance, setWalletBalance] = useState<string>("");
+  const [walletBalance, setWalletBalance] = useState<string>("checking...");
 
   const handleSetBalance = (balance: string) => {
     setWalletBalance(parseFloat(balance).toFixed(2).toString());
@@ -14,8 +14,8 @@ const DisplayWalletBalance = () => {
       try {
         const result = await getWalletBalance();
         handleSetBalance(result);
-      } catch {
-        console.log("Could not find wallet balance");
+      } catch (e) {
+        console.log(e);
       }
     };
     void fetchData();
