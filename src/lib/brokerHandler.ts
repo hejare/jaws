@@ -49,10 +49,10 @@ export const handleGetTrades = async () => {
 export const getWalletBalance = async () => {
   try {
     const resp = await fetch("/api/broker/account/balance");
-    const data = await convertResult(resp);
+    const result = await convertResult(resp);
 
-    if (data.meta.balance) {
-      return data.meta.balance;
+    if (result.balance) {
+      return result.balance;
     }
     throw new Error(
       "Could not get wallet balance, prop balance does not exist on response obj.",

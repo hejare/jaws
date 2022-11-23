@@ -2,18 +2,20 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { ResponseDataType } from "../../../../../db/ResponseDataMeta";
 import { getAccountCashBalance } from "../../../../../services/alpacaService";
 
+interface ExtendedResponseDataType extends ResponseDataType {
+  balance?: Record<string, any>;
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
   try {
-    const responseData: ResponseDataType = { status: "INIT" };
+    const responseData: ExtendedResponseDataType = { status: "INIT" };
     await getAccountCashBalance()
       .then((result) => {
         responseData.status = "OK";
-        responseData.meta = {
-          balance: result,
-        };
+        responseData.balance = result;
       })
       .catch((e) => {
         responseData.status = "NOK";
