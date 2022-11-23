@@ -64,12 +64,6 @@ const BreakoutsList = ({ data }: Props) => {
       width: 100,
       render: (tickerRef: string) => <Ticker id={tickerRef} />,
     },
-    // {
-    //   title: "Relative Strength",
-    //   dataIndex: "relativeStrength",
-    //   key: "relativeStrength",
-    //   width: 200,
-    // },
     {
       title: "Breakout Value",
       dataIndex: "breakoutValue",
