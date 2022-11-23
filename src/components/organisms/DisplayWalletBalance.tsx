@@ -15,20 +15,14 @@ const DisplayWalletBalance = () => {
         const result = await getWalletBalance();
         handleSetBalance(result);
       } catch (e) {
+        handleSetBalance("Could not get wallet balance");
         console.log(e);
       }
     };
     void fetchData();
   }, []);
 
-  return (
-    <TextDisplay
-      content={[
-        "Wallet balance",
-        walletBalance ? walletBalance : "Could not get wallet balance",
-      ]}
-    />
-  );
+  return <TextDisplay content={["Wallet balance", walletBalance]} />;
 };
 
 export default DisplayWalletBalance;
