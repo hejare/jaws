@@ -1,5 +1,4 @@
 import getNextJSConfig from "next/config";
-import Button from "../atoms/buttons/Button";
 import Table, { Operations } from "../atoms/Table";
 import { DailyRunStatus } from "../../db/dailyRunsMeta";
 import Ticker from "../atoms/Ticker";
@@ -9,6 +8,7 @@ import { memo } from "react";
 import { useModal } from "use-modal-hook";
 import styled from "styled-components";
 import BreakoutModal from "../molecules/BreakoutModal";
+import IndicateLoadingButton from "../molecules/IndicateLoadingButton";
 
 export type PartialBreakoutDataType = {
   image: string;
@@ -92,14 +92,14 @@ const BreakoutsList = ({ data }: Props) => {
       className: "operations",
       render: (item: any) => (
         <Operations>
-          <Button
+          <IndicateLoadingButton
             onClick={async () => {
               console.log(console.log("BUYING this breakout...:", item));
               await handleBuyOrder(item.tickerRef, item.breakoutValue);
             }}
           >
             Place Order
-          </Button>
+          </IndicateLoadingButton>
           <NavButton
             href={`https://www.tradingview.com/symbols/${
               item.tickerRef as string
