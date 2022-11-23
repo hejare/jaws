@@ -47,12 +47,13 @@ const DailyRun: NextPage = () => {
             relativeStrength,
             breakoutValue,
             configRef,
+            _ref: breakoutRef,
           }: BreakoutDataType) => ({
             tickerRef,
             relativeStrength,
             breakoutValue,
             configRef,
-            image,
+            imageData: { image, breakoutRef },
           }),
         );
         newBreakoutsData = newBreakoutsData.sort((a, b) =>

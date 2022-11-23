@@ -7,6 +7,7 @@ export type BreakoutDataType = {
   relativeStrength: number;
   breakoutValue: number;
   image: string;
+  _ref: string;
 };
 
 export async function getBreakout(refId: string) {
@@ -76,6 +77,7 @@ export async function getBreakoutsByDailyRun(dailyRunRef: string) {
   docs.forEach((doc: any) => {
     result.push({
       ...doc.data(),
+      _ref: doc.ref.id,
     });
   });
 

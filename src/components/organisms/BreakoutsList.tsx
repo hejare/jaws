@@ -11,7 +11,7 @@ import BreakoutModal from "../molecules/BreakoutModal";
 import IndicateLoadingButton from "../molecules/IndicateLoadingButton";
 
 export type PartialBreakoutDataType = {
-  image: string;
+  imageData: { image: string; breakoutRef: string };
   tickerRef: string;
   relativeStrength: number;
   breakoutValue: number;
@@ -33,15 +33,23 @@ interface Props {
   data: PartialBreakoutDataType[];
 }
 interface ModalProps {
+  breakoutRef: string;
   isOpen: boolean;
   onClose: () => void;
   image: string;
 }
 
 const BreakoutsList = ({ data }: Props) => {
-  const MyModal = memo(({ isOpen, onClose, image }: ModalProps) => (
-    <BreakoutModal isOpen={isOpen} onClose={onClose} image={image} />
-  ));
+  const MyModal = memo(
+    ({ isOpen, onClose, image, breakoutRef }: ModalProps) => (
+      <BreakoutModal
+        isOpen={isOpen}
+        onClose={onClose}
+        image={image}
+        breakoutRef={breakoutRef}
+      />
+    ),
+  );
   const [showModal, hideModal] = useModal(MyModal, {});
 
   const renderTitle = () => {
@@ -76,12 +84,15 @@ const BreakoutsList = ({ data }: Props) => {
       key: "image",
       width: 50,
       className: "image",
-      render: (image: string) => (
+      render: (imageData: { image: string; breakoutRef: string }) => (
         <StyledImage
           onClick={() =>
-            showModal({ image: `${IMAGE_SERVICE_BASE_URL as string}/${image}` })
+            showModal({
+              image: `${IMAGE_SERVICE_BASE_URL as string}/${imageData.image}`,
+              breakoutRef: imageData.breakoutRef,
+            })
           }
-          src={`${IMAGE_SERVICE_BASE_URL as string}/${image}`}
+          src={`${IMAGE_SERVICE_BASE_URL as string}/${imageData.image}`}
         />
       ),
     },
