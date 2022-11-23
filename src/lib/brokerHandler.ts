@@ -45,3 +45,20 @@ export const handleGetTrades = async () => {
   });
   return response;
 };
+
+export const getWalletBalance = async () => {
+  let result;
+  try {
+    const resp = await fetch("/api/broker/account/balance");
+    result = await convertResult(resp);
+  } catch (e) {
+    console.error(e);
+    throw new Error("Could not get wallet balance");
+  }
+
+  if (!result.balance) {
+    throw new Error("Could not get wallet balance");
+  }
+
+  return result.balance;
+};

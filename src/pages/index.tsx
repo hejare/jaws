@@ -3,6 +3,8 @@ import styled from "styled-components";
 import Head from "next/head";
 import { getToday } from "../lib/helpers";
 import NavButton from "../components/atoms/buttons/NavButton";
+import TextDisplay from "../components/atoms/TextDisplay";
+import DisplayWalletBalance from "../components/organisms/DisplayWalletBalance";
 
 const PageContainer = styled.div`
   display: flex;
@@ -34,6 +36,7 @@ const Home: NextPage = () => {
             <NavButton href={`/daily-runs/${today}`}>Todays run</NavButton>
             <NavButton href="/daily-runs">All runs</NavButton>
             <NavButton href="/orders">All Orders</NavButton>
+            <DisplayWalletBalance />
           </ContentContainer>
         </PageContainer>
       </main>
