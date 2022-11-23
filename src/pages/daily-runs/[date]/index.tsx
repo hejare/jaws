@@ -27,7 +27,7 @@ const DailyRunsDate: NextPage = () => {
     fetch(`/api/data/daily-runs/${date as string}`)
       .then(handleResult)
       .then((result) => {
-        const newData = result.map(
+        let newData = result.map(
           ({
             duration,
             runId,
@@ -37,12 +37,15 @@ const DailyRunsDate: NextPage = () => {
           }: DailyRunDataType) => ({
             runId,
             status,
-            initiated: new Date(timeInitiated)
+            timeInitiated: new Date(timeInitiated)
               .toUTCString()
               .replace(" GMT", ""),
-            ended: new Date(timeEnded).toUTCString().replace(" GMT", ""),
+            timeEnded: new Date(timeEnded).toUTCString().replace(" GMT", ""),
             duration,
           }),
+        );
+        newData = newData.sort((a: DailyRunDataType, b: DailyRunDataType) =>
+          b.runId < a.runId ? -1 : b.runId > a.runId ? 1 : 0,
         );
         setData(newData);
         setDataFetchStatus(STATUS.READY);

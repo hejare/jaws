@@ -55,8 +55,8 @@ const DailyRun: NextPage = () => {
             image,
           }),
         );
-        newBreakoutsData = newBreakoutsData.sort(
-          (a, b) => b.relativeStrength - a.relativeStrength,
+        newBreakoutsData = newBreakoutsData.sort((a, b) =>
+          b.tickerRef < a.tickerRef ? 1 : b.tickerRef > a.tickerRef ? -1 : 0,
         );
         setBreakoutsData(newBreakoutsData);
         setDataFetchStatus(STATUS.READY);
