@@ -13,6 +13,7 @@ const EnabledDiv = styled.div`
   border-radius: 5px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
   transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+  background-color: ${({ theme }) => theme.palette.background.primary};
 
   ::after {
     content: "";

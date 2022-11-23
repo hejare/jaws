@@ -1,11 +1,13 @@
 import getNextJSConfig from "next/config";
-import Button from "../atoms/buttons/Button";
-import Table from "../atoms/Table";
+import Table, { Operations } from "../atoms/Table";
 import { DailyRunStatus } from "../../db/dailyRunsMeta";
 import Ticker from "../atoms/Ticker";
 import NavButton from "../atoms/buttons/NavButton";
 import { handleBuyOrder } from "../../lib/brokerHandler";
-import { useState } from "react";
+import { memo } from "react";
+import { useModal } from "use-modal-hook";
+import styled from "styled-components";
+import BreakoutModal from "../molecules/BreakoutModal";
 import IndicateLoadingButton from "../molecules/IndicateLoadingButton";
 
 export type PartialBreakoutDataType = {
@@ -21,10 +23,27 @@ const nonCancellableStatus = [DailyRunStatus.COMPLETED] as const;
 const { publicRuntimeConfig } = getNextJSConfig();
 const { IMAGE_SERVICE_BASE_URL = "[NOT_DEFINED_IN_ENV]" } = publicRuntimeConfig;
 
+const StyledImage = styled.img`
+  cursor: pointer;
+  :hover {
+    border: 1px solid ${({ theme }) => theme.palette.actionHover.border};
+  }
+`;
 interface Props {
   data: PartialBreakoutDataType[];
 }
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  image: string;
+}
+
 const BreakoutsList = ({ data }: Props) => {
+  const MyModal = memo(({ isOpen, onClose, image }: ModalProps) => (
+    <BreakoutModal isOpen={isOpen} onClose={onClose} image={image} />
+  ));
+  const [showModal, hideModal] = useModal(MyModal, {});
+
   const renderTitle = () => {
     return <h2>Breakouts</h2>;
   };
@@ -46,12 +65,6 @@ const BreakoutsList = ({ data }: Props) => {
       render: (tickerRef: string) => <Ticker id={tickerRef} />,
     },
     {
-      title: "Relative Strength",
-      dataIndex: "relativeStrength",
-      key: "relativeStrength",
-      width: 200,
-    },
-    {
       title: "Breakout Value",
       dataIndex: "breakoutValue",
       key: "breakoutValue",
@@ -62,35 +75,40 @@ const BreakoutsList = ({ data }: Props) => {
       dataIndex: "image",
       key: "image",
       width: 50,
+      className: "image",
       render: (image: string) => (
-        <img src={`${IMAGE_SERVICE_BASE_URL as string}/${image}`} />
+        <StyledImage
+          onClick={() =>
+            showModal({ image: `${IMAGE_SERVICE_BASE_URL as string}/${image}` })
+          }
+          src={`${IMAGE_SERVICE_BASE_URL as string}/${image}`}
+        />
       ),
     },
     {
       title: "Operations",
       dataIndex: "",
       key: "operations",
-      render: (item: any) => {
-        return (
-          <>
-            <IndicateLoadingButton
-              onClick={async () => {
-                console.log(console.log("BUYING this breakout...:", item));
-                await handleBuyOrder(item.tickerRef, item.breakoutValue);
-              }}
-              label={"Place Order"}
-            />
-
-            <NavButton
-              href={`https://www.tradingview.com/symbols/${
-                item.tickerRef as string
-              }`}
-            >
-              TradeView
-            </NavButton>
-          </>
-        );
-      },
+      className: "operations",
+      render: (item: any) => (
+        <Operations>
+          <IndicateLoadingButton
+            onClick={async () => {
+              console.log(console.log("BUYING this breakout...:", item));
+              await handleBuyOrder(item.tickerRef, item.breakoutValue);
+            }}
+          >
+            Place Order
+          </IndicateLoadingButton>
+          <NavButton
+            href={`https://www.tradingview.com/symbols/${
+              item.tickerRef as string
+            }`}
+          >
+            TradeView
+          </NavButton>
+        </Operations>
+      ),
     },
   ];
 

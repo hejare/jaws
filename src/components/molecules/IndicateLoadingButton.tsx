@@ -1,9 +1,9 @@
 import { useState } from "react";
 import Button from "../atoms/buttons/Button";
 
-type Props = { onClick: () => Promise<void>; label: string };
+type Props = { onClick: () => Promise<void>; children: React.ReactNode };
 
-const IndicateLoadingButton = ({ onClick, label }: Props) => {
+const IndicateLoadingButton = ({ onClick, children, ...props }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
 
   return (
@@ -14,8 +14,9 @@ const IndicateLoadingButton = ({ onClick, label }: Props) => {
         await onClick();
         setIsLoading(false);
       }}
+      {...props}
     >
-      {label}
+      {children}
     </Button>
   );
 };

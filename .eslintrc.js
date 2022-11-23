@@ -133,6 +133,7 @@ module.exports = {
         "comma-spacing": "off",
         "lines-between-class-members": "off",
         "space-infix-ops": "off",
+        "react/display-name": "off",
 
         // TEMP: ENABLE THIS WHEN WE WANT TO GET BETTER TYPESCRIPT CODE:
         "@typescript-eslint/no-unsafe-assignment": "off",

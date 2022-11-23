@@ -9,8 +9,8 @@ const nonCancellableStatus = [DailyRunStatus.COMPLETED] as const;
 type DailyRunsListData = {
   runId: string;
   status: string;
-  initiated: string;
-  ended: string;
+  timeInitiated: string;
+  timeEnded: string;
   duration: number;
 };
 interface Props {
@@ -47,14 +47,14 @@ const DailyRunsList = ({ data }: Props) => {
     },
     {
       title: "Initiated at",
-      dataIndex: "initiated",
-      key: "initiated",
+      dataIndex: "timeInitiated",
+      key: "timeInitiated",
       width: 200,
     },
     {
       title: "Ended at",
-      dataIndex: "ended",
-      key: "ended",
+      dataIndex: "timeEnded",
+      key: "timeEnded",
       width: 200,
     },
     {

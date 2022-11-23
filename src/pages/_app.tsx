@@ -4,6 +4,7 @@ import "../styles/globals.css";
 import "../styles/fonts.css";
 import themes from "../styles/themes";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
+import { ModalProvider } from "use-modal-hook";
 
 const theme = themes.dark; // I know, we are now removing ability to switch theme without hard reload, but what the hell...
 
@@ -28,7 +29,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         />
       </Head>
       <ThemeProvider theme={theme}>
-        <Component {...pageProps} />
+        <ModalProvider>
+          <Component {...pageProps} />
+        </ModalProvider>
       </ThemeProvider>
       <GlobalStyle />
     </>
