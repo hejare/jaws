@@ -8,9 +8,9 @@ import { useModal } from "use-modal-hook";
 import styled from "styled-components";
 import BreakoutModal from "../molecules/BreakoutModal";
 import ImageModal from "../molecules/ImageModal";
-import IndicateLoadingButton from "../molecules/IndicateLoadingButton";
 import Rating from "../molecules/Rating";
 import * as backendService from "../../services/backendService";
+import Button from "../atoms/buttons/Button";
 
 export type PartialBreakoutDataType = {
   image: string;
@@ -147,7 +147,7 @@ const BreakoutsList = ({ data }: Props) => {
       className: "operations",
       render: (item: any) => (
         <Operations>
-          <IndicateLoadingButton
+          <Button
             onClick={() => {
               void showBreakoutModal({
                 image: `${IMAGE_SERVICE_BASE_URL as string}/${
@@ -161,7 +161,7 @@ const BreakoutsList = ({ data }: Props) => {
             }}
           >
             Prepare Order
-          </IndicateLoadingButton>
+          </Button>
           <NavButton
             href={`https://www.tradingview.com/symbols/${
               item.tickerRef as string

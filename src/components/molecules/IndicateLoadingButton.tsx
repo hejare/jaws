@@ -9,9 +9,9 @@ const IndicateLoadingButton = ({ onClick, children, ...props }: Props) => {
   return (
     <Button
       loading={isLoading}
-      onClick={async () => {
+      onClick={() => {
         setIsLoading(true);
-        await onClick();
+        // await onClick(); // TODO: This is not really how it should work.
         setIsLoading(false);
       }}
       {...props}
