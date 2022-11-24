@@ -23,3 +23,11 @@ export const setRating = async ({
 
   return convertResult(resp);
 };
+
+export const getAccountCashBalance = async () => {
+  const resp = await fetch("/api/broker/account/balance", {
+    headers: baseHeaders,
+  });
+  const { balance } = await convertResult(resp);
+  return balance;
+};

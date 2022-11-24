@@ -8,6 +8,7 @@ import {
   triggerDailyRun,
   checkDailyRunIdle,
 } from "../services/sharksterService";
+import { postSlackMessage } from "../services/slackService";
 
 interface Breakout {
   relative_strength: number;
@@ -65,7 +66,6 @@ const isConfigDifferent = (latestConfig: Config, config: Config) => {
   }, 0);
   return !!foundMissmatches;
 };
-
 export const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
   const { runId, runTime, config, breakouts } = dailyRunBody;
   console.log({ runId });
@@ -124,4 +124,5 @@ export const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
     return handleBreakout();
   });
   await Promise.all(promises);
+  await postSlackMessage(runId);
 };

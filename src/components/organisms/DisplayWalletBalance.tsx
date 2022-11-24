@@ -22,7 +22,13 @@ const DisplayWalletBalance = () => {
     void fetchData();
   }, []);
 
-  return <TextDisplay content={["Wallet balance", walletBalance]} />;
+  return (
+    <TextDisplay>
+      <>
+        <div>Wallet balance</div> <div>{walletBalance}</div>
+      </>
+    </TextDisplay>
+  );
 };
 
 export default DisplayWalletBalance;

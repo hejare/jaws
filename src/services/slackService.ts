@@ -1,10 +1,46 @@
-import fetch from "node-fetch";
-import { convertResult } from "../util";
+import fetch, { BodyInit, Response } from "node-fetch";
+import type { NextApiRequest, NextApiResponse } from "next";
 
-export const postSlackMessage = async () => {
-  const resp = await fetch(`/api/slack/slack`, {
-    method: "POST",
+type Data = {
+  data: Response;
+};
+
+const { SLACK_WEBHOOK_API_KEY = "[NOT_DEFINED_IN_ENV]" } = process.env;
+
+export const postSlackMessage = async (runId: string) => {
+  const [unformatedDate, unformatedTime] = runId.split("_");
+
+  // 131023 -> 13:10
+  const time = `${unformatedTime.substring(0, 2)}:${unformatedTime.substring(
+    2,
+    4,
+  )}`;
+
+  // 20221124 -> 2022-11-24
+  const date = `${unformatedDate.substring(0, 4)}-${unformatedDate.substring(
+    4,
+    6,
+  )}-${unformatedDate.substring(6, 8)}`;
+
+  const body: BodyInit = JSON.stringify({
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `Time to check out todays run! \n <https://jaws-sharkster.netlify.app/daily-runs/${unformatedDate}/${unformatedTime}|Daily run for ${date} at ${time}>`,
+        },
+      },
+    ],
   });
 
-  return convertResult(resp);
+  const resp = await fetch(
+    `https://hooks.slack.com/services/${SLACK_WEBHOOK_API_KEY}`,
+    {
+      method: "POST",
+      body,
+    },
+  );
+
+  return resp;
 };

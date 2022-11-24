@@ -12,6 +12,7 @@ import {
 import BreakoutsList, {
   PartialBreakoutDataType,
 } from "../../../components/organisms/BreakoutsList";
+import { handleLimitPrice } from "../../../util/handleLimitPrice";
 
 const PageContainer = styled.div`
   display: flex;
@@ -52,11 +53,12 @@ const DailyRun: NextPage = () => {
             _ref: breakoutRef,
             rating,
           }: BreakoutWithRatingDataType) => ({
+            breakoutRef,
             tickerRef,
             relativeStrength,
-            breakoutValue,
+            breakoutValue: handleLimitPrice(breakoutValue),
             configRef,
-            image: { image, breakoutRef, rating },
+            image,
             rating,
           }),
         );

@@ -20,17 +20,21 @@ const brokerApiBaseUrl = "https://broker-api.sandbox.alpaca.markets/v1";
 export const postOrder = async (
   ticker: string,
   orderType: string,
-  breakoutValue: string,
+  price: number,
+  quantity: number,
 ) => {
-  const qty = await handleCalculateQuantity(breakoutValue); // todo to be used, this is the qty to use
   const body: BodyInit = JSON.stringify({
     symbol: ticker,
-    qty: 1,
+    qty: quantity,
     side: orderType,
     time_in_force: "day",
     type: "limit",
-    limit_price: handleLimitPrice(breakoutValue),
+    limit_price: price,
   });
+
+  // TODO: REMOVE ME WHEN WE FEEL SAFE!!!!
+  console.log("Body to be sent to Alpaca:", body);
+  throw Error(`TEMPORARY EXITING POST ORDER TO ALPACA!!!`);
 
   try {
     const res = await fetch(

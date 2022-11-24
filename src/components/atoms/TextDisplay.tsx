@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 type Props = {
-  content: string[];
+  children: React.ReactNode;
 };
 
 const Container = styled.div`
@@ -9,14 +9,8 @@ const Container = styled.div`
   flex-direction: column;
 `;
 
-const TextDisplay = ({ content }: Props) => {
-  return (
-    <Container>
-      {content.map((item, i) => (
-        <span key={i}>{item}</span>
-      ))}
-    </Container>
-  );
+const TextDisplay = ({ children }: Props) => {
+  return <Container>{children}</Container>;
 };
 
 export default TextDisplay;

@@ -9,12 +9,18 @@ const GraphContainer = styled.div`
 `;
 
 const Graph = styled.div`
+  height: fit-content;
+  object-fit: cover;
+  background-size: cover;
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
 `;
 
+const StyledImg = styled.img`
+  height: fit-content;
+`;
 interface Props {
   isOpen: boolean;
   onClose: () => void;
@@ -37,7 +43,7 @@ export default function ImageModal({
     >
       <GraphContainer>
         <Graph>
-          <img src={image} />
+          <StyledImg src={image} />
         </Graph>
       </GraphContainer>
     </Modal>
