@@ -34,13 +34,8 @@ export const postSlackMessage = async (runId: string) => {
     ],
   });
 
-  const resp = await fetch(
-    `https://hooks.slack.com/services/${SLACK_WEBHOOK_API_KEY}`,
-    {
-      method: "POST",
-      body,
-    },
-  );
-
-  return resp;
+  await fetch(`https://hooks.slack.com/services/${SLACK_WEBHOOK_API_KEY}`, {
+    method: "POST",
+    body,
+  });
 };

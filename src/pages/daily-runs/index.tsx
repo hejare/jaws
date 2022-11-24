@@ -63,7 +63,9 @@ const DailyRuns: NextPage = () => {
     <PageContainer>
       <ButtonsContainer>
         <TriggerDailyRunButton />
-        <Button onClick={postSlackMessage}>Slack service test trigger</Button>
+        <Button onClick={() => void postSlackMessage("20221125_133700")}>
+          Slack service test trigger
+        </Button>
       </ButtonsContainer>
       {dataFetchStatus === STATUS.READY && <DailyRunsList data={data} />}
     </PageContainer>

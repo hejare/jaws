@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { storeDailyRun } from "../../../lib/dailyRunHandler";
-import { postSlackMessage } from "../../../services/slackService";
 
 export default async function handler(
   req: NextApiRequest,
