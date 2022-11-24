@@ -3,7 +3,6 @@ import styled from "styled-components";
 import Head from "next/head";
 import { getToday } from "../lib/helpers";
 import NavButton from "../components/atoms/buttons/NavButton";
-import TextDisplay from "../components/atoms/TextDisplay";
 import DisplayWalletBalance from "../components/organisms/DisplayWalletBalance";
 
 const PageContainer = styled.div`

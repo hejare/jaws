@@ -25,7 +25,7 @@ const DisplayWalletBalance = () => {
   return (
     <TextDisplay>
       <>
-        <div>Wallet balance</div> <div>{walletBalance}</div>
+        <div>Wallet balance</div> <div>${walletBalance}</div>
       </>
     </TextDisplay>
   );
