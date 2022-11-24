@@ -4,7 +4,7 @@ import RatingStar from "../atoms/RatingStar";
 
 interface Props {
   currentRating: number;
-  handleSetRating: (value: number) => void;
+  handleSetRating?: (value: number) => void;
 }
 
 const RatingContainer = styled.div`
@@ -15,6 +15,8 @@ const Rating = ({ currentRating, handleSetRating }: Props) => {
   const [hoverNumber, setHoverNumber] = useState(-1);
   const [rating, setRating] = useState(currentRating);
 
+  const disabled = !handleSetRating;
+
   const fiveStars = () => {
     const n = 5;
 
@@ -22,12 +24,14 @@ const Rating = ({ currentRating, handleSetRating }: Props) => {
       <RatingStar
         key={i}
         isFilled={hoverNumber === -1 && rating > i}
-        onHover={setHoverNumber}
+        onHover={(value) => !disabled && setHoverNumber(value)}
         starNumber={i}
-        isHovered={hoverNumber >= i}
+        isHovered={!disabled && hoverNumber >= i}
         onClick={() => {
-          setRating(i + 1);
-          handleSetRating(i + 1);
+          if (!disabled) {
+            setRating(i + 1);
+            handleSetRating(i + 1);
+          }
         }}
       />
     ));

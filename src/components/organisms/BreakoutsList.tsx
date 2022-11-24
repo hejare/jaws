@@ -9,6 +9,8 @@ import { useModal } from "use-modal-hook";
 import styled from "styled-components";
 import BreakoutModal from "../molecules/BreakoutModal";
 import IndicateLoadingButton from "../molecules/IndicateLoadingButton";
+import Rating from "../molecules/Rating";
+import { BreakoutWithRatingDataType } from "../../db/breakoutsEntity";
 
 export type PartialBreakoutDataType = {
   image: { image: string; breakoutRef: string };
@@ -16,6 +18,7 @@ export type PartialBreakoutDataType = {
   relativeStrength: number;
   breakoutValue: number;
   configRef: string;
+  rating?: number;
 };
 // const cancellableStatus = [DailyRunStatus.INITIATED] as const;
 const nonCancellableStatus = [DailyRunStatus.COMPLETED] as const;
@@ -95,6 +98,13 @@ const BreakoutsList = ({ data }: Props) => {
           src={`${IMAGE_SERVICE_BASE_URL as string}/${imageData.image}`}
         />
       ),
+    },
+    {
+      title: "Rating",
+      dataIndex: "rating",
+      key: "rating",
+      width: 100,
+      render: (rating: number) => <Rating currentRating={rating} />,
     },
     {
       title: "Operations",

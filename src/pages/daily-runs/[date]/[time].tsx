@@ -5,7 +5,10 @@ import { useEffect, useState } from "react";
 import fetch from "node-fetch";
 import { handleResult } from "../../../util";
 import { DailyRunDataType } from "../../../db/dailyRunsMeta";
-import { ExistingBreakoutDataType } from "../../../db/breakoutsEntity";
+import {
+  BreakoutWithRatingDataType,
+  ExistingBreakoutDataType,
+} from "../../../db/breakoutsEntity";
 import BreakoutsList, {
   PartialBreakoutDataType,
 } from "../../../components/organisms/BreakoutsList";
@@ -49,12 +52,14 @@ const DailyRun: NextPage = () => {
             breakoutValue,
             configRef,
             _ref: breakoutRef,
-          }: ExistingBreakoutDataType) => ({
+            rating,
+          }: BreakoutWithRatingDataType) => ({
             tickerRef,
             relativeStrength,
             breakoutValue,
             configRef,
             image: { image, breakoutRef },
+            rating,
           }),
         );
         newBreakoutsData = newBreakoutsData.sort((a, b) =>
