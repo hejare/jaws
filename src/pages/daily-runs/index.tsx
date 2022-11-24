@@ -1,7 +1,5 @@
 import styled from "styled-components";
 import type { NextPage } from "next";
-import { postSlackMessage } from "../../services/slackService";
-import Button from "../../components/atoms/buttons/Button";
 import { useEffect, useState } from "react";
 import fetch from "node-fetch";
 import { handleResult } from "../../util";
@@ -20,6 +18,7 @@ const ButtonsContainer = styled.div`
   gap: 5px;
 `;
 
+// eslint-disable-next-line no-unused-vars
 enum STATUS {
   LOADING,
   READY,
@@ -63,9 +62,6 @@ const DailyRuns: NextPage = () => {
     <PageContainer>
       <ButtonsContainer>
         <TriggerDailyRunButton />
-        <Button onClick={() => void postSlackMessage("20221125_133700")}>
-          Slack service test trigger
-        </Button>
       </ButtonsContainer>
       {dataFetchStatus === STATUS.READY && <DailyRunsList data={data} />}
     </PageContainer>
