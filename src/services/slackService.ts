@@ -1,9 +1,4 @@
-import fetch, { BodyInit, Response } from "node-fetch";
-import type { NextApiRequest, NextApiResponse } from "next";
-
-type Data = {
-  data: Response;
-};
+import fetch, { BodyInit } from "node-fetch";
 
 const { SLACK_WEBHOOK_API_KEY = "[NOT_DEFINED_IN_ENV]" } = process.env;
 
