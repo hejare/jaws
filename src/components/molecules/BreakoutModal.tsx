@@ -43,6 +43,7 @@ interface Props {
   onClose: () => void;
   image: string;
   enableOnClickOutside?: boolean;
+  rating: number;
 }
 
 interface ModalProps {
@@ -54,6 +55,7 @@ export default function BreakoutModal({
   onClose,
   image,
   breakoutRef,
+  rating,
 }: Props) {
   const [enableOnClickOutside, setEnableOnClickOutside] = useState(true);
 
@@ -95,7 +97,7 @@ export default function BreakoutModal({
         <p>Size:</p>
         <Button onClick={() => console.log("click")}>BUY $1</Button>
       </InfoContainer>
-      <Rating currentRating={3.5} handleSetRating={handleSetRating} />
+      <Rating currentRating={rating} handleSetRating={handleSetRating} />
       <GraphContainer>
         <Graph>
           <StyledImage

@@ -1,13 +1,14 @@
 import { useState } from "react";
 import styled from "styled-components";
 
-type Props = {
+interface Props {
   onHover: (starNumber: number) => void;
   isHovered: boolean;
   onClick: () => void;
   starNumber: number;
   isFilled: boolean;
-};
+  isInModal?: boolean;
+}
 
 const Container = styled.div`
   display: flex;
@@ -34,7 +35,6 @@ const Star = styled.div`
   position: absolute;
   top: 0px;
   left: 0px;
-  z-index: 2;
   mask-image: url("/static/FilledStar.svg");
   mask-size: 25px;
 `;
@@ -47,7 +47,6 @@ const StarBackground = styled.div`
   position: absolute;
   top: 0px;
   left: 0px;
-  z-index: 1;
   mask-image: url("/static/FilledStar.svg");
   mask-size: 25px;
 `;
@@ -65,10 +64,10 @@ const RatingStar = ({
       onMouseOver={() => onHover(starNumber)}
       onMouseOut={() => onHover(-1)}
     >
+      <StarBackground isHovered={isHovered} />
       <StarMask percentageFilled={isFilled ? 100 : 0}>
         <Star isHovered={isHovered} />
       </StarMask>
-      <StarBackground isHovered={isHovered} />
     </Container>
   );
 };

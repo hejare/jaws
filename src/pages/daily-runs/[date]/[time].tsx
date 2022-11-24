@@ -37,8 +37,6 @@ const DailyRun: NextPage = () => {
     [],
   );
 
-  // const runId = `${date as string}_${time as string}`;
-
   useEffect(() => {
     fetch(`/api/data/daily-runs/${date as string}/${time as string}`)
       .then(handleResult)
@@ -58,7 +56,7 @@ const DailyRun: NextPage = () => {
             relativeStrength,
             breakoutValue,
             configRef,
-            image: { image, breakoutRef },
+            image: { image, breakoutRef, rating },
             rating,
           }),
         );
