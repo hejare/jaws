@@ -28,11 +28,19 @@ export default async function handler(
         break;
       case "POST":
         const body = JSON.parse(req.body);
-        const ticker: string = body.ticker as string;
-        const orderType: OrderType = body.orderType as OrderType;
-        const breakoutValue: string = body.breakoutValue as string;
+        const {
+          ticker,
+          orderType,
+          price,
+          quantity,
+        }: {
+          ticker: string;
+          orderType: OrderType;
+          price: number;
+          quantity: number;
+        } = body;
 
-        await postOrder(ticker, orderType, breakoutValue)
+        await postOrder(ticker, orderType, price, quantity)
           .then(() => {
             responseData.status = "OK";
           })

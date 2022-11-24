@@ -49,6 +49,11 @@ const StarBackground = styled.div`
   left: 0px;
   mask-image: url("/static/FilledStar.svg");
   mask-size: 25px;
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: scale(1.05);
+  }
 `;
 
 const RatingStar = ({

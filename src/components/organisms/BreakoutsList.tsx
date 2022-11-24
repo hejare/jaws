@@ -3,16 +3,17 @@ import Table, { Operations } from "../atoms/Table";
 import { DailyRunStatus } from "../../db/dailyRunsMeta";
 import Ticker from "../atoms/Ticker";
 import NavButton from "../atoms/buttons/NavButton";
-import { handleBuyOrder } from "../../lib/brokerHandler";
 import { memo } from "react";
 import { useModal } from "use-modal-hook";
 import styled from "styled-components";
 import BreakoutModal from "../molecules/BreakoutModal";
+import ImageModal from "../molecules/ImageModal";
 import IndicateLoadingButton from "../molecules/IndicateLoadingButton";
 import Rating from "../molecules/Rating";
+import * as backendService from "../../services/backendService";
 
 export type PartialBreakoutDataType = {
-  image: { image: string; breakoutRef: string; rating?: number };
+  image: string;
   tickerRef: string;
   relativeStrength: number;
   breakoutValue: number;
@@ -40,21 +41,43 @@ interface ModalProps {
   onClose: () => void;
   image: string;
   rating: number;
+  breakoutValue: number;
+  symbol: string;
 }
 
 const BreakoutsList = ({ data }: Props) => {
-  const MyModal = memo(
-    ({ isOpen, onClose, image, breakoutRef, rating }: ModalProps) => (
+  const TheBreakoutModal = memo(
+    ({
+      isOpen,
+      onClose,
+      image,
+      breakoutRef,
+      rating,
+      breakoutValue,
+      symbol,
+    }: ModalProps) => (
       <BreakoutModal
         isOpen={isOpen}
         onClose={onClose}
         image={image}
         breakoutRef={breakoutRef}
         rating={rating}
+        breakoutValue={breakoutValue}
+        symbol={symbol}
       />
     ),
   );
-  const [showModal] = useModal(MyModal, {});
+  const [showBreakoutModal] = useModal(TheBreakoutModal, {});
+
+  const TheImageModal = memo(({ isOpen, onClose, image }: ModalProps) => (
+    <ImageModal
+      isOpen={isOpen}
+      onClose={onClose}
+      image={image}
+      enableOnClickOutside
+    />
+  ));
+  const [showImageModal] = useModal(TheImageModal, {});
 
   const renderTitle = () => {
     return <h2>Breakouts</h2>;
@@ -68,6 +91,12 @@ const BreakoutsList = ({ data }: Props) => {
     );
   };
 
+  const handleSetRating = (breakoutRef: string, value: number) => {
+    const userRef = "ludde@hejare.se"; // TODO
+    console.log({ breakoutRef, userRef, value });
+    void backendService.setRating({ breakoutRef, userRef, value });
+  };
+
   const columns = [
     {
       title: "Ticker",
@@ -77,10 +106,10 @@ const BreakoutsList = ({ data }: Props) => {
       render: (tickerRef: string) => <Ticker id={tickerRef} />,
     },
     {
-      title: "Breakout Value",
+      title: "Breakout",
       dataIndex: "breakoutValue",
       key: "breakoutValue",
-      width: 200,
+      width: 100,
     },
     {
       title: "Image",
@@ -88,29 +117,28 @@ const BreakoutsList = ({ data }: Props) => {
       key: "image",
       width: 50,
       className: "image",
-      render: (imageData: {
-        image: string;
-        breakoutRef: string;
-        rating: string;
-      }) => (
+      render: (image: string) => (
         <StyledImage
           onClick={() =>
-            showModal({
-              image: `${IMAGE_SERVICE_BASE_URL as string}/${imageData.image}`,
-              breakoutRef: imageData.breakoutRef,
-              rating: imageData.rating,
+            showImageModal({
+              image: `${IMAGE_SERVICE_BASE_URL as string}/${image}`,
             })
           }
-          src={`${IMAGE_SERVICE_BASE_URL as string}/${imageData.image}`}
+          src={`${IMAGE_SERVICE_BASE_URL as string}/${image}`}
         />
       ),
     },
     {
       title: "Rating",
-      dataIndex: "rating",
+      dataIndex: "",
       key: "rating",
       width: 100,
-      render: (rating: number) => <Rating currentRating={rating} />,
+      render: (item: any) => (
+        <Rating
+          currentRating={item.rating}
+          handleSetRating={(value) => handleSetRating(item.breakoutRef, value)}
+        />
+      ),
     },
     {
       title: "Operations",
@@ -120,12 +148,19 @@ const BreakoutsList = ({ data }: Props) => {
       render: (item: any) => (
         <Operations>
           <IndicateLoadingButton
-            onClick={async () => {
-              console.log(console.log("BUYING this breakout...:", item));
-              await handleBuyOrder(item.tickerRef, item.breakoutValue);
+            onClick={() => {
+              void showBreakoutModal({
+                image: `${IMAGE_SERVICE_BASE_URL as string}/${
+                  item.image as string
+                }`,
+                breakoutRef: item.breakoutRef,
+                rating: item.rating,
+                symbol: item.tickerRef,
+                breakoutValue: item.breakoutValue,
+              });
             }}
           >
-            Place Order
+            Prepare Order
           </IndicateLoadingButton>
           <NavButton
             href={`https://www.tradingview.com/symbols/${

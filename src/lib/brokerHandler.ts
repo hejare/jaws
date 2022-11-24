@@ -4,13 +4,15 @@ import { convertResult } from "../util";
 
 const handlePostOrder = async (
   ticker: string,
-  breakoutValue: number,
+  price: number,
   orderType: OrderType,
+  quantity: number,
 ) => {
   const body: BodyInit = JSON.stringify({
     ticker,
     orderType,
-    breakoutValue,
+    price,
+    quantity,
   });
 
   const resp = await fetch("/api/broker/orders/", {
@@ -22,11 +24,14 @@ const handlePostOrder = async (
   console.log(data);
 };
 
-export const handleBuyOrder = (ticker: string, breakoutValue: number) =>
-  handlePostOrder(ticker, breakoutValue, "buy");
+export const handleBuyOrder = (
+  ticker: string,
+  price: number,
+  quantity: number,
+) => handlePostOrder(ticker, price, "buy", quantity);
 
 export const handleSellOrder = (ticker: string) =>
-  handlePostOrder(ticker, 1, "sell"); // ?refactor handlepostorder to not need breakout value here
+  handlePostOrder(ticker, 1, "sell", 1); // ?refactor handlepostorder to not need breakout value here
 
 export const handleDeleteOrder = async (order_id: string) => {
   const resp = await fetch(`/api/broker/orders/${order_id}`, {

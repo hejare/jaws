@@ -1,25 +1,44 @@
-import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
-import IconButton from "@mui/material/IconButton";
-import styled from "styled-components";
+import React from "react";
+import styled, { css } from "styled-components";
+import Button from "./Button";
 
-type Props = {
-  handleClick: () => void;
-  children: ReactJSXElement;
-};
+export enum CIRCULAR_BUTTON_SIZE {
+  SMALL = "SMALL",
+  REGULAR = "REGULAR",
+}
 
-const Icon = styled.div`
-  width: 20px;
-  height: 20px;
+const CircularButtonContainer = styled(Button)`
+  border-radius: 50%;
+  display: inline-block;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  ${({
+    size,
+  }: {
+    size: CIRCULAR_BUTTON_SIZE.SMALL | CIRCULAR_BUTTON_SIZE.REGULAR;
+  }) =>
+    size === CIRCULAR_BUTTON_SIZE.SMALL
+      ? css`
+          height: 12px;
+          width: 12px;
+        `
+      : css`
+          height: 50px;
+          width: 50px;
+        `};
 `;
 
-const CircularButton = ({ handleClick, children }: Props) => {
+type Props = {
+  onClick: () => void;
+  children: React.ReactNode;
+  size: CIRCULAR_BUTTON_SIZE.SMALL | CIRCULAR_BUTTON_SIZE.REGULAR;
+};
+
+const CircularButton = ({ children, ...props }: Props) => {
   return (
-    <IconButton onClick={handleClick} aria-label="fingerprint">
-      <Icon>{children}</Icon>
-    </IconButton>
+    <CircularButtonContainer {...props}>{children}</CircularButtonContainer>
   );
 };
 

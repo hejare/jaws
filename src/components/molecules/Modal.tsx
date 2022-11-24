@@ -5,6 +5,7 @@ import { useLockedBody, useOnClickOutside } from "usehooks-ts";
 
 const ContentContainer = styled.div`
   display: flex;
+  height: 100%;
 `;
 
 const CancelButtonContainer = styled.div`
@@ -42,6 +43,11 @@ const ModalContent = styled.div`
 const CircularButton = styled(Button)`
   border-radius: 50%;
   display: inline-block;
+  height: 50px;
+  width: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 interface Props {

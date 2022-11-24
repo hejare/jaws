@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Button from "../atoms/buttons/Button";
 
-type Props = { onClick: () => Promise<void>; children: React.ReactNode };
+type Props = { onClick: () => void; children: React.ReactNode };
 
 const IndicateLoadingButton = ({ onClick, children, ...props }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
