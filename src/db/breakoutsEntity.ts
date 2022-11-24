@@ -1,5 +1,14 @@
 import { db } from "../services/firestoreService";
 
+export interface ExistingBreakoutDataType extends BreakoutDataType {
+  _ref: string;
+}
+
+export interface BreakoutWithRatingDataType extends BreakoutDataType {
+  _ref: string;
+  rating?: number;
+}
+
 export type BreakoutDataType = {
   dailyRunRef: string;
   configRef: string;

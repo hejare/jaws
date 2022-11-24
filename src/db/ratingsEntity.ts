@@ -16,6 +16,23 @@ export async function getRatings(breakoutRef: string) {
   return result;
 }
 
+export async function getRatingsForDailyRun(runId: string) {
+  const result: any = [];
+  const docs = await db
+    .collection("ratings")
+    .where("breakoutRef", ">=", runId)
+    .where("breakoutRef", "<", (parseInt(runId) + 1).toString())
+    .get();
+  docs.forEach((doc: any) => {
+    result.push({
+      ...doc.data(),
+      _ref: doc.ref.id,
+    });
+  });
+
+  return result;
+}
+
 export async function getRating(breakoutRef: string, userRef: string) {
   const query = db.collection("ratings");
   const results = await query

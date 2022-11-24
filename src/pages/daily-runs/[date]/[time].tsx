@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import fetch from "node-fetch";
 import { handleResult } from "../../../util";
 import { DailyRunDataType } from "../../../db/dailyRunsMeta";
-import { BreakoutDataType } from "../../../db/breakoutsEntity";
+import { ExistingBreakoutDataType } from "../../../db/breakoutsEntity";
 import BreakoutsList, {
   PartialBreakoutDataType,
 } from "../../../components/organisms/BreakoutsList";
@@ -23,10 +23,6 @@ enum STATUS {
 
 interface DailyRunFetchDataType extends DailyRunDataType {
   breakouts: ExistingBreakoutDataType[];
-}
-
-interface ExistingBreakoutDataType extends BreakoutDataType {
-  _ref: string;
 }
 
 const DailyRun: NextPage = () => {
