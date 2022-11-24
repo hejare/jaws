@@ -4,6 +4,8 @@ import Button from "../atoms/buttons/Button";
 import ImageModal from "./ImageModal";
 import Modal from "./Modal";
 import { useModal } from "use-modal-hook";
+import Rating from "./Rating";
+import * as backendService from "../../services/backendService";
 
 const InfoContainer = styled.div`
   width: 50%;
@@ -36,17 +38,25 @@ const StyledImage = styled.img`
 `;
 
 interface Props {
+  breakoutRef: string;
   isOpen: boolean;
   onClose: () => void;
   image: string;
   enableOnClickOutside?: boolean;
+  rating: number;
 }
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
-export default function BreakoutModal({ isOpen, onClose, image }: Props) {
+export default function BreakoutModal({
+  isOpen,
+  onClose,
+  image,
+  breakoutRef,
+  rating,
+}: Props) {
   const [enableOnClickOutside, setEnableOnClickOutside] = useState(true);
 
   const MyModal = memo(
@@ -63,6 +73,12 @@ export default function BreakoutModal({ isOpen, onClose, image }: Props) {
     ),
   );
   const [showModal, hideModal] = useModal(MyModal, {});
+
+  const handleSetRating = (value: number) => {
+    const userRef = "ludde@hejare.se"; // TODO
+    void backendService.setRating({ breakoutRef, userRef, value });
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -81,6 +97,7 @@ export default function BreakoutModal({ isOpen, onClose, image }: Props) {
         <p>Size:</p>
         <Button onClick={() => console.log("click")}>BUY $1</Button>
       </InfoContainer>
+      <Rating currentRating={rating} handleSetRating={handleSetRating} />
       <GraphContainer>
         <Graph>
           <StyledImage

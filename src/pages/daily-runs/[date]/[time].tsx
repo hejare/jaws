@@ -5,7 +5,10 @@ import { useEffect, useState } from "react";
 import fetch from "node-fetch";
 import { handleResult } from "../../../util";
 import { DailyRunDataType } from "../../../db/dailyRunsMeta";
-import { BreakoutDataType } from "../../../db/breakoutsEntity";
+import {
+  BreakoutWithRatingDataType,
+  ExistingBreakoutDataType,
+} from "../../../db/breakoutsEntity";
 import BreakoutsList, {
   PartialBreakoutDataType,
 } from "../../../components/organisms/BreakoutsList";
@@ -15,13 +18,14 @@ const PageContainer = styled.div`
   flex-direction: column;
 `;
 
+// eslint-disable-next-line no-unused-vars
 enum STATUS {
-  LOADING,
-  READY,
+  LOADING = "LOADING",
+  READY = "READY",
 }
 
 interface DailyRunFetchDataType extends DailyRunDataType {
-  breakouts: BreakoutDataType[];
+  breakouts: ExistingBreakoutDataType[];
 }
 
 const DailyRun: NextPage = () => {
@@ -32,8 +36,6 @@ const DailyRun: NextPage = () => {
   const [breakoutsData, setBreakoutsData] = useState<PartialBreakoutDataType[]>(
     [],
   );
-
-  // const runId = `${date as string}_${time as string}`;
 
   useEffect(() => {
     fetch(`/api/data/daily-runs/${date as string}/${time as string}`)
@@ -47,12 +49,15 @@ const DailyRun: NextPage = () => {
             relativeStrength,
             breakoutValue,
             configRef,
-          }: BreakoutDataType) => ({
+            _ref: breakoutRef,
+            rating,
+          }: BreakoutWithRatingDataType) => ({
             tickerRef,
             relativeStrength,
             breakoutValue,
             configRef,
-            image,
+            image: { image, breakoutRef, rating },
+            rating,
           }),
         );
         newBreakoutsData = newBreakoutsData.sort((a, b) =>
