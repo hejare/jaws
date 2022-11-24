@@ -5,7 +5,7 @@ import ImageModal from "./ImageModal";
 import Modal from "./Modal";
 import { useModal } from "use-modal-hook";
 import Rating from "./Rating";
-//import { Rating } from "@mui/material";
+import * as backendService from "../../services/backendService";
 
 const InfoContainer = styled.div`
   width: 50%;
@@ -71,6 +71,12 @@ export default function BreakoutModal({
     ),
   );
   const [showModal, hideModal] = useModal(MyModal, {});
+
+  const handleSetRating = (value: number) => {
+    const userRef = "ludde@hejare.se"; // TODO
+    void backendService.setRating({ breakoutRef, userRef, value });
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -89,11 +95,7 @@ export default function BreakoutModal({
         <p>Size:</p>
         <Button onClick={() => console.log("click")}>BUY $1</Button>
       </InfoContainer>
-      <Rating
-        breakoutRef={breakoutRef}
-        currentRating={3.5}
-        handleSetRating={() => console.log("handle this")}
-      />
+      <Rating currentRating={3.5} handleSetRating={handleSetRating} />
       <GraphContainer>
         <Graph>
           <StyledImage

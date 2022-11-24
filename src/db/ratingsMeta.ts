@@ -3,4 +3,5 @@ export type RatingDataType = {
   userRef: string;
   breakoutRef: string;
   timestamp?: string;
+  _ref?: string;
 };

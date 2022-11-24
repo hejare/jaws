@@ -11,7 +11,7 @@ import BreakoutModal from "../molecules/BreakoutModal";
 import IndicateLoadingButton from "../molecules/IndicateLoadingButton";
 
 export type PartialBreakoutDataType = {
-  imageData: { image: string; breakoutRef: string };
+  image: { image: string; breakoutRef: string };
   tickerRef: string;
   relativeStrength: number;
   breakoutValue: number;
@@ -50,7 +50,7 @@ const BreakoutsList = ({ data }: Props) => {
       />
     ),
   );
-  const [showModal, hideModal] = useModal(MyModal, {});
+  const [showModal] = useModal(MyModal, {});
 
   const renderTitle = () => {
     return <h2>Breakouts</h2>;

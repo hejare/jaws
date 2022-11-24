@@ -7,7 +7,6 @@ export type BreakoutDataType = {
   relativeStrength: number;
   breakoutValue: number;
   image: string;
-  _ref: string;
 };
 
 export async function getBreakout(refId: string) {
@@ -21,26 +20,6 @@ export async function getBreakout(refId: string) {
     _ref: doc.ref.id,
   };
 }
-
-// export async function getBreakoutBySymbolAndRunId(
-//   dailyRunRef: string,
-//   tickerRef: string,
-// ) {
-//   const query = db
-//     .collection("breakouts")
-//     .where("dailyRunRef", "==", dailyRunRef)
-//     .where("tickerRef", "==", tickerRef);
-//   const results = await query.get();
-
-//   if (results.size === 0) {
-//     return null;
-//   }
-
-//   const doc = results.docs[0];
-//   return {
-//     ...doc.data(),
-//   };
-// }
 
 export async function putBreakout(refId: string, data: BreakoutDataType) {
   return db.collection("breakouts").doc(refId).set(data);

@@ -1,22 +1,19 @@
 import { useState } from "react";
 import styled from "styled-components";
 import RatingStar from "../atoms/RatingStar";
-import { setUserRating } from "../../lib/ratingHandler";
 
 interface Props {
-  breakoutRef: string;
   currentRating: number;
-  handleSetRating: () => void;
+  handleSetRating: (value: number) => void;
 }
 
 const RatingContainer = styled.div`
   display: flex;
 `;
 
-const Rating = ({ breakoutRef, currentRating, handleSetRating }: Props) => {
-  const [newRating, setNewRating] = useState();
+const Rating = ({ currentRating, handleSetRating }: Props) => {
   const [hoverNumber, setHoverNumber] = useState(-1);
-  const [rating, setRating] = useState(0);
+  const [rating, setRating] = useState(currentRating);
 
   const fiveStars = () => {
     const n = 5;
@@ -30,7 +27,7 @@ const Rating = ({ breakoutRef, currentRating, handleSetRating }: Props) => {
         isHovered={hoverNumber >= i}
         onClick={() => {
           setRating(i + 1);
-          void setUserRating(breakoutRef, i + 1);
+          handleSetRating(i + 1);
         }}
       />
     ));

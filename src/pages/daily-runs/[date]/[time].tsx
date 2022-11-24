@@ -15,13 +15,18 @@ const PageContainer = styled.div`
   flex-direction: column;
 `;
 
+// eslint-disable-next-line no-unused-vars
 enum STATUS {
-  LOADING,
-  READY,
+  LOADING = "LOADING",
+  READY = "READY",
 }
 
 interface DailyRunFetchDataType extends DailyRunDataType {
-  breakouts: BreakoutDataType[];
+  breakouts: ExistingBreakoutDataType[];
+}
+
+interface ExistingBreakoutDataType extends BreakoutDataType {
+  _ref: string;
 }
 
 const DailyRun: NextPage = () => {
@@ -48,12 +53,12 @@ const DailyRun: NextPage = () => {
             breakoutValue,
             configRef,
             _ref: breakoutRef,
-          }: BreakoutDataType) => ({
+          }: ExistingBreakoutDataType) => ({
             tickerRef,
             relativeStrength,
             breakoutValue,
             configRef,
-            imageData: { image, breakoutRef },
+            image: { image, breakoutRef },
           }),
         );
         newBreakoutsData = newBreakoutsData.sort((a, b) =>

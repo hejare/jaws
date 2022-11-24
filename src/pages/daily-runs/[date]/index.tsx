@@ -12,6 +12,7 @@ const PageContainer = styled.div`
   flex-direction: column;
 `;
 
+// eslint-disable-next-line no-unused-vars
 enum STATUS {
   LOADING,
   READY,

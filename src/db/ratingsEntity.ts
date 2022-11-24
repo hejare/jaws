@@ -1,6 +1,21 @@
 import { db } from "../services/firestoreService";
 import { RatingDataType } from "./ratingsMeta";
 
+export async function getRatings(breakoutRef: string) {
+  const query = db.collection("ratings");
+  const docs = await query.where("breakoutRef", "==", breakoutRef).get();
+
+  const result: any = [];
+  docs.forEach((doc: any) => {
+    result.push({
+      ...doc.data(),
+      _ref: doc.ref.id,
+    });
+  });
+
+  return result;
+}
+
 export async function getRating(breakoutRef: string, userRef: string) {
   const query = db.collection("ratings");
   const results = await query
@@ -14,6 +29,7 @@ export async function getRating(breakoutRef: string, userRef: string) {
   const doc = results.docs[0];
   return {
     ...doc.data(),
+    _ref: doc.ref.id,
   } as RatingDataType;
 }
 
