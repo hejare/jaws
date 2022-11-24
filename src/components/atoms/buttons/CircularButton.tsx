@@ -17,7 +17,7 @@ const CircularButtonContainer = styled(Button)`
   ${({
     size,
   }: {
-    size: CIRCULAR_BUTTON_SIZE.SMALL | CIRCULAR_BUTTON_SIZE.REGULAR;
+    size?: CIRCULAR_BUTTON_SIZE.SMALL | CIRCULAR_BUTTON_SIZE.REGULAR;
   }) =>
     size === CIRCULAR_BUTTON_SIZE.SMALL
       ? css`
@@ -33,7 +33,7 @@ const CircularButtonContainer = styled(Button)`
 type Props = {
   onClick: () => void;
   children: React.ReactNode;
-  size: CIRCULAR_BUTTON_SIZE.SMALL | CIRCULAR_BUTTON_SIZE.REGULAR;
+  size?: CIRCULAR_BUTTON_SIZE.SMALL | CIRCULAR_BUTTON_SIZE.REGULAR;
 };
 
 const CircularButton = ({ children, ...props }: Props) => {
