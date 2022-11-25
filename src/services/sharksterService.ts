@@ -14,8 +14,10 @@ export const getSessions = async () => {
   return convertResult(resp);
 };
 
-export const triggerDailyRun = async () => {
-  const resp = await fetch(`${SERVICE_SHARKSTER_API_BASE_URL}/breakouts`);
+export const triggerDailyRun = async (runId: string) => {
+  const resp = await fetch(
+    `${SERVICE_SHARKSTER_API_BASE_URL}/breakouts?runId=${runId}`,
+  );
 
   return convertResult(resp);
 };
