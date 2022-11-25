@@ -38,6 +38,22 @@ export async function getErrorsByDate(date: string) {
   return result;
 }
 
+export async function getSpecificErrors(runIds: string[]) {
+  const result: ErrorDataParsedType[] = [];
+  const docs = await db.collection("errors").where("runId", "in", runIds).get();
+  docs.forEach((doc: any) => {
+    const { message, runId, timestamp, miscJson } = doc.data();
+    result.push({
+      message,
+      timestamp,
+      runId,
+      misc: JSON.parse(miscJson),
+    });
+  });
+
+  return result;
+}
+
 export async function postError(runId: string, message: string, misc: any) {
   const data = {
     runId,
@@ -46,4 +62,5 @@ export async function postError(runId: string, message: string, misc: any) {
     miscJson: JSON.stringify(misc),
   };
   await db.collection("errors").doc(runId).set(data);
+  return data;
 }

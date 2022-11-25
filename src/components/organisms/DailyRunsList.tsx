@@ -4,7 +4,10 @@ import { DailyRunStatus } from "../../db/dailyRunsMeta";
 import NavButton from "../atoms/buttons/NavButton";
 
 // const cancellableStatus = [DailyRunStatus.INITIATED] as const;
-const nonCancellableStatus = [DailyRunStatus.COMPLETED] as const;
+const nonCancellableStatus = [
+  DailyRunStatus.COMPLETED,
+  DailyRunStatus.ERROR,
+] as const;
 
 type DailyRunsListData = {
   runId: string;
@@ -62,7 +65,9 @@ const DailyRunsList = ({ data }: Props) => {
       dataIndex: "duration",
       key: "duration",
       width: 50,
-      render: (duration: number) => <>{(duration / 1).toFixed(2)} min</>,
+      render: (duration: number) => (
+        <>{duration ? `${(duration / 1).toFixed(2)} min` : "n/a"}</>
+      ),
     },
     {
       title: "Status",

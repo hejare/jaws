@@ -1,10 +1,23 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getAllDailyRuns } from "../../../../db/dailyRunsEntity";
+import { DailyRunDataType } from "../../../../db/dailyRunsMeta";
+import { getSpecificErrors } from "../../../../db/errorsEntity";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const result = await getAllDailyRuns();
-  res.status(200).json(result);
+  const dailyRuns: DailyRunDataType[] = await getAllDailyRuns();
+  const runIds = dailyRuns.map(({ runId }: { runId: string }) => runId);
+  const errors = await getSpecificErrors(runIds);
+  errors.map(({ runId, message, misc, timestamp }) => {
+    dailyRuns.find((dailyRun) => {
+      if (dailyRun.runId == runId) {
+        dailyRun.error = { message, misc, timestamp };
+        return true;
+      }
+      return false;
+    });
+  });
+  res.status(200).json(dailyRuns);
 }

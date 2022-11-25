@@ -87,7 +87,6 @@ export const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
   // update DailyRun
   let dailyRun: null | DailyRunDataType = await getDailyRun(runId);
 
-  console.log("existing dailyRun", dailyRun);
   if (dailyRun === null) {
     dailyRun = await postDailyRun(runId);
   }
@@ -145,10 +144,23 @@ export const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
 export const storeDailyRunError = async (dailyRunBody: DailyRunErrorBody) => {
   const { runId, message, cell, symbols, rangeStart, rangeEnd } = dailyRunBody;
 
-  return postError(runId, message, {
+  const errorData = await postError(runId, message, {
     cell,
     symbols,
     rangeStart,
     rangeEnd,
+  });
+
+  // update DailyRun
+  const dailyRun: null | DailyRunDataType = await getDailyRun(runId);
+  await putDailyRun(runId, {
+    ...(dailyRun || {}),
+    runId,
+    status: DailyRunStatus.ERROR,
+    duration:
+      dailyRun && dailyRun.timeInitiated
+        ? errorData.timestamp - new Date(dailyRun.timeInitiated).getTime()
+        : 0,
+    timeEnded: Date.now(),
   });
 };
