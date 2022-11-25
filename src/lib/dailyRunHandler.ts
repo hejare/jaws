@@ -91,7 +91,7 @@ export const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
     timestamp: Date.now(),
   };
   const latestConfig = await getLatestConfig();
-  let configRef: string | undefined = latestConfig?._ref; // document ref
+  let configRef: string | undefined = latestConfig?._ref;
 
   if (!configRef || (latestConfig && !isConfigSame(latestConfig, newConfig))) {
     const { _ref } = await postConfig(newConfig);
