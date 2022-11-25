@@ -53,12 +53,12 @@ export const triggerDailyrun = async () => {
 };
 
 const isConfigDifferent = (latestConfig: Config, config: Config) => {
-  const configEntities = Object.keys(config);
   const latestConfigEntities = Object.keys(latestConfig);
+  const configEntities = Object.keys(config);
 
   // Note: since latest config (the ones existing in Frestore) always get their _ref prop extended to iteself, the difference between incoming config and existing config should be 1, if objects are identical.
   if (latestConfigEntities.length - configEntities.length !== 1) {
-    return false;
+    return true;
   }
 
   const foundMissmatches = configEntities.reduce((result, configName) => {
@@ -90,7 +90,9 @@ export const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
     timestamp: Date.now(),
   };
   const latestConfig = await getLatestConfig();
-  let configRef: string | undefined = latestConfig?._ref;
+  let configRef: string | undefined = latestConfig?._ref; // document ref
+
+  // om databasen är tom, eller om förra och nuvarande skiljer sig
   if (
     !configRef ||
     (latestConfig && isConfigDifferent(latestConfig, newConfig))
