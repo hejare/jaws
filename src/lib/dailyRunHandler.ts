@@ -93,7 +93,6 @@ export const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
   const latestConfig = await getLatestConfig();
   let configRef: string | undefined = latestConfig?._ref; // document ref
 
-  // om databasen är tom, eller om förra och nuvarande skiljer sig
   if (!configRef || (latestConfig && !isConfigSame(latestConfig, newConfig))) {
     const { _ref } = await postConfig(newConfig);
     configRef = _ref;
