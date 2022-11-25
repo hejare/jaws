@@ -2,6 +2,7 @@ import { BreakoutDataType, upsertBreakout } from "../db/breakoutsEntity";
 import { getLatestConfig, postConfig } from "../db/configsEntity";
 import { getDailyRun, postDailyRun, putDailyRun } from "../db/dailyRunsEntity";
 import { DailyRunDataType, DailyRunStatus } from "../db/dailyRunsMeta";
+import { postError } from "../db/errorsEntity";
 import { upsertTicker } from "../db/tickersEntity";
 import {
   getSessions,
@@ -9,20 +10,33 @@ import {
   checkDailyRunIdle,
 } from "../services/sharksterService";
 import { postSlackMessage } from "../services/slackService";
+import { getNewRunId } from "./helpers";
 
-interface Breakout {
+interface BreakoutNoImage {
   relative_strength: number;
   breakout_level: number;
-  image: string;
   symbol: string;
+}
+interface Breakout extends BreakoutNoImage {
+  image: string;
 }
 
 type Config = Record<string, string | number>;
+
 type DailyRunBody = {
   runId: string;
   runTime: number;
   breakouts: Breakout[];
   config: Config;
+};
+
+type DailyRunErrorBody = {
+  runId: string;
+  message: string;
+  cell: string;
+  symbols: string[];
+  rangeStart: number;
+  rangeEnd: number;
 };
 
 const isNotebookIdle = (
@@ -46,10 +60,10 @@ export const triggerDailyrun = async () => {
       ),
     );
   }
-  const resp = await triggerDailyRun();
-  const runId = resp.split("\n")[0].replace("run_id= ", "");
-  await postDailyRun(runId);
-  return Promise.resolve(runId);
+  const newRunId = getNewRunId();
+  await postDailyRun(newRunId);
+  void triggerDailyRun(newRunId);
+  return Promise.resolve(newRunId);
 };
 
 const isConfigDifferent = (latestConfig: Config, config: Config) => {
@@ -66,9 +80,10 @@ const isConfigDifferent = (latestConfig: Config, config: Config) => {
   }, 0);
   return !!foundMissmatches;
 };
+
 export const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
   const { runId, runTime, config, breakouts } = dailyRunBody;
-  console.log({ runId });
+
   // update DailyRun
   let dailyRun: null | DailyRunDataType = await getDailyRun(runId);
 
@@ -125,4 +140,15 @@ export const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
   });
   await Promise.all(promises);
   await postSlackMessage(runId);
+};
+
+export const storeDailyRunError = async (dailyRunBody: DailyRunErrorBody) => {
+  const { runId, message, cell, symbols, rangeStart, rangeEnd } = dailyRunBody;
+
+  return postError(runId, message, {
+    cell,
+    symbols,
+    rangeStart,
+    rangeEnd,
+  });
 };

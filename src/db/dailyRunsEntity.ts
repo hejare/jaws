@@ -35,8 +35,6 @@ export async function postDailyRun(runId: string) {
   const data = {
     runId,
     timeInitiated: Date.now(),
-    timeEnded: Date.now(),
-    duration: 1000,
     status: DailyRunStatus.INITIATED,
   };
   await db.collection("daily-runs").doc(runId).set(data);

@@ -19,3 +19,15 @@ export const getDateTime = (timestamp: string) => {
     nowHours,
   )}:${addZero(nowMinutes)}`;
 };
+
+export const getNewRunId = () => {
+  const now = new Date();
+  const nowDate = now.getDate();
+  const nowMonth = now.getMonth() + 1;
+  const nowHours = now.getHours();
+  const nowMinutes = now.getMinutes();
+  const nowSeconds = now.getSeconds();
+  return `${now.getFullYear()}${addZero(nowMonth)}${addZero(nowDate)}_${addZero(
+    nowHours,
+  )}${addZero(nowMinutes)}${addZero(nowSeconds)}`;
+};
