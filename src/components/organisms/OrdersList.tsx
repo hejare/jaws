@@ -3,6 +3,7 @@ import { handleDeleteOrder, handleGetTrades } from "../../lib/brokerHandler";
 import { getDateTime } from "../../lib/helpers";
 import Button from "../atoms/buttons/Button";
 import Table from "../atoms/Table";
+import PriceDisplay from "../molecules/PriceDisplay";
 
 export type OrderType = "buy" | "sell";
 
@@ -44,16 +45,23 @@ export interface Order {
   side: OrderType;
 }
 
-const OrdersList = () => {
-  const [orders, setOrders] = useState(Array<Order>);
+type OrdersListData = {
+  symbol: string;
+};
+interface Props {
+  data: OrdersListData[];
+}
 
-  useEffect(() => {
-    handleGetTrades()
-      .then((data) => setOrders(data))
-      .catch((e) => {
-        console.error(e);
-      });
-  }, []);
+const OrdersList = ({ data }: Props) => {
+  // const [orders, setOrders] = useState(Array<Order>);
+
+  // useEffect(() => {
+  //   handleGetTrades()
+  //     .then((data) => setOrders(data))
+  //     .catch((e) => {
+  //       console.error(e);
+  //     });
+  // }, []);
 
   const renderTitle = () => {
     return <h2>Order list</h2>;
@@ -71,22 +79,62 @@ const OrdersList = () => {
       width: 100,
     },
     {
+      title: "Type",
+      dataIndex: "side",
+      key: "side",
+      width: 100,
+    },
+    {
+      title: "Quantity",
+      dataIndex: "",
+      key: "qty",
+      width: 100,
+      render: ({ notional, qty }: { notional?: string; qty: string }) =>
+        notional ? notional : qty,
+    },
+    {
+      title: "Price",
+      dataIndex: "filled_avg_price",
+      key: "price",
+      width: 200,
+      render: (price: string) => <PriceDisplay value={parseFloat(price)} />,
+    },
+    {
+      title: "Value",
+      dataIndex: "",
+      key: "value",
+      width: 200,
+      render: ({
+        price,
+        notional,
+        qty,
+      }: {
+        price: string;
+        notional?: string;
+        qty: string;
+      }) => {
+        // TODO: BigInt here?
+        console.log(parseFloat(price) * parseFloat(notional ? notional : qty));
+        return (
+          <PriceDisplay
+            value={parseFloat(price) * parseFloat(notional ? notional : qty)}
+          />
+        );
+      },
+    },
+    {
       title: "Created at",
-      dataIndex: "created",
+      dataIndex: "created_at",
       key: "created",
       width: 200,
+      render: (createAt: string) => getDateTime(createAt),
     },
     {
       title: "Filled at",
-      dataIndex: "filled",
+      dataIndex: "filled_at",
       key: "filled",
       width: 200,
-    },
-    {
-      title: "Notional",
-      dataIndex: "notional",
-      key: "notional",
-      width: 50,
+      render: (filledAt: string) => getDateTime(filledAt),
     },
     {
       title: "Status",
@@ -113,20 +161,20 @@ const OrdersList = () => {
     },
   ];
 
-  const data = orders.map((order: any) => {
-    return {
-      symbol: order.symbol,
-      created: getDateTime(order.created_at),
-      filled: order.filled_at
-        ? getDateTime(order.filled_at)
-        : nonCancellableOrderStatus.includes(order.status)
-        ? "n/a"
-        : "not yet",
-      notional: order.notional,
-      status: order.status,
-      orderId: order.id,
-    };
-  });
+  // const data = orders.map((order: any) => {
+  //   return {
+  //     symbol: order.symbol,
+  //     created: getDateTime(order.created_at),
+  //     filled: order.filled_at
+  //       ? getDateTime(order.filled_at)
+  //       : nonCancellableOrderStatus.includes(order.status)
+  //       ? "n/a"
+  //       : "not yet",
+  //     notional: order.notional,
+  //     status: order.status,
+  //     orderId: order.id,
+  //   };
+  // });
 
   return (
     <Table

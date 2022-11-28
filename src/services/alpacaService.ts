@@ -79,8 +79,7 @@ export const deleteOrder = async (orderId: string) => {
     );
     return await handleResult(res);
   } catch (e) {
-    console.log(e);
-    throw Error(`Unable to delete order`);
+    throw Error(`Unable to delete order - ${e as string}`);
   }
 };
 

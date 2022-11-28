@@ -1,19 +1,15 @@
 import { INDICATOR } from "../../lib/priceHandler";
 import Table, { Operations } from "../atoms/Table";
-import PriceDisplay, {
-  PRICE_DISPLAY_VARIANTS,
-} from "../molecules/PriceDisplay";
+import PriceDisplay from "../molecules/PriceDisplay";
 import PercentageDisplay from "../molecules/PercentageDisplay";
 import TradeViewButton from "../atoms/buttons/TradeViewButton";
-import QuantityDisplay, {
-  QUANTITY_DISPLAY_VARIANTS,
-} from "../molecules/QuantityDisplay";
+import QuantityDisplay from "../molecules/QuantityDisplay";
 
-type AssetssListData = {
+type AssetsListData = {
   symbol: string;
 };
 interface Props {
-  data: AssetssListData[];
+  data: AssetsListData[];
 }
 const AssetssList = ({ data }: Props) => {
   const renderTitle = () => {
