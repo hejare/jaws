@@ -38,9 +38,9 @@ const DailyRunsDate: NextPage = () => {
           }: DailyRunDataType) => ({
             runId,
             status,
-            timeInitiated: new Date(timeInitiated)
-              .toUTCString()
-              .replace(" GMT", ""),
+            timeInitiated: timeInitiated
+              ? new Date(timeInitiated).toUTCString().replace(" GMT", "")
+              : "n/a",
             timeEnded: new Date(timeEnded).toUTCString().replace(" GMT", ""),
             duration,
           }),
