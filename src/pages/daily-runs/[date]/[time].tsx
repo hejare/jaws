@@ -85,18 +85,18 @@ const DailyRun: NextPage = () => {
       .catch(console.error);
   }, [date, time]);
 
-  const isDateToday = (date: string) => {
-    const currentDate = new Date().setHours(0, 0, 0);
-    const compareDate = new Date(
-      `${date.substring(0, 4)}-${date.substring(4, 6)}-${date.substring(6, 8)}`,
-    ).setHours(0, 0, 0);
+  // const isDateToday = (date: string) => {
+  //   const currentDate = new Date().setHours(0, 0, 0);
+  //   const compareDate = new Date(
+  //     `${date.substring(0, 4)}-${date.substring(4, 6)}-${date.substring(6, 8)}`,
+  //   ).setHours(0, 0, 0);
 
-    if (currentDate !== compareDate) {
-      return false;
-    }
+  //   if (currentDate !== compareDate) {
+  //     return false;
+  //   }
 
-    return true;
-  };
+  //   return true;
+  // };
 
   return (
     <PageContainer>
