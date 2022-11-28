@@ -1,0 +1,5 @@
+export enum INDICATOR {
+  POSITIVE = "POSITIVE",
+  NEUTRAL = "NEUTRAL",
+  NEGATIVE = "NEGATIVE",
+}

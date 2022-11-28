@@ -98,7 +98,7 @@ export default function BreakoutModal({
       />
     ),
   );
-  const [showModal, hideModal] = useModal(MyModal, {});
+  const [showModal] = useModal(MyModal, {});
 
   const handleSetRating = (value: number) => {
     const userRef = "ludde@hejare.se"; // TODO

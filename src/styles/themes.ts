@@ -18,6 +18,7 @@ const colors = {
   orange: "#E28C47",
   brown: "rgb(165, 42, 42)",
   red: "#f87260",
+  lightRed: "#f8a290",
 };
 
 const typography = {
@@ -94,6 +95,11 @@ const dark = {
       border: colors.white,
     },
 
+    indicator: {
+      positive: colors.lightGreen,
+      neutral: colors.lightGrey,
+      negative: colors.lightRed,
+    },
     ...colors,
   },
 };

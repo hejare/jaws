@@ -100,3 +100,16 @@ export const getAccountCashBalance = async () => {
   const result = await convertResult(res);
   return result.cash;
 };
+
+export const getAccountAssets = async () => {
+  // NOTE: "Assets" as we think of it, is actually "positions" in Alpacas terminology
+  const res = await fetch(
+    `${brokerApiBaseUrl}/trading/accounts/${accountId}/positions`,
+    {
+      headers: {
+        Authorization: `Basic ${base64EncodedKeys}`,
+      },
+    },
+  );
+  return convertResult(res);
+};
