@@ -14,6 +14,8 @@ import BreakoutsList, {
 } from "../../../components/organisms/BreakoutsList";
 import { handleLimitPrice } from "../../../util/handleLimitPrice";
 import { ErrorDataParsedType } from "../../../db/errorsMeta";
+import { isDateASameDayAsDateB } from "../../../util/handleCompareDates";
+import { formatDateString } from "../../../util/handleFormatDateString";
 
 const PageContainer = styled.div`
   display: flex;
@@ -40,6 +42,7 @@ interface DailyRunFetchDataType extends DailyRunDataType {
 const DailyRun: NextPage = () => {
   const router = useRouter();
   const { date, time } = router.query;
+  const dateString = `${date as string}`;
   const [dataFetchStatus, setDataFetchStatus] = useState(STATUS.LOADING);
   const [dailyRun, setDailyRun] = useState<DailyRunDataType>();
   const [breakoutsData, setBreakoutsData] = useState<PartialBreakoutDataType[]>(
@@ -120,7 +123,15 @@ const DailyRun: NextPage = () => {
           </div>
         </div>
       )}
-      <BreakoutsList data={breakoutsData} />
+      <BreakoutsList
+        data={breakoutsData}
+        disableBuy={
+          !isDateASameDayAsDateB(
+            new Date(),
+            new Date(formatDateString(dateString)),
+          )
+        }
+      />
     </PageContainer>
   );
 };

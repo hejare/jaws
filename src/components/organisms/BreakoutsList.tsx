@@ -34,6 +34,7 @@ const StyledImage = styled.img`
 `;
 interface Props {
   data: PartialBreakoutDataType[];
+  disableBuy?: boolean;
 }
 interface ModalProps {
   breakoutRef: string;
@@ -45,7 +46,7 @@ interface ModalProps {
   symbol: string;
 }
 
-const BreakoutsList = ({ data }: Props) => {
+const BreakoutsList = ({ data, disableBuy }: Props) => {
   const TheBreakoutModal = memo(
     ({
       isOpen,
@@ -147,21 +148,23 @@ const BreakoutsList = ({ data }: Props) => {
       className: "operations",
       render: (item: any) => (
         <Operations>
-          <Button
-            onClick={() => {
-              void showBreakoutModal({
-                image: `${IMAGE_SERVICE_BASE_URL as string}/${
-                  item.image as string
-                }`,
-                breakoutRef: item.breakoutRef,
-                rating: item.rating,
-                symbol: item.tickerRef,
-                breakoutValue: item.breakoutValue,
-              });
-            }}
-          >
-            Prepare Order
-          </Button>
+          {disableBuy && (
+            <Button
+              onClick={() => {
+                void showBreakoutModal({
+                  image: `${IMAGE_SERVICE_BASE_URL as string}/${
+                    item.image as string
+                  }`,
+                  breakoutRef: item.breakoutRef,
+                  rating: item.rating,
+                  symbol: item.tickerRef,
+                  breakoutValue: item.breakoutValue,
+                });
+              }}
+            >
+              Prepare Order
+            </Button>
+          )}
           <NavButton
             href={`https://www.tradingview.com/symbols/${
               item.tickerRef as string
