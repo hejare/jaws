@@ -148,7 +148,7 @@ const BreakoutsList = ({ data, disableBuy }: Props) => {
       className: "operations",
       render: (item: any) => (
         <Operations>
-          {disableBuy && (
+          {!disableBuy && (
             <Button
               onClick={() => {
                 void showBreakoutModal({
