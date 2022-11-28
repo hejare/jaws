@@ -14,6 +14,8 @@ import BreakoutsList, {
 } from "../../../components/organisms/BreakoutsList";
 import { handleLimitPrice } from "../../../util/handleLimitPrice";
 import { ErrorDataParsedType } from "../../../db/errorsMeta";
+import { isDateASameDayAsDateB } from "../../../util/handleCompareDates";
+import { formatDateString } from "../../../util/handleFormatDateString";
 
 const PageContainer = styled.div`
   display: flex;
@@ -83,18 +85,18 @@ const DailyRun: NextPage = () => {
       .catch(console.error);
   }, [date, time]);
 
-  const isDateToday = (date: string) => {
-    const currentDate = new Date().setHours(0, 0, 0);
-    const compareDate = new Date(
-      `${date.substring(0, 4)}-${date.substring(4, 6)}-${date.substring(6, 8)}`,
-    ).setHours(0, 0, 0);
+  // const isDateToday = (date: string) => {
+  //   const currentDate = new Date().setHours(0, 0, 0);
+  //   const compareDate = new Date(
+  //     `${date.substring(0, 4)}-${date.substring(4, 6)}-${date.substring(6, 8)}`,
+  //   ).setHours(0, 0, 0);
 
-    if (currentDate !== compareDate) {
-      return false;
-    }
+  //   if (currentDate !== compareDate) {
+  //     return false;
+  //   }
 
-    return true;
-  };
+  //   return true;
+  // };
 
   return (
     <PageContainer>
@@ -136,7 +138,12 @@ const DailyRun: NextPage = () => {
       )}
       <BreakoutsList
         data={breakoutsData}
-        disableBuy={!isDateToday(dateString)}
+        disableBuy={
+          !isDateASameDayAsDateB(
+            new Date(),
+            new Date(formatDateString(dateString)),
+          )
+        }
       />
     </PageContainer>
   );
