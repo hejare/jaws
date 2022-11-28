@@ -25,16 +25,12 @@ export const postOrder = async (
 ) => {
   const body: BodyInit = JSON.stringify({
     symbol: ticker,
-    qty: quantity,
+    qty: 1, // TODO: UNDO OVERRIDING OF QUANTITY: quantity,
     side: orderType,
     time_in_force: "day",
     type: "limit",
     limit_price: price,
   });
-
-  // TODO: REMOVE ME WHEN WE FEEL SAFE!!!!
-  console.log("Body to be sent to Alpaca:", body);
-  throw Error(`TEMPORARY EXITING POST ORDER TO ALPACA!!!`);
 
   try {
     const res = await fetch(
