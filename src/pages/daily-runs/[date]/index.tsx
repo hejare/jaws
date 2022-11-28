@@ -41,7 +41,9 @@ const DailyRunsDate: NextPage = () => {
             timeInitiated: timeInitiated
               ? new Date(timeInitiated).toUTCString().replace(" GMT", "")
               : "n/a",
-            timeEnded: new Date(timeEnded).toUTCString().replace(" GMT", ""),
+            timeEnded: timeEnded
+              ? new Date(timeEnded).toUTCString().replace(" GMT", "")
+              : "(ongoing)",
             duration,
           }),
         );
