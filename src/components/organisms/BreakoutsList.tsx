@@ -34,6 +34,7 @@ const StyledImage = styled.img`
 `;
 interface Props {
   data: PartialBreakoutDataType[];
+  disableBuy?: boolean;
 }
 interface ModalProps {
   breakoutRef: string;
@@ -45,7 +46,7 @@ interface ModalProps {
   symbol: string;
 }
 
-const BreakoutsList = ({ data }: Props) => {
+const BreakoutsList = ({ data, disableBuy }: Props) => {
   const TheBreakoutModal = memo(
     ({
       isOpen,
@@ -148,6 +149,7 @@ const BreakoutsList = ({ data }: Props) => {
       render: (item: any) => (
         <Operations>
           <Button
+            disabled={disableBuy}
             onClick={() => {
               void showBreakoutModal({
                 image: `${IMAGE_SERVICE_BASE_URL as string}/${

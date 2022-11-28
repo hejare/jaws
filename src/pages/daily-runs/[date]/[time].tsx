@@ -40,6 +40,7 @@ interface DailyRunFetchDataType extends DailyRunDataType {
 const DailyRun: NextPage = () => {
   const router = useRouter();
   const { date, time } = router.query;
+  const dateString = `${date as string}`;
   const [dataFetchStatus, setDataFetchStatus] = useState(STATUS.LOADING);
   const [dailyRun, setDailyRun] = useState<DailyRunDataType>();
   const [breakoutsData, setBreakoutsData] = useState<PartialBreakoutDataType[]>(
@@ -82,6 +83,19 @@ const DailyRun: NextPage = () => {
       .catch(console.error);
   }, [date, time]);
 
+  const isDateToday = (date: string) => {
+    const currentDate = new Date().setHours(0, 0, 0);
+    const compareDate = new Date(
+      `${date.substring(0, 4)}-${date.substring(4, 6)}-${date.substring(6, 8)}`,
+    ).setHours(0, 0, 0);
+
+    if (currentDate !== compareDate) {
+      return false;
+    }
+
+    return true;
+  };
+
   return (
     <PageContainer>
       <h1>DAILY RUN</h1>
@@ -120,7 +134,10 @@ const DailyRun: NextPage = () => {
           </div>
         </div>
       )}
-      <BreakoutsList data={breakoutsData} />
+      <BreakoutsList
+        data={breakoutsData}
+        disableBuy={!isDateToday(dateString)}
+      />
     </PageContainer>
   );
 };
