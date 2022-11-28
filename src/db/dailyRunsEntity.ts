@@ -59,3 +59,24 @@ export async function getAllDailyRuns() {
 
   return result;
 }
+
+export async function getLatestDailyRun() {
+  const docs = await db
+    .collection("daily-runs")
+    .orderBy("timeInitiated", "desc")
+    .limit(1)
+    .get();
+
+  const result: DailyRunDataType[] = [];
+  docs.forEach((doc: any) => {
+    result.push({
+      ...doc.data(),
+      _ref: doc.ref.id,
+    });
+  });
+
+  if (result.length === 0) {
+    return null;
+  }
+  return result[0];
+}

@@ -4,6 +4,7 @@ import { handleResult } from "../../util";
 import fetch from "node-fetch";
 import Button from "../atoms/buttons/Button";
 import styled from "styled-components";
+import { DailyRunStatus } from "../../db/dailyRunsMeta";
 
 export const ONE_MINUTE_IN_MS = 60000;
 
@@ -18,14 +19,15 @@ const TriggerDailyRunButton = () => {
 
   useInterval(() => {
     setInterval(ONE_MINUTE_IN_MS);
-    fetch("/api/sharkster/check-breakouts-state")
+    fetch("/api/data/daily-runs/status")
       .then(handleResult)
-      .then(({ isIdle, message = null }) => {
-        setButtonEnabled(isIdle);
-        setButtonNotice(message);
+      .then(({ status, error = null }) => {
+        setButtonEnabled(status !== DailyRunStatus.INITIATED);
+        setButtonNotice(error?.message);
       })
       .catch((e) => {
         setButtonEnabled(false);
+        setButtonNotice(e.message);
       });
   }, interval);
 

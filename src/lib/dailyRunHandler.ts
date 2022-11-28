@@ -4,11 +4,7 @@ import { getDailyRun, postDailyRun, putDailyRun } from "../db/dailyRunsEntity";
 import { DailyRunDataType, DailyRunStatus } from "../db/dailyRunsMeta";
 import { postError } from "../db/errorsEntity";
 import { upsertTicker } from "../db/tickersEntity";
-import {
-  getSessions,
-  triggerDailyRun,
-  checkDailyRunIdle,
-} from "../services/sharksterService";
+import { getSessions, triggerDailyRun } from "../services/sharksterService";
 import { postSlackMessage } from "../services/slackService";
 import { getNewRunId } from "./helpers";
 
@@ -51,9 +47,8 @@ const isNotebookIdle = (
 export const triggerDailyrun = async () => {
   const sessions = await getSessions();
   const isIdle = isNotebookIdle(sessions);
-  const { isIdle: isIdle2 } = await checkDailyRunIdle();
 
-  if (!isIdle || !isIdle2) {
+  if (!isIdle) {
     return Promise.reject(
       new Error(
         "Process is not idle. Could be due to previous execution is still ongoing.",
