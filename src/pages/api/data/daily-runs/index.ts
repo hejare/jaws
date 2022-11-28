@@ -9,6 +9,7 @@ export default async function handler(
 ) {
   const dailyRuns: DailyRunDataType[] = await getAllDailyRuns();
   const runIds = dailyRuns.map(({ runId }: { runId: string }) => runId);
+
   const errors = await getSpecificErrors(runIds);
   errors.map(({ runId, message, misc, timestamp }) => {
     dailyRuns.find((dailyRun) => {

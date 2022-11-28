@@ -13,6 +13,7 @@ import BreakoutsList, {
   PartialBreakoutDataType,
 } from "../../../components/organisms/BreakoutsList";
 import { handleLimitPrice } from "../../../util/handleLimitPrice";
+import { ErrorDataParsedType } from "../../../db/errorsMeta";
 
 const PageContainer = styled.div`
   display: flex;
@@ -25,8 +26,15 @@ enum STATUS {
   READY = "READY",
 }
 
+const ErrorContainer = styled.div`
+  border: 1px solid red;
+  margin: 4px;
+  padding: 4px;
+`;
+
 interface DailyRunFetchDataType extends DailyRunDataType {
-  breakouts: ExistingBreakoutDataType[];
+  breakouts?: ExistingBreakoutDataType[];
+  error?: ErrorDataParsedType;
 }
 
 const DailyRun: NextPage = () => {
@@ -43,29 +51,32 @@ const DailyRun: NextPage = () => {
       .then(handleResult)
       .then((result: DailyRunFetchDataType) => {
         setDailyRun(result);
-        let newBreakoutsData = result.breakouts.map(
-          ({
-            image,
-            tickerRef,
-            relativeStrength,
-            breakoutValue,
-            configRef,
-            _ref: breakoutRef,
-            rating,
-          }: BreakoutWithRatingDataType) => ({
-            breakoutRef,
-            tickerRef,
-            relativeStrength,
-            breakoutValue: handleLimitPrice(breakoutValue),
-            configRef,
-            image,
-            rating,
-          }),
-        );
-        newBreakoutsData = newBreakoutsData.sort((a, b) =>
-          b.tickerRef < a.tickerRef ? 1 : b.tickerRef > a.tickerRef ? -1 : 0,
-        );
-        setBreakoutsData(newBreakoutsData);
+
+        if (result.breakouts) {
+          let newBreakoutsData = result.breakouts.map(
+            ({
+              image,
+              tickerRef,
+              relativeStrength,
+              breakoutValue,
+              configRef,
+              _ref: breakoutRef,
+              rating,
+            }: BreakoutWithRatingDataType) => ({
+              breakoutRef,
+              tickerRef,
+              relativeStrength,
+              breakoutValue: handleLimitPrice(breakoutValue),
+              configRef,
+              image,
+              rating,
+            }),
+          );
+          newBreakoutsData = newBreakoutsData.sort((a, b) =>
+            b.tickerRef < a.tickerRef ? 1 : b.tickerRef > a.tickerRef ? -1 : 0,
+          );
+          setBreakoutsData(newBreakoutsData);
+        }
         setDataFetchStatus(STATUS.READY);
       })
       .catch(console.error);
@@ -85,13 +96,24 @@ const DailyRun: NextPage = () => {
           <div>
             <span>Status: {dailyRun.status}</span>
           </div>
+          {dailyRun.error && (
+            <ErrorContainer>
+              <div>Message: {dailyRun.error.message}</div>
+              <div>cell: {dailyRun.error.misc.cell}</div>
+              <div>rangeStart: {dailyRun.error.misc.rangeStart}</div>
+              <div>rangeEnd: {dailyRun.error.misc.rangeEnd}</div>
+              <div>symbols: {JSON.stringify(dailyRun.error.misc.symbols)}</div>
+            </ErrorContainer>
+          )}
           <div>
-            <span>
-              Initiated:{" "}
-              {new Date(dailyRun.timeInitiated)
-                .toUTCString()
-                .replace(" GMT", "")}
-            </span>
+            {dailyRun.timeInitiated && (
+              <span>
+                Initiated:{" "}
+                {new Date(dailyRun.timeInitiated)
+                  .toUTCString()
+                  .replace(" GMT", "")}
+              </span>
+            )}
             <span>
               Ended: {dailyRun.timeEnded} ({dailyRun.duration}s)
             </span>

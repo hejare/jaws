@@ -1,15 +1,15 @@
 import { db } from "../services/firestoreService";
-import { ErrorDataParsedType } from "./errorsMeta";
+import { ErrorDataDBType, ErrorDataParsedType } from "./errorsMeta";
 
-export async function getError(runId: string) {
-  const query = db.collection("error");
-  const results = await query.where("runId", "==", runId).get();
-  if (results.size === 0) {
+export async function getError(refId: string) {
+  const query = db.collection("errors");
+  const results = await query.doc(refId).get();
+
+  if (!results.data()) {
     return null;
   }
-
-  const doc = results.docs[0];
-  const { message, timestamp, miscJson } = doc.data();
+  const doc = results;
+  const { runId, message, timestamp, miscJson } = doc.data() as ErrorDataDBType;
   return {
     message,
     timestamp,
