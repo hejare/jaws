@@ -14,8 +14,8 @@ import BreakoutsList, {
 } from "../../../components/organisms/BreakoutsList";
 import { handleLimitPrice } from "../../../util/handleLimitPrice";
 import { ErrorDataParsedType } from "../../../db/errorsMeta";
-import { isDateASameDayAsDateB } from "../../../util/handleCompareDates";
 import { formatDateString } from "../../../util/handleFormatDateString";
+import { areDatesTheSame } from "../../../util/handleCompareDates";
 
 const PageContainer = styled.div`
   display: flex;
@@ -126,10 +126,7 @@ const DailyRun: NextPage = () => {
       <BreakoutsList
         data={breakoutsData}
         disableBuy={
-          !isDateASameDayAsDateB(
-            new Date(),
-            new Date(formatDateString(dateString)),
-          )
+          !areDatesTheSame(new Date(), new Date(formatDateString(dateString)))
         }
       />
     </PageContainer>
