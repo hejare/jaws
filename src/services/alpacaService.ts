@@ -66,6 +66,26 @@ export const getOrders = async () => {
   }
 };
 
+export const getOrderByTicker = async (ticker: string) => {
+  console.log("ticker! ", ticker);
+  try {
+    const res = await fetch(
+      `${brokerApiBaseUrl}/trading/accounts/${accountId}/orders?symbols=${ticker}&status=all`, // TODO how handle params?
+      {
+        headers: {
+          Authorization: `Basic ${base64EncodedKeys}`,
+        },
+      },
+    );
+    const result = await handleResult(res);
+    console.log(result);
+    return result;
+  } catch (e) {
+    console.log(e);
+    throw Error(`Unable to get order - ${e as string}`);
+  }
+};
+
 export const deleteOrder = async (orderId: string) => {
   try {
     const res = await fetch(
