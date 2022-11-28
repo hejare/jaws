@@ -3,6 +3,10 @@ import { OrderType } from "../../../../components/organisms/OrdersList";
 import { ResponseDataType } from "../../../../db/ResponseDataMeta";
 import { getOrders, postOrder } from "../../../../services/alpacaService";
 
+interface ExtendedResponseDataType extends ResponseDataType {
+  orders?: Record<string, any>;
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
@@ -10,16 +14,13 @@ export default async function handler(
   const { method } = req;
 
   try {
-    const responseData: ResponseDataType = { status: "INIT" };
-    console.log(responseData);
+    const responseData: ExtendedResponseDataType = { status: "INIT" };
     switch (method) {
       case "GET":
         await getOrders()
           .then((result) => {
             responseData.status = "OK";
-            responseData.meta = {
-              orders: result,
-            };
+            responseData.orders = result;
           })
           .catch((e) => {
             responseData.status = "NOK";

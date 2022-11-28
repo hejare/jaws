@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getWalletBalance } from "../../lib/brokerHandler";
+import { getAccountCashBalance } from "../../services/backendService";
 import TextDisplay from "../atoms/TextDisplay";
 
 const DisplayWalletBalance = () => {
@@ -12,7 +12,7 @@ const DisplayWalletBalance = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const result = await getWalletBalance();
+        const result = await getAccountCashBalance();
         handleSetBalance(result);
       } catch (e) {
         setWalletBalance("Could not get wallet balance");

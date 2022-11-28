@@ -1,9 +1,9 @@
 import styled from "styled-components";
 import type { NextPage } from "next";
-import OrdersList from "../components/organisms/OrdersList";
 import { useEffect, useState } from "react";
-import { handleResult } from "../util";
 import fetch from "node-fetch";
+import { handleResult } from "../util";
+import AssetsList from "../components/organisms/AssetsList";
 
 const PageContainer = styled.div`
   display: flex;
@@ -16,24 +16,25 @@ enum STATUS {
   READY,
 }
 
-const OrdersPage: NextPage = () => {
+const AssetsPage: NextPage = () => {
   const [dataFetchStatus, setDataFetchStatus] = useState(STATUS.LOADING);
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch("/api/broker/orders")
+    fetch("/api/broker/account/assets")
       .then(handleResult)
       .then((result) => {
-        setData(result.orders);
+        setData(result.assets);
         setDataFetchStatus(STATUS.READY);
       })
       .catch(console.error);
   }, []);
+
   return (
     <PageContainer>
-      {dataFetchStatus === STATUS.READY && <OrdersList data={data} />}
+      {dataFetchStatus === STATUS.READY && <AssetsList data={data} />}
     </PageContainer>
   );
 };
 
-export default OrdersPage;
+export default AssetsPage;

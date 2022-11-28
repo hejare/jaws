@@ -2,7 +2,6 @@ import getNextJSConfig from "next/config";
 import Table, { Operations } from "../atoms/Table";
 import { DailyRunStatus } from "../../db/dailyRunsMeta";
 import Ticker from "../atoms/Ticker";
-import NavButton from "../atoms/buttons/NavButton";
 import { memo } from "react";
 import { useModal } from "use-modal-hook";
 import styled from "styled-components";
@@ -11,6 +10,7 @@ import ImageModal from "../molecules/ImageModal";
 import Rating from "../molecules/Rating";
 import * as backendService from "../../services/backendService";
 import Button from "../atoms/buttons/Button";
+import TradeViewButton from "../atoms/buttons/TradeViewButton";
 
 export type PartialBreakoutDataType = {
   image: string;
@@ -165,13 +165,7 @@ const BreakoutsList = ({ data, disableBuy }: Props) => {
               Prepare Order
             </Button>
           )}
-          <NavButton
-            href={`https://www.tradingview.com/symbols/${
-              item.tickerRef as string
-            }`}
-          >
-            TradeView
-          </NavButton>
+          <TradeViewButton symbol={item.tickerRef}>TradeView</TradeViewButton>
         </Operations>
       ),
     },
