@@ -9,9 +9,7 @@ export default async function handler(
   try {
     switch (method) {
       case "POST":
-        console.log("reported error body:", body.json);
         const jsonBody = JSON.parse(body.json);
-        console.log("PARSED error body:", jsonBody);
         await storeDailyRunError(jsonBody);
 
         break;
