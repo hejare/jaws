@@ -75,12 +75,13 @@ const dark = {
       error: colors.red,
       hover: colors.lightGreen,
       active: colors.black,
-      disabled: colors.white,
+      disabled: `${colors.lightGrey}80`,
     },
 
     border: {
       primary: colors.mediumGrey,
       secondary: colors.pink,
+      disabled: `${colors.lightGrey}80`,
     },
 
     action: {

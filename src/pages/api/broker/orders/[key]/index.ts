@@ -1,13 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { ResponseDataType } from "../../../../db/ResponseDataMeta";
-import { deleteOrder } from "../../../../services/alpacaService";
+import { ResponseDataType } from "../../../../../db/ResponseDataMeta";
+import { deleteOrder } from "../../../../../services/alpacaService";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
   const { query, method } = req;
-  const { id } = query;
+  const { key: id } = query;
 
   try {
     const responseData: ResponseDataType = { status: "INIT" };

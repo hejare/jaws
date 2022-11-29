@@ -50,6 +50,8 @@ const LoadingDiv = styled.div`
 
 const DisabledDiv = styled.div`
   padding: 16px;
+  border-radius: 5px;
+  border: 1px solid ${({ theme }) => theme.palette.border.disabled};
   cursor: not-allowed;
   position: relative;
   align-items: center;

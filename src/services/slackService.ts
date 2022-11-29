@@ -1,4 +1,5 @@
 import fetch, { BodyInit } from "node-fetch";
+import { formatDateString } from "../util/handleFormatDateString";
 
 const { SLACK_WEBHOOK_API_KEY = "[NOT_DEFINED_IN_ENV]" } = process.env;
 
@@ -12,10 +13,7 @@ export const postSlackMessage = async (runId: string) => {
   )}`;
 
   // 20221124 -> 2022-11-24
-  const date = `${unformatedDate.substring(0, 4)}-${unformatedDate.substring(
-    4,
-    6,
-  )}-${unformatedDate.substring(6, 8)}`;
+  const date = formatDateString(unformatedDate);
 
   const body: BodyInit = JSON.stringify({
     blocks: [
