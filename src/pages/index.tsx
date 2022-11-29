@@ -1,10 +1,14 @@
 import type { NextPage } from "next";
 import styled from "styled-components";
 import Head from "next/head";
-import { getToday } from "../lib/helpers";
-import NavButton from "../components/atoms/buttons/NavButton";
 import DisplayWalletBalance from "../components/organisms/DisplayWalletBalance";
 import Navbar from "../components/organisms/Navbar";
+
+// TODO widget component
+//  All positions value
+// topp 3 mest investerade assets, eller topp 3 som gått med mest vinst?
+// <button>Trigger todays run if not yet done</button>
+// <div>latest done orders</div>
 
 const PageContainer = styled.div`
   display: flex;
@@ -21,8 +25,6 @@ const ContentContainer = styled.div`
 `;
 
 const Home: NextPage = () => {
-  const today = getToday();
-
   return (
     <div>
       <Head>
@@ -31,14 +33,10 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <Navbar />
         <PageContainer>
           <ContentContainer>
-            <NavButton href={`/daily-runs/${today}`}>Todays run</NavButton>
-            <NavButton href="/daily-runs">All runs</NavButton>
-            <NavButton href="/assets">Own Assets</NavButton>
-            <NavButton href="/orders">All Orders</NavButton>
             <DisplayWalletBalance />
+            ...add widgets
           </ContentContainer>
         </PageContainer>
       </main>

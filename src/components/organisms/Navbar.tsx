@@ -1,42 +1,85 @@
 import Link from "next/link";
-import React from "react";
-import styled from "styled-components";
+import React, { useEffect, useState } from "react";
+import styled, { css } from "styled-components";
 import { getToday } from "../../lib/helpers";
+import { Theme } from "../../styles/themes";
+import { useRouter } from "next/router";
 
 const NavBarContainer = styled.div`
   display: flex;
   height: 50px;
   width: 100%;
-  gap: 10px;
-  padding: 15px;
+  gap: 15px;
+  border-bottom: ${({ theme }: { theme: Theme }) =>
+    `${theme.borders.base} ${theme.palette.border.primary}`};
+  padding: 5px;
+`;
+
+const LogoContainer = styled.div`
+  width: 100px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: url("/static/shark.png");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+`;
+
+const LinksContainer = styled.div`
+  display: flex;
+  height: 100%;
+  gap: 15px;
 `;
 
 const NavBarItem = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 100%;
   cursor: pointer;
   :hover {
     color: ${({ theme }) => theme.palette.actionHover.text};
+    transform: scale(1.05);
   }
+  ${({ active }: { active: boolean }) =>
+    active &&
+    css`
+      color: #71b16b;
+    `};
 `;
 
 const Navbar = () => {
   const today = getToday();
+  const router = useRouter();
+  const [pathName, setPathName] = useState("");
+
+  useEffect(() => {
+    setPathName(router.pathname);
+  }, [router]);
+
+  console.log(router.pathname);
+
   return (
     <NavBarContainer>
-      <Link href={`/daily-runs/${today}`}>
-        <NavBarItem>Todays run</NavBarItem>
-      </Link>
-      <Link href="/daily-runs">
-        <NavBarItem>All runs</NavBarItem>
-      </Link>
-      <Link href="/assets">
-        <NavBarItem>Own assets</NavBarItem>
-      </Link>
-      <Link href="/orders">
-        <NavBarItem>All orders</NavBarItem>
-      </Link>
+      <LogoContainer />
+      <LinksContainer>
+        <Link href={`/daily-runs/${today}`}>
+          <NavBarItem active={pathName === "/daily-runs/[date]"}>
+            Todays run
+          </NavBarItem>
+        </Link>
+        <Link href="/daily-runs">
+          <NavBarItem active={pathName === "/daily-runs"}>All runs</NavBarItem>
+        </Link>
+        <Link href="/assets">
+          <NavBarItem active={pathName === "/assets"}>Own assets</NavBarItem>
+        </Link>
+        <Link href="/orders">
+          <NavBarItem active={pathName === "/orders"}>All orders</NavBarItem>
+        </Link>
+      </LinksContainer>
     </NavBarContainer>
   );
 };
