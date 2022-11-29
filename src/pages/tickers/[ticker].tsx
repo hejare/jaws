@@ -6,7 +6,7 @@ import { handleResult } from "../../util";
 
 // TODO on server side (given ticker):
 // return our assets of given ticker
-////  return our orders of given ticker - DONE
+// //  return our orders of given ticker - DONE
 // place calling this 👆 in same endpoint/handler (get assets, get orders)
 // add logic for sell
 
@@ -25,7 +25,7 @@ const TickerPage: NextPage = () => {
   console.log(ticker);
 
   useEffect(() => {
-    fetch(`/api/broker/orders/tickers/${ticker as string}`)
+    fetch(`/api/broker/tickers/${ticker as string}`)
       .then(handleResult)
       .then((result) => {
         console.log(result);

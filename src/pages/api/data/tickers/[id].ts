@@ -1,6 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getTicker } from "../../../../db/tickersEntity";
 
+// TODO get all breakouts for this ticker
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,

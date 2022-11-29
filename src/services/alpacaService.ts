@@ -67,7 +67,6 @@ export const getOrders = async () => {
 };
 
 export const getOrderByTicker = async (ticker: string) => {
-  console.log("ticker! ", ticker);
   try {
     const res = await fetch(
       `${brokerApiBaseUrl}/trading/accounts/${accountId}/orders?symbols=${ticker}&status=all`, // TODO how handle params?
@@ -77,13 +76,33 @@ export const getOrderByTicker = async (ticker: string) => {
         },
       },
     );
-    const result = await handleResult(res);
-    console.log(result);
-    return result;
+    return await handleResult(res);
   } catch (e) {
-    console.log(e);
     throw Error(`Unable to get order - ${e as string}`);
   }
+};
+
+const getAssetsByTicker = async (ticker: string) => {
+  try {
+    const res = await fetch(
+      `${brokerApiBaseUrl}/trading/accounts/${accountId}/positions/${ticker.toUpperCase()}`,
+      {
+        headers: {
+          Authorization: `Basic ${base64EncodedKeys}`,
+        },
+      },
+    );
+    return await handleResult(res);
+  } catch (e: any) {
+    console.log(e);
+    throw Error(`Unable to get assets - ${e.message as string}`);
+  }
+};
+
+export const getAssetsAndOrdersByTicker = async (ticker: string) => {
+  const orders = await getOrderByTicker(ticker);
+  const assets = await getAssetsByTicker(ticker);
+  return { orders, assets };
 };
 
 export const deleteOrder = async (orderId: string) => {
