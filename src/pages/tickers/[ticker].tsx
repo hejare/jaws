@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import fetch from "node-fetch";
 import { useEffect, useState } from "react";
 import Button from "../../components/atoms/buttons/Button";
+import PageContainer from "../../components/atoms/PageContainer";
 import TextDisplay from "../../components/atoms/TextDisplay";
 import { handleResult } from "../../util";
 
@@ -69,7 +70,7 @@ const TickerPage: NextPage = () => {
   }
 
   return (
-    <>
+    <PageContainer>
       <h1>{`${ticker.toUpperCase()}`}</h1>
       <TextDisplay>
         <h2>Orders</h2>
@@ -112,7 +113,7 @@ const TickerPage: NextPage = () => {
           Sell
         </Button>
       </TextDisplay>
-    </>
+    </PageContainer>
   );
 };
 

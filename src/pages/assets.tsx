@@ -4,11 +4,7 @@ import { useEffect, useState } from "react";
 import fetch from "node-fetch";
 import { handleResult } from "../util";
 import AssetsList from "../components/organisms/AssetsList";
-
-const PageContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
+import PageContainer from "../components/atoms/PageContainer";
 
 // eslint-disable-next-line no-unused-vars
 enum STATUS {

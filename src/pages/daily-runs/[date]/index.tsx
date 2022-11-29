@@ -9,13 +9,11 @@ import { useRouter } from "next/router";
 import { isToday } from "../../../lib/helpers";
 import TriggerDailyRunButton from "../../../components/molecules/TriggerDailyRunButton";
 import { formatDateString } from "../../../util/handleFormatDateString";
-
-const PageContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
+import PageContainer from "../../../components/atoms/PageContainer";
+import NavButton from "../../../components/atoms/buttons/NavButton";
 
 const ButtonsContainer = styled.div`
+  margin-top: 32px;
   display: flex;
   flex-direction: row;
   gap: 5px;
@@ -75,7 +73,9 @@ const DailyRunsDate: NextPage = () => {
 
   return (
     <PageContainer>
-      Date: {date}
+      <NavButton goBack href="">
+        Go back
+      </NavButton>
       {isToday(formatDateString(date)) && (
         <ButtonsContainer>
           <TriggerDailyRunButton />

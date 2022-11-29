@@ -36,7 +36,7 @@ const DailyRunsList = ({ data }: Props) => {
 
   const columns = [
     {
-      title: "RunId",
+      title: "Run Id",
       dataIndex: "runId",
       key: "runId",
       width: 100,
@@ -74,27 +74,6 @@ const DailyRunsList = ({ data }: Props) => {
       dataIndex: "status",
       key: "status",
       width: 100,
-    },
-    {
-      title: "Operations",
-      dataIndex: "",
-      key: "operations",
-      render: (item: any) => {
-        const disabled = (nonCancellableStatus as unknown as string[]).includes(
-          item.status,
-        );
-        return disabled ? (
-          ""
-        ) : (
-          <Button
-            onClick={() =>
-              console.log("Try and cancel this daily run...:", item.orderId)
-            }
-          >
-            Cancel
-          </Button>
-        );
-      },
     },
   ];
 

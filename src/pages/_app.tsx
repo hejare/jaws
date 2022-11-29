@@ -24,6 +24,9 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
+        <title>Jaws</title>
+        <meta name="description" content="Jaws - the Frontend for Sharkster" />
+        <link rel="icon" href="/favicon.ico" />
         <meta
           name="viewport"
           content="minimum-scale=1, maximum-scale=5, initial-scale=1, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover"

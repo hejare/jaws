@@ -1,5 +1,8 @@
 import fetch, { BodyInit } from "node-fetch";
-import { formatDateString } from "../util/handleFormatDateString";
+import {
+  formatDateString,
+  formatTimeString,
+} from "../util/handleFormatDateString";
 
 const { SLACK_WEBHOOK_API_KEY = "[NOT_DEFINED_IN_ENV]" } = process.env;
 
@@ -7,10 +10,7 @@ export const postSlackMessage = async (runId: string) => {
   const [unformatedDate, unformatedTime] = runId.split("_");
 
   // 131023 -> 13:10
-  const time = `${unformatedTime.substring(0, 2)}:${unformatedTime.substring(
-    2,
-    4,
-  )}`;
+  const time = formatTimeString(unformatedTime);
 
   // 20221124 -> 2022-11-24
   const date = formatDateString(unformatedDate);

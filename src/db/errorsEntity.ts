@@ -40,7 +40,10 @@ export async function getErrorsByDate(date: string) {
 
 export async function getSpecificErrors(runIds: string[]) {
   const result: ErrorDataParsedType[] = [];
-  const docs = await db.collection("errors").where("runId", "in", runIds).get();
+  const docs = await db
+    .collection("errors")
+    .where("runId", "in", runIds.slice(0, 10))
+    .get();
   docs.forEach((doc: any) => {
     const { message, runId, timestamp, miscJson } = doc.data();
     result.push({

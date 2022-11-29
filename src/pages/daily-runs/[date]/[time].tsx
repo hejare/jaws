@@ -14,13 +14,13 @@ import BreakoutsList, {
 } from "../../../components/organisms/BreakoutsList";
 import { handleLimitPrice } from "../../../util/handleLimitPrice";
 import { ErrorDataParsedType } from "../../../db/errorsMeta";
-import { formatDateString } from "../../../util/handleFormatDateString";
+import {
+  formatDateString,
+  formatTimeString,
+} from "../../../util/handleFormatDateString";
 import { isToday } from "../../../lib/helpers";
-
-const PageContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
+import NavButton from "../../../components/atoms/buttons/NavButton";
+import PageContainer from "../../../components/atoms/PageContainer";
 
 // eslint-disable-next-line no-unused-vars
 enum STATUS {
@@ -29,6 +29,8 @@ enum STATUS {
 }
 
 const ErrorContainer = styled.div`
+  overflow: scroll;
+  max-width: 90vw;
   border: 1px solid red;
   margin: 4px;
   padding: 4px;
@@ -85,11 +87,18 @@ const DailyRun: NextPage = () => {
       .catch(console.error);
   }, [date, time]);
 
+  if (dataFetchStatus !== STATUS.READY || !time || Array.isArray(time)) {
+    return <></>;
+  }
+
   return (
     <PageContainer>
+      <NavButton goBack href="">
+        Go back
+      </NavButton>
       <h1>DAILY RUN</h1>
       <h3>
-        Date: {date} (Time: {time})
+        Date: {date} (Time: {formatTimeString(time)})
       </h3>
       {dailyRun && dataFetchStatus === STATUS.READY && (
         <div>
@@ -110,16 +119,16 @@ const DailyRun: NextPage = () => {
           )}
           <div>
             {dailyRun.timeInitiated && (
-              <span>
+              <div>
                 Initiated:{" "}
                 {new Date(dailyRun.timeInitiated)
                   .toUTCString()
                   .replace(" GMT", "")}
-              </span>
+              </div>
             )}
-            <span>
+            <div>
               Ended: {dailyRun.timeEnded} ({dailyRun.duration}s)
-            </span>
+            </div>
           </div>
         </div>
       )}

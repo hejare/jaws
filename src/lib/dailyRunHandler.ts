@@ -146,7 +146,11 @@ export const storeDailyRunError = async (dailyRunBody: DailyRunErrorBody) => {
 
   // update DailyRun
   const dailyRun: null | DailyRunDataType = await getDailyRun(runId);
-
+  console.log(
+    "DID WE GET A DAILY RUN TO UPDATE WITH ERROR STATUS?",
+    dailyRun,
+    runId,
+  );
   await putDailyRun(runId, {
     ...(dailyRun || {}),
     runId,
