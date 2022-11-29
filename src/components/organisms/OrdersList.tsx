@@ -105,22 +105,18 @@ const OrdersList = ({ data }: Props) => {
       key: "value",
       width: 200,
       render: ({
-        price,
+        filled_avg_price: price,
         notional,
         qty,
       }: {
-        price: string;
+        filled_avg_price: string;
         notional?: string;
         qty: string;
-      }) => {
-        // TODO: BigInt here?
-        console.log(parseFloat(price) * parseFloat(notional ? notional : qty));
-        return (
-          <PriceDisplay
-            value={parseFloat(price) * parseFloat(notional ? notional : qty)}
-          />
-        );
-      },
+      }) => (
+        <PriceDisplay
+          value={parseFloat(price) * parseFloat(notional ? notional : qty)}
+        />
+      ),
     },
     {
       title: "Created at",
