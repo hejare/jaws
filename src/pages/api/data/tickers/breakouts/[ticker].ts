@@ -21,7 +21,7 @@ export default async function handler(
     }
     await getBreakOutsForTicker(ticker).then((breakouts) => {
       responseData.breakouts = breakouts;
-      responseData.status = "OK got breakout(s) for ticker";
+      responseData.status = "OK";
     });
     res.status(200).json(responseData);
   } catch (e) {

@@ -44,16 +44,18 @@ const TickerPage: NextPage = () => {
   const { ticker } = router.query;
 
   useEffect(() => {
-    if (ticker) {
-      fetch(`/api/broker/tickers/${ticker as string}`)
-        .then(handleResult)
-        .then((result) => {
-          setAsset(result.asset);
-          setOrders(result.orders);
-        })
-        .catch(console.error);
+    if (!ticker || Array.isArray(ticker)) {
+      return;
     }
-    fetch(`/api/data/tickers/breakouts/${ticker as string}`)
+
+    fetch(`/api/broker/tickers/${ticker}`)
+      .then(handleResult)
+      .then((result) => {
+        setAsset(result.asset);
+        setOrders(result.orders);
+      })
+      .catch(console.error);
+    fetch(`/api/data/tickers/breakouts/${ticker}`)
       .then(handleResult)
       .then((result) => {
         setBreakouts(result.breakouts);
@@ -62,54 +64,54 @@ const TickerPage: NextPage = () => {
       .catch(console.error);
   }, [ticker]);
 
+  if (dataFetchStatus !== STATUS.READY || !ticker || Array.isArray(ticker)) {
+    return <></>;
+  }
+
   return (
     <>
-      <h1>{`${(ticker as string).toUpperCase()}`}</h1>
-      {dataFetchStatus === STATUS.READY && (
-        <>
-          <TextDisplay>
-            <h2>Orders</h2>
-            {orders ? (
-              orders.map((order: PartialOrderDataType, i) => (
-                <div key={i}>
-                  <div>Created at: {order.created_at}</div>
-                  <div>Filled at: {order.filled_at}</div>
-                  <div>Quantity: {order.notional}</div>
-                </div>
-              ))
-            ) : (
-              <div>No orders for this ticker</div>
-            )}
-          </TextDisplay>
-          <TextDisplay>
-            <h2>Breakouts</h2>
-            {breakouts && breakouts.length > 0 ? (
-              breakouts.map((breakout: PartialBreakoutDataType, i) => (
-                <div key={i}>
-                  <h4>Breakout</h4>
-                  <div>Breakout value:{breakout.breakoutValue}</div>
-                  <div>Relative strength: {breakout.relativeStrength}</div>
-                </div>
-              ))
-            ) : (
-              <div>No breakouts for this ticker</div>
-            )}
-          </TextDisplay>
-          <TextDisplay>
-            <h2>Asset</h2>
-            {asset ? (
-              <div>
-                <div>Entry price: {asset.avg_entry_price}</div>
-              </div>
-            ) : (
-              <div>No asset for this ticker</div>
-            )}
-            <Button onClick={() => console.log("smart sell button do smth...")}>
-              Sell
-            </Button>
-          </TextDisplay>
-        </>
-      )}
+      <h1>{`${ticker.toUpperCase()}`}</h1>
+      <TextDisplay>
+        <h2>Orders</h2>
+        {orders ? (
+          orders.map((order: PartialOrderDataType, i) => (
+            <div key={i}>
+              <div>Created at: {order.created_at}</div>
+              <div>Filled at: {order.filled_at}</div>
+              <div>Quantity: {order.notional}</div>
+            </div>
+          ))
+        ) : (
+          <div>No orders for this ticker</div>
+        )}
+      </TextDisplay>
+      <TextDisplay>
+        <h2>Breakouts</h2>
+        {breakouts && breakouts.length > 0 ? (
+          breakouts.map((breakout: PartialBreakoutDataType, i) => (
+            <div key={i}>
+              <h4>Breakout</h4>
+              <div>Breakout value:{breakout.breakoutValue}</div>
+              <div>Relative strength: {breakout.relativeStrength}</div>
+            </div>
+          ))
+        ) : (
+          <div>No breakouts for this ticker</div>
+        )}
+      </TextDisplay>
+      <TextDisplay>
+        <h2>Asset</h2>
+        {asset ? (
+          <div>
+            <div>Entry price: {asset.avg_entry_price}</div>
+          </div>
+        ) : (
+          <div>No asset for this ticker</div>
+        )}
+        <Button onClick={() => console.log("smart sell button do smth...")}>
+          Sell
+        </Button>
+      </TextDisplay>
     </>
   );
 };
