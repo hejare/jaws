@@ -2,11 +2,11 @@ import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import fetch from "node-fetch";
 import { useEffect, useState } from "react";
+import Button from "../../components/atoms/buttons/Button";
+import TextDisplay from "../../components/atoms/TextDisplay";
 import { handleResult } from "../../util";
 
-// add logic for sell
-// todo place asset, breakouts, and orders in separate components
-
+// TODO add smart sell button
 interface Asset {
   avg_entry_price?: string;
   change_today?: string;
@@ -67,38 +67,47 @@ const TickerPage: NextPage = () => {
       <h1>{`${(ticker as string).toUpperCase()}`}</h1>
       {dataFetchStatus === STATUS.READY && (
         <>
-          <h2>Orders</h2>
-          {orders ? (
-            orders.map((order: PartialOrderDataType, i) => (
-              <div key={i}>
-                <div>Created at: {order.created_at}</div>
-                <div>Filled at: {order.filled_at}</div>
-                <div>Quantity: {order.notional}</div>
+          <TextDisplay>
+            <h2>Orders</h2>
+            {orders ? (
+              orders.map((order: PartialOrderDataType, i) => (
+                <div key={i}>
+                  <div>Created at: {order.created_at}</div>
+                  <div>Filled at: {order.filled_at}</div>
+                  <div>Quantity: {order.notional}</div>
+                </div>
+              ))
+            ) : (
+              <div>No orders for this ticker</div>
+            )}
+          </TextDisplay>
+          <TextDisplay>
+            <h2>Breakouts</h2>
+            {breakouts && breakouts.length > 0 ? (
+              breakouts.map((breakout: PartialBreakoutDataType, i) => (
+                <div key={i}>
+                  <h4>Breakout</h4>
+                  <div>Breakout value:{breakout.breakoutValue}</div>
+                  <div>Relative strength: {breakout.relativeStrength}</div>
+                </div>
+              ))
+            ) : (
+              <div>No breakouts for this ticker</div>
+            )}
+          </TextDisplay>
+          <TextDisplay>
+            <h2>Asset</h2>
+            {asset ? (
+              <div>
+                <div>Entry price: {asset.avg_entry_price}</div>
               </div>
-            ))
-          ) : (
-            <div>No orders for this ticker</div>
-          )}
-          <h2>Breakouts</h2>
-          {breakouts && breakouts.length > 0 ? (
-            breakouts.map((breakout: PartialBreakoutDataType, i) => (
-              <div key={i}>
-                <h4>Breakout</h4>
-                <div>Breakout value:{breakout.breakoutValue}</div>
-                <div>Relative strength: {breakout.relativeStrength}</div>
-              </div>
-            ))
-          ) : (
-            <div>No breakouts for this ticker</div>
-          )}
-          <h2>Asset</h2>
-          {asset ? (
-            <div>
-              <div>Entry price: {asset.avg_entry_price}</div>
-            </div>
-          ) : (
-            <div>No asset for this ticker</div>
-          )}
+            ) : (
+              <div>No asset for this ticker</div>
+            )}
+            <Button onClick={() => console.log("smart sell button do smth...")}>
+              Sell
+            </Button>
+          </TextDisplay>
         </>
       )}
     </>
