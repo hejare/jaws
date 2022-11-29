@@ -21,7 +21,6 @@ type Config = Record<string, string | number>;
 
 type DailyRunBody = {
   runId: string;
-  runTime: number;
   breakouts: Breakout[];
   config: Config;
 };
@@ -77,7 +76,7 @@ const isConfigSame = (latestConfig: Config, config: Config) => {
 };
 
 export const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
-  const { runId, runTime, config, breakouts } = dailyRunBody;
+  const { runId, config, breakouts } = dailyRunBody;
 
   // update DailyRun
   let dailyRun: null | DailyRunDataType = await getDailyRun(runId);
@@ -89,7 +88,7 @@ export const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
   await putDailyRun(runId, {
     ...dailyRun,
     status: DailyRunStatus.COMPLETED,
-    duration: runTime,
+    duration: 1337, // TODO: Make use of timeInitiated or whatever...
     timeEnded: Date.now(),
   });
 
