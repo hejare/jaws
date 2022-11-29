@@ -25,6 +25,10 @@ const LogoContainer = styled.div`
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
+  cursor: pointer;
+  :hover {
+    transform: scale(1.05);
+  }
 `;
 
 const LinksContainer = styled.div`
@@ -63,10 +67,17 @@ const Navbar = () => {
 
   return (
     <NavBarContainer>
-      <LogoContainer />
+      <Link href={"/"}>
+        <LogoContainer />
+      </Link>
       <LinksContainer>
         <Link href={`/daily-runs/${today}`}>
-          <NavBarItem active={pathName === "/daily-runs/[date]"}>
+          <NavBarItem
+            active={
+              pathName === "/daily-runs/[date]" ||
+              pathName === "/daily-runs/[date]/[time]"
+            }
+          >
             Todays run
           </NavBarItem>
         </Link>
