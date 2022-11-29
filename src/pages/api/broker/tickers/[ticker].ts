@@ -1,14 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { ResponseDataType } from "../../../../db/ResponseDataMeta";
-import {
-  getAssetsAndOrdersByTicker,
-  getOrderByTicker,
-} from "../../../../services/alpacaService";
+import { getAssetAndOrdersByTicker } from "../../../../services/alpacaService";
 
 interface ExtendedResponseDataType extends ResponseDataType {
-  tickers?: [];
-  assets?: [];
-  orders?: object;
+  asset?: object;
+  orders?: [];
 }
 
 // TODO get all assets for ticker
@@ -26,9 +22,9 @@ export default async function handler(
     switch (method) {
       case "GET":
         if (ticker && !(ticker instanceof Array)) {
-          await getAssetsAndOrdersByTicker(ticker)
-            .then(({ assets, orders }) => {
-              responseData.assets = assets;
+          await getAssetAndOrdersByTicker(ticker)
+            .then(({ asset, orders }) => {
+              responseData.asset = asset;
               responseData.orders = orders;
               responseData.status = "OK got order(s) and asset for ticker";
             })

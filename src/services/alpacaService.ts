@@ -1,7 +1,5 @@
 import fetch, { BodyInit } from "node-fetch";
 import { convertResult, handleResult } from "../util";
-import { handleLimitPrice } from "../util/handleLimitPrice";
-import { handleCalculateQuantity } from "../util/handleQuantity";
 
 const {
   ALPACA_API_KEY_ID = "[NOT_DEFINED_IN_ENV]",
@@ -66,7 +64,7 @@ export const getOrders = async () => {
   }
 };
 
-export const getOrderByTicker = async (ticker: string) => {
+export const getOrdersByTicker = async (ticker: string) => {
   try {
     const res = await fetch(
       `${brokerApiBaseUrl}/trading/accounts/${accountId}/orders?symbols=${ticker}&status=all`, // TODO how handle params?
@@ -82,7 +80,7 @@ export const getOrderByTicker = async (ticker: string) => {
   }
 };
 
-const getAssetsByTicker = async (ticker: string) => {
+const getAssetByTicker = async (ticker: string) => {
   try {
     const res = await fetch(
       `${brokerApiBaseUrl}/trading/accounts/${accountId}/positions/${ticker.toUpperCase()}`,
@@ -99,10 +97,10 @@ const getAssetsByTicker = async (ticker: string) => {
   }
 };
 
-export const getAssetsAndOrdersByTicker = async (ticker: string) => {
-  const orders = await getOrderByTicker(ticker);
-  const assets = await getAssetsByTicker(ticker);
-  return { orders, assets };
+export const getAssetAndOrdersByTicker = async (ticker: string) => {
+  const orders = await getOrdersByTicker(ticker);
+  const asset = await getAssetByTicker(ticker);
+  return { orders, asset };
 };
 
 export const deleteOrder = async (orderId: string) => {
