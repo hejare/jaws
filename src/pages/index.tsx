@@ -4,6 +4,7 @@ import Head from "next/head";
 import { getToday } from "../lib/helpers";
 import NavButton from "../components/atoms/buttons/NavButton";
 import DisplayWalletBalance from "../components/organisms/DisplayWalletBalance";
+import Navbar from "../components/organisms/Navbar";
 
 const PageContainer = styled.div`
   display: flex;
@@ -30,6 +31,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
+        <Navbar />
         <PageContainer>
           <ContentContainer>
             <NavButton href={`/daily-runs/${today}`}>Todays run</NavButton>
