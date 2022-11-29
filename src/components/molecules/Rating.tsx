@@ -4,10 +4,11 @@ import CircularButton, {
   CIRCULAR_BUTTON_SIZE,
 } from "../atoms/buttons/CircularButton";
 import RatingStar from "../atoms/RatingStar";
+import * as backendService from "../../services/backendService";
 
 interface Props {
-  currentRating: number;
-  handleSetRating: (value: number) => void;
+  breakoutRef: string;
+  initialValue?: number;
 }
 
 const RatingContainer = styled.div`
@@ -28,13 +29,14 @@ const RatingsWrapper = styled.div`
   border-radius: 15px;
 `;
 
-const Rating = ({ currentRating, handleSetRating }: Props) => {
+const Rating = ({ initialValue = 0, breakoutRef }: Props) => {
   const [hoverNumber, setHoverNumber] = useState(-1);
-  const [rating, setRating] = useState(currentRating);
+  const [rating, setRating] = useState(initialValue);
 
   const setValue = (value: number) => {
     setRating(value);
-    handleSetRating(value);
+    const userRef = "ludde@hejare.se"; // TODO
+    void backendService.setRating({ breakoutRef, userRef, value });
   };
 
   const fiveStars = () => {

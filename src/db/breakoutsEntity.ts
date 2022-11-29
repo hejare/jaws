@@ -30,6 +30,20 @@ export async function getBreakout(refId: string) {
   };
 }
 
+export async function getBreakOutsForTicker(ticker: string) {
+  const result: any = [];
+  const query = db.collection("breakouts");
+  const docs = await query.where("tickerRef", "==", ticker).get();
+
+  docs.forEach((doc: any) => {
+    result.push({
+      ...doc.data(),
+      _ref: doc.ref.id,
+    });
+  });
+  return result;
+}
+
 export async function putBreakout(refId: string, data: BreakoutDataType) {
   return db.collection("breakouts").doc(refId).set(data);
 }

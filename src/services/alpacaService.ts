@@ -1,7 +1,5 @@
 import fetch, { BodyInit } from "node-fetch";
 import { convertResult, handleResult } from "../util";
-import { handleLimitPrice } from "../util/handleLimitPrice";
-import { handleCalculateQuantity } from "../util/handleQuantity";
 
 const {
   ALPACA_API_KEY_ID = "[NOT_DEFINED_IN_ENV]",
@@ -64,6 +62,45 @@ export const getOrders = async () => {
   } catch (e) {
     throw Error(`Unable to get orders - ${e as string}`);
   }
+};
+
+export const getOrdersByTicker = async (ticker: string) => {
+  try {
+    const res = await fetch(
+      `${brokerApiBaseUrl}/trading/accounts/${accountId}/orders?symbols=${ticker}&status=all`, // TODO how handle params?
+      {
+        headers: {
+          Authorization: `Basic ${base64EncodedKeys}`,
+        },
+      },
+    );
+    return await handleResult(res);
+  } catch (e) {
+    throw Error(`Unable to get order - ${e as string}`);
+  }
+};
+
+const getAssetByTicker = async (ticker: string) => {
+  try {
+    const res = await fetch(
+      `${brokerApiBaseUrl}/trading/accounts/${accountId}/positions/${ticker.toUpperCase()}`,
+      {
+        headers: {
+          Authorization: `Basic ${base64EncodedKeys}`,
+        },
+      },
+    );
+    return await handleResult(res);
+  } catch (e: any) {
+    console.log(e);
+    throw Error(`Unable to get asset for ${ticker} - ${e.message as string}`);
+  }
+};
+
+export const getAssetAndOrdersByTicker = async (ticker: string) => {
+  const orders = await getOrdersByTicker(ticker);
+  const asset = await getAssetByTicker(ticker);
+  return { orders, asset };
 };
 
 export const deleteOrder = async (orderId: string) => {

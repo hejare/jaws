@@ -9,7 +9,22 @@ export const getToday = () => {
   return `${now.getFullYear()}${addZero(nowMonth)}${addZero(nowDate)}`;
 };
 
-export const getDateTime = (timestamp: string) => {
+export const isToday = (datetime: string) => {
+  const d = new Date(datetime);
+  const now = new Date();
+  return now.toDateString() === d.toDateString();
+};
+
+export const isOnSameDate = (datetime1: string, datetime2: string) => {
+  const d1 = new Date(datetime1);
+  const d2 = new Date(datetime2);
+  return d1.toDateString() === d2.toDateString();
+};
+
+export const getDateTime = (timestamp: string | null) => {
+  if (!timestamp) {
+    return timestamp;
+  }
   const d = new Date(timestamp);
   const nowMonth = d.getMonth() + 1;
   const nowDate = d.getDate();

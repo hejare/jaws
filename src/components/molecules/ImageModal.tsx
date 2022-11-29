@@ -1,11 +1,13 @@
 import styled from "styled-components";
 import Modal from "./Modal";
+import Rating from "./Rating";
 
 const GraphContainer = styled.div`
   color: white;
   display: flex;
   align-items: center;
   justify-content: end;
+  flex-direction: column;
 `;
 
 const Graph = styled.div`
@@ -21,11 +23,22 @@ const Graph = styled.div`
 const StyledImg = styled.img`
   height: fit-content;
 `;
+
+const RatingContainer = styled.div`
+  margin-top: 16px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   image: string;
   enableOnClickOutside?: boolean;
+  breakoutRef: string;
+  currentRating?: number;
 }
 
 export default function ImageModal({
@@ -33,6 +46,8 @@ export default function ImageModal({
   onClose,
   image,
   enableOnClickOutside,
+  breakoutRef,
+  currentRating,
 }: Props) {
   return (
     <Modal
@@ -45,6 +60,11 @@ export default function ImageModal({
         <Graph>
           <StyledImg src={image} />
         </Graph>
+        {breakoutRef && (
+          <RatingContainer>
+            <Rating initialValue={currentRating} breakoutRef={breakoutRef} />
+          </RatingContainer>
+        )}
       </GraphContainer>
     </Modal>
   );
