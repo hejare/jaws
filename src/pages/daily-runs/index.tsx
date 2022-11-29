@@ -5,17 +5,10 @@ import fetch from "node-fetch";
 import { handleResult } from "../../util";
 import DailyRunsList from "../../components/organisms/DailyRunsList";
 import { DailyRunDataType } from "../../db/dailyRunsMeta";
-import TriggerDailyRunButton from "../../components/molecules/TriggerDailyRunButton";
 
 const PageContainer = styled.div`
   display: flex;
   flex-direction: column;
-`;
-
-const ButtonsContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: 5px;
 `;
 
 // eslint-disable-next-line no-unused-vars
@@ -64,9 +57,6 @@ const DailyRuns: NextPage = () => {
 
   return (
     <PageContainer>
-      <ButtonsContainer>
-        <TriggerDailyRunButton />
-      </ButtonsContainer>
       {dataFetchStatus === STATUS.READY && <DailyRunsList data={data} />}
     </PageContainer>
   );

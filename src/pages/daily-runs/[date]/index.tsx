@@ -6,10 +6,19 @@ import { handleResult } from "../../../util";
 import DailyRunsList from "../../../components/organisms/DailyRunsList";
 import { DailyRunDataType } from "../../../db/dailyRunsMeta";
 import { useRouter } from "next/router";
+import { isToday } from "../../../lib/helpers";
+import TriggerDailyRunButton from "../../../components/molecules/TriggerDailyRunButton";
+import { formatDateString } from "../../../util/handleFormatDateString";
 
 const PageContainer = styled.div`
   display: flex;
   flex-direction: column;
+`;
+
+const ButtonsContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
 `;
 
 // eslint-disable-next-line no-unused-vars
@@ -25,7 +34,11 @@ const DailyRunsDate: NextPage = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch(`/api/data/daily-runs/${date as string}`)
+    if (!date || Array.isArray(date)) {
+      return;
+    }
+
+    fetch(`/api/data/daily-runs/${date}`)
       .then(handleResult)
       .then((result) => {
         let newData = result.map(
@@ -56,9 +69,18 @@ const DailyRunsDate: NextPage = () => {
       .catch(console.error);
   }, [date]);
 
+  if (dataFetchStatus !== STATUS.READY || !date || Array.isArray(date)) {
+    return <></>;
+  }
+
   return (
     <PageContainer>
       Date: {date}
+      {isToday(formatDateString(date)) && (
+        <ButtonsContainer>
+          <TriggerDailyRunButton />
+        </ButtonsContainer>
+      )}
       {dataFetchStatus === STATUS.READY && <DailyRunsList data={data} />}
     </PageContainer>
   );
