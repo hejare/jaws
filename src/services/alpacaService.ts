@@ -93,7 +93,7 @@ const getAssetByTicker = async (ticker: string) => {
     return await handleResult(res);
   } catch (e: any) {
     console.log(e);
-    throw Error(`Unable to get assets - ${e.message as string}`);
+    throw Error(`Unable to get asset for ${ticker} - ${e.message as string}`);
   }
 };
 

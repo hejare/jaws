@@ -23,10 +23,9 @@ export default async function handler(
       case "GET":
         if (ticker && !(ticker instanceof Array)) {
           await getAssetAndOrdersByTicker(ticker)
-            .then(({ asset, orders }) => {
-              responseData.asset = asset;
+            .then(({ orders, asset }) => {
               responseData.orders = orders;
-              responseData.status = "OK got order(s) and asset for ticker";
+              responseData.asset = asset;
             })
             .catch((e) => {
               responseData.status = "NOK";
