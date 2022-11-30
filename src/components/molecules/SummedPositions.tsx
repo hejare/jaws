@@ -8,9 +8,8 @@ const SummedPositions = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await sumPositions().then((data) => {
-          setPositionsSum(data);
-        });
+        const data = await sumPositions();
+        setPositionsSum(data);
       } catch (e) {
         console.log(e);
       }

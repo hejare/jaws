@@ -19,9 +19,8 @@ const LatestOrders = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await getLatestOrders().then((data) => {
-          setOrders(data);
-        });
+        const data = await getLatestOrders();
+        setOrders(data);
       } catch (e) {
         console.log(e);
       }

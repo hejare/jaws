@@ -16,12 +16,11 @@ const getPositions = async () => {
 
 export const sumPositions = async () => {
   const positions = await getPositions();
-  let positionsSum = 0;
-
-  positions.forEach((position: Position) => {
-    const sum = parseFloat(position.current_price) * parseFloat(position.qty);
-    positionsSum += sum;
-  });
-
-  return positionsSum.toFixed(4);
+  return positions
+    .reduce(
+      (acc: number, position: Position) =>
+        acc + parseFloat(position.current_price) * parseFloat(position.qty),
+      0,
+    )
+    .toFixed(4);
 };
