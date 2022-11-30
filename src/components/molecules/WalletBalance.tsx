@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getAccountCashBalance } from "../../services/backendService";
 import TextDisplay from "../atoms/TextDisplay";
 
-const DisplayWalletBalance = () => {
+const WalletBalance = () => {
   const [walletBalance, setWalletBalance] = useState<string>("checking...");
 
   const handleSetBalance = (balance: string) => {
@@ -24,11 +24,10 @@ const DisplayWalletBalance = () => {
 
   return (
     <TextDisplay>
-      <>
-        <div>Wallet balance</div> <div>${walletBalance}</div>
-      </>
+      <div>Wallet balance</div>
+      <div>${walletBalance}</div>
     </TextDisplay>
   );
 };
 
-export default DisplayWalletBalance;
+export default WalletBalance;

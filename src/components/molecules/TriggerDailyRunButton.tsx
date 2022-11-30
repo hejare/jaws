@@ -12,7 +12,11 @@ const TriggerButton = styled(Button)`
   text-align: center;
 `;
 
-const TriggerDailyRunButton = () => {
+interface Props {
+  handleIndicateIsEnabled?: (state: boolean) => void;
+}
+
+const TriggerDailyRunButton = ({ handleIndicateIsEnabled }: Props) => {
   const [buttonEnabled, setButtonEnabled] = useState(false);
   const [buttonNotice, setButtonNotice] = useState<undefined | string>();
   const [interval, setInterval] = useState(0);
@@ -23,6 +27,8 @@ const TriggerDailyRunButton = () => {
       .then(handleResult)
       .then(({ status, error = null }) => {
         setButtonEnabled(status !== DailyRunStatus.INITIATED);
+        handleIndicateIsEnabled &&
+          handleIndicateIsEnabled(status !== DailyRunStatus.INITIATED);
         setButtonNotice(error?.message);
       })
       .catch((e) => {
