@@ -10,7 +10,9 @@ export type DailyRunDataType = {
   duration: number;
   timeInitiated?: number;
   timeEnded: number;
-  breakoutsCount?: number;
+  breakoutsCount: number;
+  rangeStart: number;
+  rangeEnd: number;
   error?: {
     message: string;
     timestamp: number;

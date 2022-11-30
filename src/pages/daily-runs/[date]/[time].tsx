@@ -113,8 +113,6 @@ const DailyRun: NextPage = () => {
             <ErrorContainer>
               <div>Message: {dailyRun.error.message}</div>
               <div>cell: {dailyRun.error.misc.cell}</div>
-              <div>rangeStart: {dailyRun.error.misc.rangeStart}</div>
-              <div>rangeEnd: {dailyRun.error.misc.rangeEnd}</div>
             </ErrorContainer>
           )}
           <div>
@@ -131,6 +129,9 @@ const DailyRun: NextPage = () => {
                   ).toFixed(2)}min)`
                 : "(ongoing)"}
             </div>
+          </div>
+          <div>
+            Symbol Range: {dailyRun.rangeStart}-{dailyRun.rangeEnd}
           </div>
         </div>
       )}
