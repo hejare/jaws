@@ -13,7 +13,7 @@ const GridContainer = styled.div`
 `;
 
 const WidgetGrid = () => {
-  const [triggerRunEnabled, setTriggerRunEnabled] = useState<boolean>(true);
+  const [triggerRunEnabled, setTriggerRunEnabled] = useState<boolean>(false);
 
   const handleIndicateIsEnabled = (statement: boolean) => {
     setTriggerRunEnabled(statement);
