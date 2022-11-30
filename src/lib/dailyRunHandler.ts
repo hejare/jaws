@@ -90,8 +90,9 @@ export const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
     status: DailyRunStatus.COMPLETED,
     duration: duration,
     timeEnded: Date.now(),
+    breakoutsCount: breakouts.length,
   });
-
+  console.log("DEBUG DAILY RUN RESULTS:", dailyRunBody, "Existing:", dailyRun);
   // Get/Post config
   const newConfig = {
     ...config,

@@ -46,6 +46,7 @@ const DailyRunsDate: NextPage = () => {
             status,
             timeEnded,
             timeInitiated,
+            breakoutsCount,
           }: DailyRunDataType) => ({
             runId,
             status,
@@ -56,6 +57,7 @@ const DailyRunsDate: NextPage = () => {
               ? new Date(timeEnded).toUTCString().replace(" GMT", "")
               : "(ongoing)",
             duration,
+            breakoutsCount,
           }),
         );
         newData = newData.sort((a: DailyRunDataType, b: DailyRunDataType) =>

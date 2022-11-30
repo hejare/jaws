@@ -75,6 +75,12 @@ const DailyRunsList = ({ data }: Props) => {
       key: "status",
       width: 100,
     },
+    {
+      title: "Breakouts",
+      dataIndex: "breakoutsCount",
+      key: "breakoutsCount",
+      width: 50,
+    },
   ];
 
   return (
