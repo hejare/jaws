@@ -66,7 +66,7 @@ const DailyRunsList = ({ data }: Props) => {
       key: "duration",
       width: 50,
       render: (duration: number) => (
-        <>{duration ? `${(duration / 1).toFixed(2)} min` : "n/a"}</>
+        <>{duration ? `${(duration / 60).toFixed(2)} min` : "n/a"}</>
       ),
     },
     {
