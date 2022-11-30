@@ -104,7 +104,7 @@ const BreakoutsList = ({ data, disableBuy }: Props) => {
       width: 100,
     },
     {
-      title: "Buy at price",
+      title: "Buy price",
       dataIndex: "breakoutValue",
       key: "breakoutValue",
       width: 100,
