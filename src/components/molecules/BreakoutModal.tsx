@@ -25,26 +25,14 @@ const InfoContainer = styled.div`
   padding-right: 16px;
 `;
 
-const GraphAndRatingContainer = styled.div`
+const ImageContainer = styled.div`
   color: white;
-  display: flex;
-  align-items: center;
-  justify-content: end;
-  padding: 15px 0 15px 0;
-  width: 70%;
-  flex-direction: column;
-`;
-
-const Graph = styled.div`
-  width: 100%;
   height: 100%;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 `;
 
 const StyledImage = styled.img`
+  max-width: 100%;
+  max-height: 100%;
   cursor: pointer;
   :hover {
     border: 1px solid ${({ theme }) => theme.palette.actionHover.border};
@@ -54,9 +42,9 @@ const StyledImage = styled.img`
 const RatingContainer = styled.div`
   margin-top: 16px;
   height: 60px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  position: absolute;
+  bottom: 4px;
+  right: 20px;
 `;
 
 const Info = styled.div`
@@ -249,20 +237,18 @@ export default function BreakoutModal({
         )}
       </InfoContainer>
 
-      <GraphAndRatingContainer>
-        <Graph>
-          <StyledImage
-            onClick={() => {
-              setEnableOnClickOutside(false);
-              showModal({});
-            }}
-            src={image}
-          />
-        </Graph>
-        <RatingContainer>
-          <Rating initialValue={rating} breakoutRef={breakoutRef} />
-        </RatingContainer>
-      </GraphAndRatingContainer>
+      <ImageContainer>
+        <StyledImage
+          onClick={() => {
+            setEnableOnClickOutside(false);
+            showModal({});
+          }}
+          src={image}
+        />
+      </ImageContainer>
+      <RatingContainer>
+        <Rating initialValue={rating} breakoutRef={breakoutRef} />
+      </RatingContainer>
     </Modal>
   );
 }

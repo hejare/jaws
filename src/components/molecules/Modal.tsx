@@ -5,7 +5,7 @@ import { useLockedBody, useOnClickOutside } from "usehooks-ts";
 
 const ContentContainer = styled.div`
   display: flex;
-  height: 100%;
+  height: -webkit-fill-available;
 `;
 
 const CancelButtonContainer = styled.div`

@@ -27,6 +27,7 @@ const RatingsWrapper = styled.div`
   border: 0.3px solid grey;
   padding: 10px;
   border-radius: 15px;
+  background-color: ${({ theme }) => theme.palette.background.backdrop};
 `;
 
 const Rating = ({ initialValue = 0, breakoutRef }: Props) => {

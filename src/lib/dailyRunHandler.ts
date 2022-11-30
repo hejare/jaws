@@ -97,7 +97,7 @@ export const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
     rangeStart: rangeStart,
     rangeEnd: rangeEnd,
   });
-  console.log("DEBUG DAILY RUN RESULTS:", dailyRunBody, "Existing:", dailyRun);
+
   // Get/Post config
   const newConfig = {
     ...config,
@@ -142,6 +142,7 @@ export const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
 export const storeDailyRunError = async (dailyRunBody: DailyRunErrorBody) => {
   const { runId, message, cell, rangeStart, rangeEnd } = dailyRunBody;
 
+  console.log("Sharkster message:", { message, runId, cell });
   await postError(runId, message, {
     cell,
     rangeStart,
