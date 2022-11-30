@@ -2,34 +2,27 @@ import styled from "styled-components";
 import Modal from "./Modal";
 import Rating from "./Rating";
 
-const GraphContainer = styled.div`
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: end;
-  flex-direction: column;
-`;
-
-const Graph = styled.div`
-  height: fit-content;
-  object-fit: cover;
-  background-size: cover;
+const ImageContainer = styled.div`
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
 `;
 
 const StyledImg = styled.img`
-  height: fit-content;
+  max-width: 100%;
+  max-height: 100%;
 `;
 
 const RatingContainer = styled.div`
+  position: absolute;
+  bottom: 4px;
+  right: 20px;
   margin-top: 16px;
   height: 60px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 `;
 
 interface Props {
@@ -56,16 +49,14 @@ export default function ImageModal({
       size="large"
       enableOnClickOutside={enableOnClickOutside}
     >
-      <GraphContainer>
-        <Graph>
-          <StyledImg src={image} />
-        </Graph>
-        {breakoutRef && (
-          <RatingContainer>
-            <Rating initialValue={currentRating} breakoutRef={breakoutRef} />
-          </RatingContainer>
-        )}
-      </GraphContainer>
+      <ImageContainer>
+        <StyledImg src={image} />
+      </ImageContainer>
+      {breakoutRef && (
+        <RatingContainer>
+          <Rating initialValue={currentRating} breakoutRef={breakoutRef} />
+        </RatingContainer>
+      )}
     </Modal>
   );
 }
