@@ -19,7 +19,7 @@ const SummedPositions = () => {
 
   return (
     <TextDisplay>
-      <div>Portfolio value:</div>
+      <div>Portfolio value</div>
       <div>${positionsSum}</div>
     </TextDisplay>
   );
