@@ -102,7 +102,6 @@ const BreakoutsList = ({ data, disableBuy }: Props) => {
       dataIndex: "tickerRef",
       key: "tickerRef",
       width: 100,
-      render: (tickerRef: string) => <Ticker id={tickerRef} />,
     },
     {
       title: "Breakout",
