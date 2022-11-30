@@ -58,12 +58,13 @@ export async function getSpecificErrors(runIds: string[]) {
 }
 
 export async function postError(runId: string, message: string, misc: any) {
+  const timestamp = Date.now();
   const data = {
     runId,
     message: message,
-    timestamp: Date.now(),
+    timestamp: timestamp,
     miscJson: JSON.stringify(misc),
   };
-  await db.collection("errors").doc(runId).set(data);
+  await db.collection("errors").doc(timestamp.toString()).set(data);
   return data;
 }
