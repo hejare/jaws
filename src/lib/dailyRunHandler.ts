@@ -23,13 +23,13 @@ type DailyRunBody = {
   runId: string;
   breakouts: Breakout[];
   config: Config;
+  duration: number;
 };
 
 type DailyRunErrorBody = {
   runId: string;
   message: string;
   cell: string;
-  symbols: string[];
   rangeStart: number;
   rangeEnd: number;
 };
@@ -76,7 +76,7 @@ const isConfigSame = (latestConfig: Config, config: Config) => {
 };
 
 export const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
-  const { runId, config, breakouts } = dailyRunBody;
+  const { runId, config, breakouts, duration } = dailyRunBody;
 
   // update DailyRun
   let dailyRun: null | DailyRunDataType = await getDailyRun(runId);
@@ -88,7 +88,7 @@ export const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
   await putDailyRun(runId, {
     ...dailyRun,
     status: DailyRunStatus.COMPLETED,
-    duration: 1337, // TODO: Make use of timeInitiated or whatever...
+    duration: duration,
     timeEnded: Date.now(),
   });
 
@@ -134,11 +134,10 @@ export const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
 };
 
 export const storeDailyRunError = async (dailyRunBody: DailyRunErrorBody) => {
-  const { runId, message, cell, symbols, rangeStart, rangeEnd } = dailyRunBody;
+  const { runId, message, cell, rangeStart, rangeEnd } = dailyRunBody;
 
-  const errorData = await postError(runId, message, {
+  await postError(runId, message, {
     cell,
-    symbols,
     rangeStart,
     rangeEnd,
   });
@@ -158,7 +157,7 @@ export const storeDailyRunError = async (dailyRunBody: DailyRunErrorBody) => {
     status: DailyRunStatus.ERROR,
     duration:
       dailyRun && dailyRun.timeInitiated
-        ? errorData.timestamp - new Date(dailyRun.timeInitiated).getTime()
+        ? Date.now() - new Date(dailyRun.timeInitiated).getTime()
         : 0,
     timeEnded: Date.now(),
   });
