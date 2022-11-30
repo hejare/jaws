@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import Widget from "../atoms/Widget";
 import LatestOrders from "../molecules/LatestOrders";
+import SummedPositions from "../molecules/SummedPositions";
 import WalletBalance from "../molecules/WalletBalance";
 
 const GridContainer = styled.div`
@@ -17,6 +18,9 @@ const WidgetGrid = () => {
       </Widget>
       <Widget>
         <LatestOrders />
+      </Widget>
+      <Widget>
+        <SummedPositions />
       </Widget>
     </GridContainer>
   );
