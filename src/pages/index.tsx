@@ -1,8 +1,7 @@
 import type { NextPage } from "next";
 import styled from "styled-components";
-import Head from "next/head";
-import DisplayWalletBalance from "../components/organisms/DisplayWalletBalance";
 import PageContainer from "../components/atoms/PageContainer";
+import WidgetGrid from "../components/organisms/WidgetGrid";
 
 // TODO widget component
 //  All positions value
@@ -22,8 +21,7 @@ const StartPage: NextPage = () => {
   return (
     <PageContainer>
       <ContentContainer>
-        <DisplayWalletBalance />
-        ...add widgets
+        <WidgetGrid />
       </ContentContainer>
     </PageContainer>
   );
