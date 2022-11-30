@@ -26,20 +26,20 @@ export default async function handler(
   const error = await getError(runId);
   if (error) {
     extraData = { error: error };
-  } else {
-    const breakouts = await getBreakoutsByDailyRun(runId);
-
-    const userRef = "ludde@hejare.se";
-    const ratingsForUser = await getRatingsForDailyRunAndUser(runId, userRef);
-
-    const breakOutsWithRatings = extendBreakoutsWithRatings(
-      breakouts,
-      ratingsForUser,
-    );
-    extraData = {
-      breakouts: breakOutsWithRatings,
-    };
   }
+  const breakouts = await getBreakoutsByDailyRun(runId);
+
+  const userRef = "ludde@hejare.se";
+  const ratingsForUser = await getRatingsForDailyRunAndUser(runId, userRef);
+
+  const breakOutsWithRatings = extendBreakoutsWithRatings(
+    breakouts,
+    ratingsForUser,
+  );
+  extraData = {
+    ...extraData,
+    breakouts: breakOutsWithRatings,
+  };
 
   res.status(200).json({
     ...dailyRun,

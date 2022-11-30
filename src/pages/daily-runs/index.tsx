@@ -6,6 +6,7 @@ import { handleResult } from "../../util";
 import DailyRunsList from "../../components/organisms/DailyRunsList";
 import { DailyRunDataType } from "../../db/dailyRunsMeta";
 import PageContainer from "../../components/atoms/PageContainer";
+import { formatTimestampToUtc } from "../../util/handleFormatDateString";
 
 // eslint-disable-next-line no-unused-vars
 enum STATUS {
@@ -35,10 +36,10 @@ const DailyRuns: NextPage = () => {
             status,
             error,
             timeInitiated: timeInitiated
-              ? new Date(timeInitiated).toUTCString().replace(" GMT", "")
+              ? formatTimestampToUtc(timeInitiated)
               : "n/a",
             timeEnded: timeEnded
-              ? new Date(timeEnded).toUTCString().replace(" GMT", "")
+              ? formatTimestampToUtc(timeEnded)
               : "(ongoing)",
             duration,
             breakoutsCount,

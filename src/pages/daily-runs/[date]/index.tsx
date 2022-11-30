@@ -8,7 +8,10 @@ import { DailyRunDataType } from "../../../db/dailyRunsMeta";
 import { useRouter } from "next/router";
 import { isToday } from "../../../lib/helpers";
 import TriggerDailyRunButton from "../../../components/molecules/TriggerDailyRunButton";
-import { formatDateString } from "../../../util/handleFormatDateString";
+import {
+  formatDateString,
+  formatTimestampToUtc,
+} from "../../../util/handleFormatDateString";
 import PageContainer from "../../../components/atoms/PageContainer";
 import NavButton from "../../../components/atoms/buttons/NavButton";
 
@@ -51,10 +54,10 @@ const DailyRunsDate: NextPage = () => {
             runId,
             status,
             timeInitiated: timeInitiated
-              ? new Date(timeInitiated).toUTCString().replace(" GMT", "")
+              ? formatTimestampToUtc(timeInitiated)
               : "n/a",
             timeEnded: timeEnded
-              ? new Date(timeEnded).toUTCString().replace(" GMT", "")
+              ? formatTimestampToUtc(timeEnded)
               : "(ongoing)",
             duration,
             breakoutsCount,

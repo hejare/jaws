@@ -16,6 +16,7 @@ import { handleLimitPrice } from "../../../util/handleLimitPrice";
 import { ErrorDataParsedType } from "../../../db/errorsMeta";
 import {
   formatDateString,
+  formatTimestampToUtc,
   formatTimeString,
 } from "../../../util/handleFormatDateString";
 import { isToday } from "../../../lib/helpers";
@@ -114,20 +115,21 @@ const DailyRun: NextPage = () => {
               <div>cell: {dailyRun.error.misc.cell}</div>
               <div>rangeStart: {dailyRun.error.misc.rangeStart}</div>
               <div>rangeEnd: {dailyRun.error.misc.rangeEnd}</div>
-              <div>symbols: {JSON.stringify(dailyRun.error.misc.symbols)}</div>
             </ErrorContainer>
           )}
           <div>
             {dailyRun.timeInitiated && (
               <div>
-                Initiated:{" "}
-                {new Date(dailyRun.timeInitiated)
-                  .toUTCString()
-                  .replace(" GMT", "")}
+                Initiated: {formatTimestampToUtc(dailyRun.timeInitiated)}
               </div>
             )}
             <div>
-              Ended: {dailyRun.timeEnded} ({dailyRun.duration}s)
+              Ended:{" "}
+              {dailyRun.timeEnded
+                ? `${formatTimestampToUtc(dailyRun.timeEnded)} (${(
+                    dailyRun.duration / 60
+                  ).toFixed(2)}min)`
+                : "(ongoing)"}
             </div>
           </div>
         </div>

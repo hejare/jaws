@@ -10,3 +10,7 @@ export const formatDateString = (date: string) => {
     8,
   )}`;
 };
+
+// 1669803192509 -> Wed, 30 Nov 2022 10:13:12
+export const formatTimestampToUtc = (timestamp: number) =>
+  new Date(timestamp).toUTCString().replace(" GMT", "");
