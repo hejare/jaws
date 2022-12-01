@@ -63,6 +63,8 @@ const OrdersList = ({ data }: Props) => {
   //     });
   // }, []);
 
+  console.log(data);
+
   const renderTitle = () => {
     return <h2>Order list</h2>;
   };
@@ -94,10 +96,23 @@ const OrdersList = ({ data }: Props) => {
     },
     {
       title: "Price",
-      dataIndex: "filled_avg_price",
+      dataIndex: "",
       key: "price",
       width: 200,
-      render: (price: string) => <PriceDisplay value={parseFloat(price)} />,
+      render: ({
+        filled_avg_price,
+        limit_price,
+      }: {
+        filled_avg_price?: string;
+        limit_price: string;
+      }) => {
+        console.log("price ", filled_avg_price);
+        if (filled_avg_price) {
+          return <PriceDisplay value={parseFloat(filled_avg_price)} />;
+        } else {
+          return <PriceDisplay value={parseFloat(limit_price)} />;
+        }
+      },
     },
     {
       title: "Value",
@@ -112,11 +127,18 @@ const OrdersList = ({ data }: Props) => {
         filled_avg_price: string;
         notional?: string;
         qty: string;
-      }) => (
-        <PriceDisplay
-          value={parseFloat(price) * parseFloat(notional ? notional : qty)}
-        />
-      ),
+      }) => {
+        // console.log(qty);
+        // console.log(notional);
+
+        return (
+          data && (
+            <PriceDisplay
+              value={parseFloat(price) * parseFloat(notional ? notional : qty)}
+            />
+          )
+        );
+      },
     },
     {
       title: "Created at",
