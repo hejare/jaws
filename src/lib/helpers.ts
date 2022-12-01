@@ -21,10 +21,16 @@ export const isOnSameDate = (datetime1: string, datetime2: string) => {
   return d1.toDateString() === d2.toDateString();
 };
 
-export const getDateTime = (timestamp: string | null) => {
-  if (!timestamp) {
-    return timestamp;
+export const getDateTime = (timestampInput: number | string | null) => {
+  if (!timestampInput) {
+    return timestampInput;
   }
+
+  const timestamp =
+    typeof timestampInput === "string"
+      ? parseInt(timestampInput)
+      : timestampInput;
+
   const d = new Date(timestamp);
   const nowMonth = d.getMonth() + 1;
   const nowDate = d.getDate();
