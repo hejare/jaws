@@ -9,6 +9,7 @@ import TextDisplay from "../components/atoms/TextDisplay";
 import WidgetGrid from "../components/organisms/WidgetGrid";
 import { INDICATOR } from "../lib/priceHandler";
 import { BoldText } from "../components/atoms/BoldText";
+import PriceDisplay from "../components/molecules/PriceDisplay";
 
 // eslint-disable-next-line no-unused-vars
 enum STATUS {
@@ -75,7 +76,7 @@ const PortfolioPage: NextPage = () => {
         >
           <TextDisplay>
             <BoldText>{valueDiff > 0 ? "Earn:" : "Loss:"}</BoldText>
-            <div>${valueDiff.toFixed()}</div>
+            <PriceDisplay value={valueDiff.toFixed()} />
           </TextDisplay>
         </Widget>
       </WidgetGrid>
