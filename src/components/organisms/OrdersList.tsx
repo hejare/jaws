@@ -53,16 +53,6 @@ interface Props {
 }
 
 const OrdersList = ({ data }: Props) => {
-  // const [orders, setOrders] = useState(Array<Order>);
-
-  // useEffect(() => {
-  //   handleGetTrades()
-  //     .then((data) => setOrders(data))
-  //     .catch((e) => {
-  //       console.error(e);
-  //     });
-  // }, []);
-
   const renderTitle = () => {
     return <h2>Order list</h2>;
   };
@@ -94,10 +84,22 @@ const OrdersList = ({ data }: Props) => {
     },
     {
       title: "Price",
-      dataIndex: "filled_avg_price",
+      dataIndex: "",
       key: "price",
       width: 200,
-      render: (price: string) => <PriceDisplay value={parseFloat(price)} />,
+      render: ({
+        filled_avg_price: avgPrice,
+        limit_price: limitPrice,
+      }: {
+        filled_avg_price?: string;
+        limit_price: string;
+      }) => {
+        if (avgPrice) {
+          return <PriceDisplay value={parseFloat(avgPrice)} />;
+        } else {
+          return <PriceDisplay value={parseFloat(limitPrice)} />;
+        }
+      },
     },
     {
       title: "Value",
@@ -106,17 +108,37 @@ const OrdersList = ({ data }: Props) => {
       width: 200,
       render: ({
         filled_avg_price: price,
+        limit_price: limitPrice,
         notional,
         qty,
       }: {
         filled_avg_price: string;
         notional?: string;
+        limit_price: string;
         qty: string;
-      }) => (
-        <PriceDisplay
-          value={parseFloat(price) * parseFloat(notional ? notional : qty)}
-        />
-      ),
+      }) => {
+        if (price) {
+          return (
+            data && (
+              <PriceDisplay
+                value={
+                  parseFloat(price) * parseFloat(notional ? notional : qty)
+                }
+              />
+            )
+          );
+        } else {
+          return (
+            data && (
+              <PriceDisplay
+                value={
+                  parseFloat(limitPrice) * parseFloat(notional ? notional : qty)
+                }
+              />
+            )
+          );
+        }
+      },
     },
     {
       title: "Created at",
@@ -156,21 +178,6 @@ const OrdersList = ({ data }: Props) => {
       },
     },
   ];
-
-  // const data = orders.map((order: any) => {
-  //   return {
-  //     symbol: order.symbol,
-  //     created: getDateTime(order.created_at),
-  //     filled: order.filled_at
-  //       ? getDateTime(order.filled_at)
-  //       : nonCancellableOrderStatus.includes(order.status)
-  //       ? "n/a"
-  //       : "not yet",
-  //     notional: order.notional,
-  //     status: order.status,
-  //     orderId: order.id,
-  //   };
-  // });
 
   return (
     <Table

@@ -63,8 +63,6 @@ const Navbar = () => {
     setPathName(router.pathname);
   }, [router]);
 
-  console.log(router.pathname);
-
   return (
     <NavBarContainer>
       <Link href={"/"}>
