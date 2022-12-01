@@ -4,9 +4,13 @@ import styled, { css } from "styled-components";
 import { getToday } from "../../lib/helpers";
 import { Theme } from "../../styles/themes";
 import { useRouter } from "next/router";
+import { useAccountStore, User } from "../../store/accountStore";
+import { signInWithGoogle, signOutUser } from "../../auth/firestoreAuth";
+import Button from "../atoms/buttons/Button";
 
 const NavBarContainer = styled.div`
   display: flex;
+  justify-content: space-between;
   height: 50px;
   width: 100%;
   gap: 15px;
@@ -54,6 +58,10 @@ const NavBarItem = styled.div`
     `};
 `;
 
+const RightSide = styled.div`
+  width: 100px;
+`;
+
 const Navbar = () => {
   const today = getToday();
   const router = useRouter();
@@ -62,6 +70,28 @@ const Navbar = () => {
   useEffect(() => {
     setPathName(router.pathname);
   }, [router]);
+
+  const [isLoggedIn, setIsLoggedIn, setUser] = useAccountStore((state) => [
+    state.isLoggedIn,
+    state.setIsLoggedIn,
+    state.setUser,
+  ]);
+
+  const handleLogin = () => {
+    signInWithGoogle()
+      .then((user: User) => {
+        setIsLoggedIn(true);
+        setUser(user);
+        void router.push(router.pathname);
+      })
+      .catch((e) => console.error(e));
+  };
+
+  const handleLogout = () => {
+    void signOutUser();
+    setIsLoggedIn(false);
+    setUser(null);
+  };
 
   return (
     <NavBarContainer>
@@ -89,6 +119,14 @@ const Navbar = () => {
           <NavBarItem active={pathName === "/portfolio"}>Portfolio</NavBarItem>
         </Link>
       </LinksContainer>
+
+      <RightSide>
+        {isLoggedIn ? (
+          <Button onClick={handleLogout}>Log out</Button>
+        ) : (
+          <Button onClick={handleLogin}>Log in</Button>
+        )}
+      </RightSide>
     </NavBarContainer>
   );
 };

@@ -6,6 +6,9 @@ import themes from "../styles/themes";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { ModalProvider } from "use-modal-hook";
 import Navbar from "../components/organisms/Navbar";
+import initializeFirebase from "../auth/initializeFirebase";
+import { useAccountStore } from "../store/accountStore";
+import PageContainer from "../components/atoms/PageContainer";
 
 const theme = themes.dark; // I know, we are now removing ability to switch theme without hard reload, but what the hell...
 
@@ -20,7 +23,9 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
+initializeFirebase();
 function MyApp({ Component, pageProps }: AppProps) {
+  const [isLoggedIn] = useAccountStore((state) => [state.isLoggedIn]);
   return (
     <>
       <Head>
@@ -34,9 +39,15 @@ function MyApp({ Component, pageProps }: AppProps) {
       </Head>
       <ThemeProvider theme={theme}>
         <Navbar />
-        <ModalProvider>
-          <Component {...pageProps} />
-        </ModalProvider>
+        {isLoggedIn ? (
+          <ModalProvider>
+            <Component {...pageProps} />
+          </ModalProvider>
+        ) : (
+          <PageContainer>
+            <h1>You need to Log in</h1>
+          </PageContainer>
+        )}
       </ThemeProvider>
       <GlobalStyle />
     </>

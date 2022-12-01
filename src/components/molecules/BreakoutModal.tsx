@@ -48,7 +48,7 @@ const RatingContainer = styled.div`
 `;
 
 const Info = styled.div`
-  height: calc(100% - 88px); // 88 = StyledButton height + padding
+  height: calc(100% - 60px); // 60 = StyledButton height + padding
 `;
 
 const OrderDetails = styled.div`
