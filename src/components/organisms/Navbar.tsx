@@ -85,8 +85,8 @@ const Navbar = () => {
         <Link href="/orders">
           <NavBarItem active={pathName === "/orders"}>All orders</NavBarItem>
         </Link>
-        <Link href="/assets">
-          <NavBarItem active={pathName === "/assets"}>Portfolio</NavBarItem>
+        <Link href="/portfolio">
+          <NavBarItem active={pathName === "/portfolio"}>Portfolio</NavBarItem>
         </Link>
       </LinksContainer>
     </NavBarContainer>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { getLatestOrders } from "../../lib/handleLatestOrders";
+import { BoldText } from "../atoms/BoldText";
 import TextDisplay from "../atoms/TextDisplay";
 
 interface Order {
@@ -30,7 +31,7 @@ const LatestOrders = () => {
 
   return (
     <TextDisplay>
-      <div>Latest orders</div>
+      <BoldText>Latest orders</BoldText>
       {orders?.map((order, i) => (
         <FlexContainer key={i}>
           <div>{order.symbol}</div>
