@@ -166,7 +166,9 @@ export default function BreakoutModal({
           {orderDetails && orderStatus === SUMMED_ORDER_STATUS.IN_PROGRESS && (
             <OrderDetails indicator={INDICATOR.NEUTRAL}>
               <p>An order for this ticker is in progress:</p>
-              <p>Placed at: {getDateTime(orderDetails.created_at)}</p>
+              {orderDetails.created_at && (
+                <p>Placed at: {getDateTime(orderDetails.created_at)}</p>
+              )}
               <p>Shares (Qty): {orderDetails.qty}</p>
               <p>Entry Price: {orderDetails.limit_price}</p>
               <p>
