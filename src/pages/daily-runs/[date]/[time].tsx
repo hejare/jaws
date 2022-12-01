@@ -37,6 +37,9 @@ const ErrorContainer = styled.div`
   padding: 4px;
 `;
 
+const StyledNavButton = styled(NavButton)`
+  margin-top: 32px;
+`;
 interface DailyRunFetchDataType extends DailyRunDataType {
   breakouts?: ExistingBreakoutDataType[];
   error?: ErrorDataParsedType;
@@ -92,6 +95,7 @@ const DailyRun: NextPage = () => {
     return <></>;
   }
 
+  const configId = breakoutsData.length > 0 ? breakoutsData[0].configRef : null;
   return (
     <PageContainer>
       <NavButton goBack href="">
@@ -134,6 +138,11 @@ const DailyRun: NextPage = () => {
             Symbol Range: {dailyRun.rangeStart}-{dailyRun.rangeEnd}
           </div>
         </div>
+      )}
+      {configId && (
+        <StyledNavButton href={`/configs/${configId}`}>
+          View Configuration
+        </StyledNavButton>
       )}
       <BreakoutsList
         data={breakoutsData}

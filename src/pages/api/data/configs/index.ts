@@ -5,6 +5,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const result = await getAllConfigs();
-  res.status(200).json(result);
+  const configs = await getAllConfigs();
+  res.status(200).json(configs);
 }

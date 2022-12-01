@@ -62,17 +62,28 @@ export const triggerDailyrun = async () => {
   return Promise.resolve(newRunId);
 };
 
-const isConfigSame = (latestConfig: Config, config: Config) => {
-  const latestConfigEntities = Object.keys(latestConfig);
-  const configEntities = Object.keys(config);
+const isConfigSame = (configA: Config, configB: Config) => {
+  const confA: Record<string, any> = {
+    ...configA,
+    _ref: null,
+    timestamp: null,
+  };
 
-  // Note: since latest config (the ones existing in Frestore) always get their _ref prop extended to iteself, the difference between incoming config and existing config should be 1, if objects are identical.
-  if (latestConfigEntities.length - configEntities.length !== 1) {
+  const confB: Record<string, any> = {
+    ...configB,
+    _ref: null,
+    timestamp: null,
+  };
+
+  const confAEntities = Object.keys(confA);
+  const confBEntities = Object.keys(confB);
+
+  if (confAEntities.length !== confBEntities.length) {
     return false;
   }
 
-  const foundMissmatches = configEntities.reduce((result, configName) => {
-    return result + (latestConfig[configName] !== config[configName] ? 1 : 0);
+  const foundMissmatches = confAEntities.reduce((result, configName) => {
+    return result + (confA[configName] !== confB[configName] ? 1 : 0);
   }, 0);
   return !foundMissmatches;
 };
