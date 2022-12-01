@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import fetch from "node-fetch";
 import { useEffect, useState } from "react";
-import styled from "styled-components";
+import { BoldText } from "../../components/atoms/BoldText";
 import NavButton from "../../components/atoms/buttons/NavButton";
 import PageContainer from "../../components/atoms/PageContainer";
 import TextDisplay from "../../components/atoms/TextDisplay";
@@ -29,10 +29,6 @@ enum STATUS {
   READY,
 }
 
-const Value = styled.span`
-  font-size: 1.2em;
-  font-family: "Roboto-Black";
-`;
 const ConfigPage: NextPage = () => {
   const [config, setConfig] = useState();
   const [dataFetchStatus, setDataFetchStatus] = useState(STATUS.LOADING);
@@ -70,11 +66,11 @@ const ConfigPage: NextPage = () => {
             name !== "_ref" && (
               <div key={i}>
                 {name}:{" "}
-                <Value>
+                <BoldText>
                   {typeof config[name] === "boolean"
                     ? JSON.stringify(config[name])
                     : config[name]}
-                </Value>
+                </BoldText>
               </div>
             ),
         )}

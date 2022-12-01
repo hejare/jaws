@@ -8,7 +8,7 @@ export enum PRICE_DISPLAY_VARIANTS {
 }
 
 type Props = {
-  value: number;
+  value: number | string;
   indicator?: INDICATOR;
   variant?: PRICE_DISPLAY_VARIANTS;
 };
@@ -32,11 +32,13 @@ const PriceText = styled.span`
 `;
 
 const PriceDisplay = ({
-  value,
+  value: inputValue,
   indicator = INDICATOR.NEUTRAL,
   variant = PRICE_DISPLAY_VARIANTS.BOX,
 }: Props) => {
   let char = "";
+  const value =
+    typeof inputValue === "string" ? parseInt(inputValue) : inputValue;
   if (value < 0) {
     char = "-";
   }

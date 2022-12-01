@@ -1,5 +1,6 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
+import { INDICATOR } from "../../lib/priceHandler";
 
 const StyledWidget = styled.div`
   display: flex;
@@ -10,14 +11,30 @@ const StyledWidget = styled.div`
   border-radius: 20px;
   background-color: grey;
   flex-direction: column;
+
+  ${({
+    theme,
+    indicator = INDICATOR.NEUTRAL,
+  }: {
+    theme: any;
+    indicator?: INDICATOR;
+  }) => {
+    return css`
+      color: ${indicator === INDICATOR.NEUTRAL
+        ? theme.palette.text.secondary
+        : "inherit"};
+      background-color: ${theme.palette.indicator[indicator.toLowerCase()]};
+    `;
+  }}
 `;
 
 type Props = {
+  indicator?: INDICATOR;
   children?: React.ReactNode;
 };
 
-const Widget = ({ children }: Props) => {
-  return <StyledWidget>{children}</StyledWidget>;
+const Widget = ({ indicator, children }: Props) => {
+  return <StyledWidget indicator={indicator}>{children}</StyledWidget>;
 };
 
 export default Widget;

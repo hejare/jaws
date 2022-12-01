@@ -16,11 +16,9 @@ const getPositions = async () => {
 
 export const sumPositions = async () => {
   const positions = await getPositions();
-  return positions
-    .reduce(
-      (acc: number, position: Position) =>
-        acc + parseFloat(position.current_price) * parseFloat(position.qty),
-      0,
-    )
-    .toFixed(4);
+  return positions.reduce(
+    (acc: number, position: Position) =>
+      acc + parseFloat(position.current_price) * parseFloat(position.qty),
+    0,
+  );
 };

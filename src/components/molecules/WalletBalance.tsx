@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { getAccountCashBalance } from "../../services/backendService";
+import { BoldText } from "../atoms/BoldText";
 import TextDisplay from "../atoms/TextDisplay";
 
 const WalletBalance = () => {
   const [walletBalance, setWalletBalance] = useState<string>("checking...");
 
   const handleSetBalance = (balance: string) => {
-    setWalletBalance(parseFloat(balance).toFixed(2));
+    setWalletBalance(parseFloat(balance).toFixed());
   };
 
   useEffect(() => {
@@ -24,7 +25,7 @@ const WalletBalance = () => {
 
   return (
     <TextDisplay>
-      <div>Wallet balance</div>
+      <BoldText>Wallet balance</BoldText>
       <div>${walletBalance}</div>
     </TextDisplay>
   );

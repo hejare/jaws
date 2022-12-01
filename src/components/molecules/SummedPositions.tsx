@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { sumPositions } from "../../lib/handlePositionsValue";
+import { BoldText } from "../atoms/BoldText";
 import TextDisplay from "../atoms/TextDisplay";
 
 const SummedPositions = () => {
-  const [positionsSum, setPositionsSum] = useState<string>();
+  const [positionsSum, setPositionsSum] = useState<number>(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -19,8 +20,8 @@ const SummedPositions = () => {
 
   return (
     <TextDisplay>
-      <div>Portfolio value</div>
-      <div>${positionsSum}</div>
+      <BoldText>Portfolio value</BoldText>
+      <div>${positionsSum.toFixed()}</div>
     </TextDisplay>
   );
 };
