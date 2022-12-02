@@ -1,4 +1,3 @@
-import styled from "styled-components";
 import type { NextPage } from "next";
 import OrdersList from "../components/organisms/OrdersList";
 import { useEffect, useState } from "react";

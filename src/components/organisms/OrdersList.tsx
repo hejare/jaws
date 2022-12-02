@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
-import { handleDeleteOrder, handleGetTrades } from "../../lib/brokerHandler";
-import { getDateTime } from "../../lib/helpers";
+import { handleDeleteOrder } from "../../lib/brokerHandler";
+import { getDateTime, isoStringToTimeStamp } from "../../lib/helpers";
 import Button from "../atoms/buttons/Button";
 import Table from "../atoms/Table";
 import PriceDisplay from "../molecules/PriceDisplay";
@@ -145,14 +144,14 @@ const OrdersList = ({ data }: Props) => {
       dataIndex: "created_at",
       key: "created",
       width: 200,
-      render: (createAt: string) => getDateTime(createAt),
+      render: (createAt: string) => getDateTime(isoStringToTimeStamp(createAt)),
     },
     {
       title: "Filled at",
       dataIndex: "filled_at",
       key: "filled",
       width: 200,
-      render: (filledAt: string) => getDateTime(filledAt),
+      render: (filledAt: string) => getDateTime(isoStringToTimeStamp(filledAt)),
     },
     {
       title: "Status",
