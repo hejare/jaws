@@ -3,7 +3,8 @@ import { SpinnerBar } from "../SpinnerBar";
 import { Theme } from "../../../styles/themes";
 
 const EnabledDiv = styled.div`
-  padding: 16px;
+  padding: 4px;
+  text-align: center;
   border: ${({ theme }: { theme: Theme }) =>
     `${theme.borders.base} ${theme.palette.border.primary}`};
   cursor: pointer;
@@ -49,7 +50,8 @@ const LoadingDiv = styled.div`
 `;
 
 const DisabledDiv = styled.div`
-  padding: 16px;
+  padding: 4px;
+  text-align: center;
   border-radius: 5px;
   border: 1px solid ${({ theme }) => theme.palette.border.disabled};
   cursor: not-allowed;
