@@ -1,3 +1,5 @@
+import { isValidISODateTime } from "is-isodatetime";
+
 function addZero(value: number) {
   return value < 10 ? `0${value}` : value;
 }
@@ -21,18 +23,14 @@ export const isOnSameDate = (datetime1: string, datetime2: string) => {
   return d1.toDateString() === d2.toDateString();
 };
 
-export const isoStringToTimeStamp = (isoString: string) => {
-  const date = new Date(isoString);
-  return date.getTime();
-};
-
 export const getDateTime = (timestampInput: number | string | null) => {
   if (!timestampInput) {
     return timestampInput;
   }
 
   const timestamp =
-    typeof timestampInput === "string"
+    typeof timestampInput === "string" &&
+    !isValidISODateTime(timestampInput.toString())
       ? parseInt(timestampInput)
       : timestampInput;
 
