@@ -4,7 +4,7 @@ export interface TradesDataType {
   price: number;
   quantity: number;
   alpacaOrderId: string;
-  createdAtISOString: string;
+  createdAt: string;
   breakoutRef?: string;
   userRef?: string;
 }

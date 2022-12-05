@@ -14,16 +14,16 @@ export const handleSaveOrder = async (
   price: number,
   quantity: number,
   alpacaOrderId: string,
-  createdAtISOString: string,
+  createdAt: string,
   breakoutRef?: string,
 ) => {
   const data: TradesDataType = {
     ticker,
-    orderType,
+    orderType: orderType.toUpperCase(),
     price,
     quantity,
     alpacaOrderId,
-    createdAtISOString,
+    createdAt,
     userRef: "ludde@hejare.se",
   };
 
