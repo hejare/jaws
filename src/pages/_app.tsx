@@ -9,16 +9,17 @@ import Navbar from "../components/organisms/Navbar";
 import initializeFirebase from "../auth/initializeFirebase";
 import { createAccountStore, User } from "../store/accountStore";
 import PageContainer from "../components/atoms/PageContainer";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { AccountContext } from "../store/accountContext";
 import { useStore } from "zustand";
 import ErrorMessage from "../components/atoms/ErrorMessage";
-import { useInterval } from "usehooks-ts";
+import { useClickAnyWhere, useInterval } from "usehooks-ts";
 import { refresh } from "../auth/firestoreAuth";
 import { setCookies } from "cookies-next";
 import {
   ONE_HOUR_IN_MS,
   ONE_MINUTE_IN_MS,
+  SESSION_LENGTH_IN_MS,
   TEN_MINUTES_IN_MS,
 } from "../lib/helpers";
 
@@ -48,8 +49,6 @@ interface ExtendedAppProps extends AppProps {
 
 initializeFirebase();
 
-const FIVE_MINUTES_IN_MS = ONE_MINUTE_IN_MS * 5;
-
 function MyApp({ Component, pageProps }: ExtendedAppProps) {
   const { authedUser, authError } = pageProps;
   const store = useRef(
@@ -58,6 +57,7 @@ function MyApp({ Component, pageProps }: ExtendedAppProps) {
       isLoggedIn: !!authedUser,
     }),
   ).current;
+  const [interval, setInterval] = useState(SESSION_LENGTH_IN_MS);
   const isLoggedIn = useStore(store, (state) => state.isLoggedIn);
   const [user, setUser, logoutUser] = useStore(store, (state) => [
     state.user,
@@ -66,21 +66,18 @@ function MyApp({ Component, pageProps }: ExtendedAppProps) {
   ]);
 
   // TODO: This interval could be extracted in aseparate hook or such, so that this file gets cleaner
-  useInterval(() => {
-    async function doRefresh() {
-      if (user && user.sessionExpires - Date.now() < 0) {
-        // Session time expired - lets logout
-        logoutUser();
-        location.reload();
-        return;
-      }
+  let latestInteraction = Date.now();
+  useClickAnyWhere(() => {
+    latestInteraction = Date.now();
+    setInterval(0);
 
+    async function doRefresh() {
       if (
         !user ||
         (user.sessionExpires &&
-          user.sessionExpires - Date.now() > TEN_MINUTES_IN_MS)
+          user.sessionExpires - Date.now() > SESSION_LENGTH_IN_MS)
       ) {
-        // Only refresh token if less then 10 minutes left of expiry
+        // Only refresh token if less then SESSION_LENGTH_IN_MS left
         return;
       }
 
@@ -98,7 +95,16 @@ function MyApp({ Component, pageProps }: ExtendedAppProps) {
       }
     }
     void doRefresh();
-  }, FIVE_MINUTES_IN_MS);
+  });
+
+  useInterval(() => {
+    setInterval(SESSION_LENGTH_IN_MS);
+    if (user && Date.now() - latestInteraction > SESSION_LENGTH_IN_MS) {
+      // Session time expired - lets logout
+      logoutUser();
+      return;
+    }
+  }, interval);
 
   return (
     <>
