@@ -233,6 +233,7 @@ export default function BreakoutModal({
             symbol={symbol}
             entryPrice={entryPrice}
             shares={shares}
+            breakoutRef={breakoutRef}
           />
         )}
       </InfoContainer>

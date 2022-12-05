@@ -7,12 +7,14 @@ const handlePostOrder = async (
   price: number,
   orderType: OrderType,
   quantity: number,
+  breakoutRef?: string,
 ) => {
   const body: BodyInit = JSON.stringify({
     ticker,
     orderType,
     price,
     quantity,
+    breakoutRef,
   });
 
   const resp = await fetch("/api/broker/orders/", {
@@ -28,7 +30,10 @@ export const handleBuyOrder = (
   ticker: string,
   price: number,
   quantity: number,
-) => handlePostOrder(ticker, price, "buy", quantity);
+  breakoutRef: string,
+) => {
+  return handlePostOrder(ticker, price, "buy", quantity, breakoutRef);
+};
 
 export const handleSellOrder = (ticker: string) =>
   handlePostOrder(ticker, 1, "sell", 1); // ?refactor handlepostorder to not need breakout value here

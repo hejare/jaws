@@ -15,10 +15,17 @@ interface Props {
   symbol: string;
   entryPrice: number;
   shares: number;
+  breakoutRef: string;
   onClick?: () => void;
 }
 
-const PlaceOrderButton = ({ symbol, entryPrice, shares, onClick }: Props) => {
+const PlaceOrderButton = ({
+  symbol,
+  entryPrice,
+  shares,
+  breakoutRef,
+  onClick,
+}: Props) => {
   const [interval, setInterval] = useState(0);
   const [orderStatus, setOrderStatus] = useState(null);
   const [hasClicked, setHasClicked] = useState(false);
@@ -44,8 +51,7 @@ const PlaceOrderButton = ({ symbol, entryPrice, shares, onClick }: Props) => {
       onClick={() => {
         setOrdersLengthWhenClicked(ordersLength);
         setHasClicked(true);
-
-        void handleBuyOrder(symbol, entryPrice, shares);
+        void handleBuyOrder(symbol, entryPrice, shares, breakoutRef);
         typeof onClick === "function" && onClick();
         setOrderStatus(null);
       }}

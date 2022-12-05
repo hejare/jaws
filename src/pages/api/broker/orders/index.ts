@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { OrderType } from "../../../../components/organisms/OrdersList";
 import { ResponseDataType } from "../../../../db/ResponseDataMeta";
+import { handleSaveOrder } from "../../../../db/tradesEntity";
 import { getOrders, postOrder } from "../../../../services/alpacaService";
 
 interface ExtendedResponseDataType extends ResponseDataType {
@@ -34,21 +35,36 @@ export default async function handler(
           orderType,
           price,
           quantity,
+          breakoutRef,
         }: {
           ticker: string;
           orderType: OrderType;
           price: number;
           quantity: number;
+          breakoutRef: string;
         } = body;
 
         await postOrder(ticker, orderType, price, quantity)
-          .then(() => {
+          .then(async (result) => {
+            const alpacaOrderId = result.id;
+            const created_at = Date.parse(result.created_at).toString(); // result.created_at: '2022-12-05T11:02:02.058370387Z'
+            await handleSaveOrder(
+              ticker,
+              orderType,
+              price,
+              quantity,
+              alpacaOrderId,
+              created_at,
+              breakoutRef,
+            );
             responseData.status = "OK";
           })
           .catch((e) => {
+            console.log(e);
             responseData.status = "NOK";
             responseData.message = e.message;
           });
+
         break;
       default:
         throw new Error(`Unsupported method: ${method as string}`);
