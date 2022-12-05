@@ -2405,11 +2405,6 @@ data-urls@^2.0.0:
     whatwg-mimetype "^2.3.0"
     whatwg-url "^8.0.0"
 
-date-fns@^2.13.0:
-  version "2.29.3"
-  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.29.3.tgz#27402d2fc67eb442b511b70bbdf98e6411cd68a8"
-  integrity sha512-dDCnyH2WnnKusqvZZ6+jA1O51Ibt8ZMRNkDZdyAyK4YfbDwa/cEmuztzG5pk6hqlp9aSBPYcjOlktquahGwGeA==
-
 dayjs@^1.11.6:
   version "1.11.6"
   resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.6.tgz#2e79a226314ec3ec904e3ee1dd5a4f5e5b1c7afb"
@@ -3592,13 +3587,6 @@ is-glob@^4.0.0, is-glob@^4.0.1, is-glob@^4.0.3:
   integrity sha512-xelSayHH36ZgE7ZWhli7pW34hNbNl8Ojv5KVmkJD4hBdD3th8Tfk9vYasLM+mXWOZhFkgZfxhLSnrwRr4elSSg==
   dependencies:
     is-extglob "^2.1.1"
-
-is-isodatetime@^0.0.4:
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/is-isodatetime/-/is-isodatetime-0.0.4.tgz#b48de7ffb3aafba691afc6467b83e49e2167b148"
-  integrity sha512-t5hYJ9s7HUF/vuAh+hGhGhGbJapcGXXlvOkeg0AR+t6ePJTVVBKWvAFlK92lsGXijI8Xngu1DxnLmAVY8usuIQ==
-  dependencies:
-    date-fns "^2.13.0"
 
 is-negative-zero@^2.0.2:
   version "2.0.2"

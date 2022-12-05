@@ -1,5 +1,3 @@
-import { isValidISODateTime } from "is-isodatetime";
-
 function addZero(value: number) {
   return value < 10 ? `0${value}` : value;
 }
@@ -29,8 +27,7 @@ export const getDateTime = (timestampInput: number | string | null) => {
   }
 
   const timestamp =
-    typeof timestampInput === "string" &&
-    !isValidISODateTime(timestampInput.toString())
+    typeof timestampInput === "string" && !!isNaN(Date.parse(timestampInput))
       ? parseInt(timestampInput)
       : timestampInput;
 

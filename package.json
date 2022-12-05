@@ -40,7 +40,6 @@
     "dayjs": "^1.11.6",
     "firebase": "^9.14.0",
     "firebase-admin": "^11.2.0",
-    "is-isodatetime": "^0.0.4",
     "next": "^12.3.1",
     "node-fetch": "2.6.1",
     "rc-table": "^7.28.1",
