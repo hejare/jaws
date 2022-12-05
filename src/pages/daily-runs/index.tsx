@@ -7,6 +7,7 @@ import DailyRunsList from "../../components/organisms/DailyRunsList";
 import { DailyRunDataType } from "../../db/dailyRunsMeta";
 import PageContainer from "../../components/atoms/PageContainer";
 import { formatTimestampToUtc } from "../../util/handleFormatDateString";
+import { getServerSidePropsAllPages } from "../../lib/getServerSidePropsAllPages";
 
 // eslint-disable-next-line no-unused-vars
 enum STATUS {
@@ -61,4 +62,5 @@ const DailyRuns: NextPage = () => {
   );
 };
 
+export const getServerSideProps = getServerSidePropsAllPages;
 export default DailyRuns;

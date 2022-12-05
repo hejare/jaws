@@ -7,8 +7,11 @@ import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { ModalProvider } from "use-modal-hook";
 import Navbar from "../components/organisms/Navbar";
 import initializeFirebase from "../auth/initializeFirebase";
-import { useAccountStore } from "../store/accountStore";
+import { createAccountStore, User } from "../store/accountStore";
 import PageContainer from "../components/atoms/PageContainer";
+import { useRef } from "react";
+import { AccountContext } from "../store/accountContext";
+import { useStore } from "zustand";
 
 const theme = themes.dark; // I know, we are now removing ability to switch theme without hard reload, but what the hell...
 
@@ -23,9 +26,28 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
+type AuthError = {
+  message: string;
+  code: string;
+};
+interface ExtendedAppProps extends AppProps {
+  pageProps: {
+    authedUser: User | null;
+    authError?: AuthError;
+  };
+}
+
 initializeFirebase();
-function MyApp({ Component, pageProps }: AppProps) {
-  const [isLoggedIn] = useAccountStore((state) => [state.isLoggedIn]);
+
+function MyApp({ Component, pageProps }: ExtendedAppProps) {
+  const { authedUser, authError } = pageProps;
+  const store = useRef(
+    createAccountStore({
+      user: authedUser,
+      isLoggedIn: !!authedUser,
+    }),
+  ).current;
+  const isLoggedIn = useStore(store, (state) => state.isLoggedIn);
   return (
     <>
       <Head>
@@ -38,16 +60,23 @@ function MyApp({ Component, pageProps }: AppProps) {
         />
       </Head>
       <ThemeProvider theme={theme}>
-        <Navbar />
-        {isLoggedIn ? (
-          <ModalProvider>
-            <Component {...pageProps} />
-          </ModalProvider>
-        ) : (
-          <PageContainer>
-            <h1>You need to Log in</h1>
-          </PageContainer>
-        )}
+        <AccountContext.Provider value={store}>
+          <Navbar />
+          {isLoggedIn ? (
+            <ModalProvider>
+              <Component {...pageProps} />
+            </ModalProvider>
+          ) : (
+            <PageContainer>
+              <h1>You need to Log in</h1>
+              {authError && (
+                <div>
+                  {authError.message} ({authError.code})
+                </div>
+              )}
+            </PageContainer>
+          )}
+        </AccountContext.Provider>
       </ThemeProvider>
       <GlobalStyle />
     </>

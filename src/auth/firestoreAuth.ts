@@ -46,9 +46,13 @@ export async function signInWithGoogle() {
   // const token2 = await user.getIdToken(true);
   // const payload = await admin.auth().verifyIdToken(token);
   console.log("Authenticated user:", user);
+  const idToken = await user.getIdToken();
   return {
+    userId: user.uid,
+    idToken: idToken,
     displayName: user.displayName || "",
     email: user.email || "",
+    sessionExpires: 1670002416, // TODO!
     lastSignInTime: user.metadata.lastSignInTime || "",
   };
 }

@@ -1,12 +1,15 @@
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 import { getToday } from "../../lib/helpers";
 import { Theme } from "../../styles/themes";
 import { useRouter } from "next/router";
-import { useAccountStore, User } from "../../store/accountStore";
+import { User } from "../../store/accountStore";
 import { signInWithGoogle, signOutUser } from "../../auth/firestoreAuth";
 import Button from "../atoms/buttons/Button";
+import { setCookies, deleteCookie } from "cookies-next";
+import { useStore } from "zustand";
+import { AccountContext } from "../../store/accountContext";
 
 const NavBarContainer = styled.div`
   display: flex;
@@ -71,7 +74,9 @@ const Navbar = () => {
     setPathName(router.pathname);
   }, [router]);
 
-  const [isLoggedIn, setIsLoggedIn, setUser] = useAccountStore((state) => [
+  const store = useContext(AccountContext);
+  if (!store) throw new Error("Missing AccountContext.Provider in the tree");
+  const [isLoggedIn, setIsLoggedIn, setUser] = useStore(store, (state) => [
     state.isLoggedIn,
     state.setIsLoggedIn,
     state.setUser,
@@ -80,6 +85,7 @@ const Navbar = () => {
   const handleLogin = () => {
     signInWithGoogle()
       .then((user: User) => {
+        setCookies("idToken", user.idToken);
         setIsLoggedIn(true);
         setUser(user);
         void router.push(router.pathname);
@@ -88,6 +94,7 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
+    deleteCookie("idToken");
     void signOutUser();
     setIsLoggedIn(false);
     setUser(null);

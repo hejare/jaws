@@ -10,6 +10,7 @@ import WidgetGrid from "../components/organisms/WidgetGrid";
 import { INDICATOR } from "../lib/priceHandler";
 import { BoldText } from "../components/atoms/BoldText";
 import PriceDisplay from "../components/molecules/PriceDisplay";
+import { getServerSidePropsAllPages } from "../lib/getServerSidePropsAllPages";
 
 // eslint-disable-next-line no-unused-vars
 enum STATUS {
@@ -85,4 +86,5 @@ const PortfolioPage: NextPage = () => {
   );
 };
 
+export const getServerSideProps = getServerSidePropsAllPages;
 export default PortfolioPage;
