@@ -14,7 +14,7 @@ export const handleSaveOrder = async (
   price: number,
   quantity: number,
   alpacaOrderId: string,
-  createdAt: string,
+  created: string,
   breakoutRef?: string,
 ) => {
   const data: TradesDataType = {
@@ -23,7 +23,7 @@ export const handleSaveOrder = async (
     price,
     quantity,
     alpacaOrderId,
-    createdAt,
+    created,
     userRef: "ludde@hejare.se",
   };
 
