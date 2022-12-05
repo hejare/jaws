@@ -14,6 +14,7 @@ import {
 } from "../../../util/handleFormatDateString";
 import PageContainer from "../../../components/atoms/PageContainer";
 import NavButton from "../../../components/atoms/buttons/NavButton";
+import { getServerSidePropsAllPages } from "../../../lib/getServerSidePropsAllPages";
 
 const ButtonsContainer = styled.div`
   margin-top: 32px;
@@ -91,4 +92,5 @@ const DailyRunsDate: NextPage = () => {
   );
 };
 
+export const getServerSideProps = getServerSidePropsAllPages;
 export default DailyRunsDate;

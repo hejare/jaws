@@ -6,6 +6,7 @@ import { BoldText } from "../../components/atoms/BoldText";
 import NavButton from "../../components/atoms/buttons/NavButton";
 import PageContainer from "../../components/atoms/PageContainer";
 import TextDisplay from "../../components/atoms/TextDisplay";
+import { getServerSidePropsAllPages } from "../../lib/getServerSidePropsAllPages";
 import { handleResult } from "../../util";
 
 export type PartialOrderDataType = {
@@ -53,7 +54,8 @@ const ConfigPage: NextPage = () => {
   if (dataFetchStatus !== STATUS.READY || !config || Array.isArray(config)) {
     return <></>;
   }
-
+  const configPropNames = Object.keys(config);
+  configPropNames.sort();
   return (
     <PageContainer>
       <NavButton goBack href="">
@@ -79,4 +81,5 @@ const ConfigPage: NextPage = () => {
   );
 };
 
+export const getServerSideProps = getServerSidePropsAllPages;
 export default ConfigPage;

@@ -1,10 +1,10 @@
-import styled from "styled-components";
 import type { NextPage } from "next";
 import OrdersList from "../components/organisms/OrdersList";
 import { useEffect, useState } from "react";
 import { handleResult } from "../util";
 import fetch from "node-fetch";
 import PageContainer from "../components/atoms/PageContainer";
+import { getServerSidePropsAllPages } from "../lib/getServerSidePropsAllPages";
 
 // eslint-disable-next-line no-unused-vars
 enum STATUS {
@@ -32,4 +32,5 @@ const OrdersPage: NextPage = () => {
   );
 };
 
+export const getServerSideProps = getServerSidePropsAllPages;
 export default OrdersPage;

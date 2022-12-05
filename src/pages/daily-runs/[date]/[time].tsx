@@ -22,6 +22,7 @@ import {
 import { isToday } from "../../../lib/helpers";
 import NavButton from "../../../components/atoms/buttons/NavButton";
 import PageContainer from "../../../components/atoms/PageContainer";
+import { getServerSidePropsAllPages } from "../../../lib/getServerSidePropsAllPages";
 
 // eslint-disable-next-line no-unused-vars
 enum STATUS {
@@ -152,4 +153,5 @@ const DailyRun: NextPage = () => {
   );
 };
 
+export const getServerSideProps = getServerSidePropsAllPages;
 export default DailyRun;

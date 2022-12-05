@@ -1,4 +1,3 @@
-import type { NextPage } from "next";
 import { useState } from "react";
 import styled from "styled-components";
 import PageContainer from "../components/atoms/PageContainer";
@@ -8,12 +7,13 @@ import SummedPositions from "../components/molecules/SummedPositions";
 import TriggerDailyRunButton from "../components/molecules/TriggerDailyRunButton";
 import WalletBalance from "../components/molecules/WalletBalance";
 import WidgetGrid from "../components/organisms/WidgetGrid";
+import { getServerSidePropsAllPages } from "../lib/getServerSidePropsAllPages";
 
 const ContentContainer = styled.div`
   display: flex;
 `;
 
-const StartPage: NextPage = () => {
+function StartPage() {
   const [triggerRunEnabled, setTriggerRunEnabled] = useState<boolean>(false);
 
   const handleIndicateIsEnabled = (statement: boolean) => {
@@ -44,6 +44,7 @@ const StartPage: NextPage = () => {
       </ContentContainer>
     </PageContainer>
   );
-};
+}
 
+export const getServerSideProps = getServerSidePropsAllPages;
 export default StartPage;

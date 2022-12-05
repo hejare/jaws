@@ -1,33 +1,36 @@
-import create from "zustand";
-import { devtools, persist } from "zustand/middleware";
+import { createStore } from "zustand";
 
 export type User = {
+  userId: string;
+  idToken: string;
   displayName: string;
   email: string;
-  lastSignInTime: string;
+  lastSignInTime?: string;
+  sessionExpires?: number;
 };
 
-interface AccountState {
+interface AccountProps {
   isLoggedIn: boolean;
   user: User | null;
+}
+
+interface AccountState extends AccountProps {
   setIsLoggedIn: (isLoggedIn: boolean) => void;
   setUser: (user: User | null) => void;
 }
 
-export const useAccountStore = create<AccountState>()(
-  devtools(
-    persist(
-      (set) => ({
-        user: null,
-        isLoggedIn: false,
-        setIsLoggedIn: (isLoggedIn) =>
-          set((state) => ({ ...state, isLoggedIn: isLoggedIn })),
-        setUser: (user: User | null) =>
-          set((state) => ({ ...state, user: user })),
-      }),
-      {
-        name: "account-storage",
-      },
-    ),
-  ),
-);
+export type AccountStore = ReturnType<typeof createAccountStore>;
+
+export const createAccountStore = (initProps?: Partial<AccountProps>) => {
+  const DEFAULT_PROPS: AccountProps = {
+    isLoggedIn: false,
+    user: null,
+  };
+  return createStore<AccountState>()((set) => ({
+    ...DEFAULT_PROPS,
+    ...initProps,
+    setIsLoggedIn: (isLoggedIn) =>
+      set((state) => ({ ...state, isLoggedIn: isLoggedIn })),
+    setUser: (user: User | null) => set((state) => ({ ...state, user: user })),
+  }));
+};

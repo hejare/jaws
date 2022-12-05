@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import Button from "../../components/atoms/buttons/Button";
 import PageContainer from "../../components/atoms/PageContainer";
 import TextDisplay from "../../components/atoms/TextDisplay";
+import { getServerSidePropsAllPages } from "../../lib/getServerSidePropsAllPages";
 import { handleResult } from "../../util";
 
 // TODO add smart sell button
@@ -117,4 +118,5 @@ const TickerPage: NextPage = () => {
   );
 };
 
+export const getServerSideProps = getServerSidePropsAllPages;
 export default TickerPage;
