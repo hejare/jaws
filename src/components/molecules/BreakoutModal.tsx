@@ -13,10 +13,8 @@ import {
   AlpacaOrderType,
   SUMMED_ORDER_STATUS,
 } from "../../services/alpacaMeta";
-import { getDateTime } from "../../lib/helpers";
+import { getDateTime, ONE_MINUTE_IN_MS } from "../../lib/helpers";
 import { INDICATOR } from "../../lib/priceHandler";
-
-const ONE_MINUTE_IN_MS = 60000;
 
 const InfoContainer = styled.div`
   height: 100%;

@@ -5,8 +5,7 @@ export type User = {
   idToken: string;
   displayName: string;
   email: string;
-  lastSignInTime?: string;
-  sessionExpires?: number;
+  sessionExpires: number;
 };
 
 interface AccountProps {

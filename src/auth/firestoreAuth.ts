@@ -4,6 +4,8 @@ import {
   GoogleAuthProvider,
   signOut,
 } from "@firebase/auth";
+import { getApp } from "../auth/initializeFirebase";
+import { ONE_HOUR_IN_MS } from "../lib/helpers";
 
 const enabledHejareUsers = [
   "leopold",
@@ -15,7 +17,6 @@ const enabledHejareUsers = [
 const enabledExternalEmails = ["albin@theodoratech.se", "roosleo@gmail.com"];
 
 export async function signInWithGoogle() {
-  // try {
   const auth = getAuth();
   const provider = new GoogleAuthProvider();
   provider.setCustomParameters({
@@ -41,10 +42,6 @@ export async function signInWithGoogle() {
     );
   }
 
-  // const credential = GoogleAuthProvider.credentialFromResult(result);
-  // const token = credential?.accessToken;
-  // const token2 = await user.getIdToken(true);
-  // const payload = await admin.auth().verifyIdToken(token);
   console.log("Authenticated user:", user);
   const idToken = await user.getIdToken();
   return {
@@ -52,10 +49,15 @@ export async function signInWithGoogle() {
     idToken: idToken,
     displayName: user.displayName || "",
     email: user.email || "",
-    sessionExpires: 1670002416, // TODO!
-    lastSignInTime: user.metadata.lastSignInTime || "",
+    sessionExpires: Date.now() + ONE_HOUR_IN_MS,
   };
 }
+
+export const refresh = async () => {
+  const app = getApp();
+  const auth = getAuth(app);
+  return auth.currentUser?.getIdToken();
+};
 
 export async function signOutUser() {
   const user = getAuth();

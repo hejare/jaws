@@ -5,8 +5,7 @@ import { useState } from "react";
 import * as backendService from "../../services/backendService";
 import { SUMMED_ORDER_STATUS } from "../../services/alpacaMeta";
 import { useInterval } from "usehooks-ts";
-
-const ONE_MINUTE_IN_MS = 60000;
+import { ONE_MINUTE_IN_MS } from "../../lib/helpers";
 
 const StyledButton = styled(Button)`
   text-align: center;

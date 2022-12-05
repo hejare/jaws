@@ -12,6 +12,11 @@ import PageContainer from "../components/atoms/PageContainer";
 import { useRef } from "react";
 import { AccountContext } from "../store/accountContext";
 import { useStore } from "zustand";
+import ErrorMessage from "../components/atoms/ErrorMessage";
+import { useClickAnyWhere } from "usehooks-ts";
+import { refresh } from "../auth/firestoreAuth";
+import { setCookies } from "cookies-next";
+import { ONE_HOUR_IN_MS, TEN_MINUTES_IN_MS } from "../lib/helpers";
 
 const theme = themes.dark; // I know, we are now removing ability to switch theme without hard reload, but what the hell...
 
@@ -48,6 +53,35 @@ function MyApp({ Component, pageProps }: ExtendedAppProps) {
     }),
   ).current;
   const isLoggedIn = useStore(store, (state) => state.isLoggedIn);
+  const [user, setUser] = useStore(store, (state) => [
+    state.user,
+    state.setUser,
+  ]);
+
+  useClickAnyWhere(() => {
+    async function doRefresh() {
+      if (
+        !user ||
+        (user.sessionExpires &&
+          user.sessionExpires - Date.now() > TEN_MINUTES_IN_MS)
+      ) {
+        // Only refresh token if less then 10 minutes left of expiry
+        return;
+      }
+
+      try {
+        const newToken = await refresh();
+        if (newToken) {
+          setCookies("idToken", newToken);
+          setUser({ ...user, sessionExpires: Date.now() + ONE_HOUR_IN_MS });
+        }
+      } catch (err) {
+        console.log("Refresh token failed", JSON.stringify(err));
+      }
+    }
+    void doRefresh();
+  });
+
   return (
     <>
       <Head>
@@ -70,9 +104,9 @@ function MyApp({ Component, pageProps }: ExtendedAppProps) {
             <PageContainer>
               <h1>You need to Log in</h1>
               {authError && (
-                <div>
-                  {authError.message} ({authError.code})
-                </div>
+                <ErrorMessage>
+                  {authError.message} {authError.code && `(${authError.code})`}
+                </ErrorMessage>
               )}
             </PageContainer>
           )}

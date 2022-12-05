@@ -1,3 +1,7 @@
+export const ONE_MINUTE_IN_MS = 60000;
+export const TEN_MINUTES_IN_MS = 600000 * 5;
+export const ONE_HOUR_IN_MS = 3600000;
+
 function addZero(value: number) {
   return value < 10 ? `0${value}` : value;
 }
