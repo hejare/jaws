@@ -5,9 +5,9 @@ import { getToday } from "../../lib/helpers";
 import { Theme } from "../../styles/themes";
 import { useRouter } from "next/router";
 import { User } from "../../store/accountStore";
-import { signInWithGoogle, signOutUser } from "../../auth/firestoreAuth";
+import { signInWithGoogle } from "../../auth/firestoreAuth";
 import Button from "../atoms/buttons/Button";
-import { setCookies, deleteCookie } from "cookies-next";
+import { setCookies } from "cookies-next";
 import { useStore } from "zustand";
 import { AccountContext } from "../../store/accountContext";
 
@@ -76,11 +76,15 @@ const Navbar = () => {
 
   const store = useContext(AccountContext);
   if (!store) throw new Error("Missing AccountContext.Provider in the tree");
-  const [isLoggedIn, setIsLoggedIn, setUser] = useStore(store, (state) => [
-    state.isLoggedIn,
-    state.setIsLoggedIn,
-    state.setUser,
-  ]);
+  const [isLoggedIn, setIsLoggedIn, setUser, logoutUser] = useStore(
+    store,
+    (state) => [
+      state.isLoggedIn,
+      state.setIsLoggedIn,
+      state.setUser,
+      state.logoutUser,
+    ],
+  );
 
   const handleLogin = () => {
     signInWithGoogle()
@@ -91,13 +95,6 @@ const Navbar = () => {
         void router.push(router.pathname);
       })
       .catch((e) => console.error(e));
-  };
-
-  const handleLogout = () => {
-    deleteCookie("idToken");
-    void signOutUser();
-    setIsLoggedIn(false);
-    setUser(null);
   };
 
   return (
@@ -129,7 +126,7 @@ const Navbar = () => {
 
       <RightSide>
         {isLoggedIn ? (
-          <Button onClick={handleLogout}>Log out</Button>
+          <Button onClick={logoutUser}>Log out</Button>
         ) : (
           <Button onClick={handleLogin}>Log in</Button>
         )}

@@ -42,7 +42,6 @@ export async function signInWithGoogle() {
     );
   }
 
-  console.log("Authenticated user:", user);
   const idToken = await user.getIdToken();
   return {
     userId: user.uid,

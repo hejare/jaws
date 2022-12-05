@@ -13,10 +13,14 @@ import { useRef } from "react";
 import { AccountContext } from "../store/accountContext";
 import { useStore } from "zustand";
 import ErrorMessage from "../components/atoms/ErrorMessage";
-import { useClickAnyWhere } from "usehooks-ts";
+import { useInterval } from "usehooks-ts";
 import { refresh } from "../auth/firestoreAuth";
 import { setCookies } from "cookies-next";
-import { ONE_HOUR_IN_MS, TEN_MINUTES_IN_MS } from "../lib/helpers";
+import {
+  ONE_HOUR_IN_MS,
+  ONE_MINUTE_IN_MS,
+  TEN_MINUTES_IN_MS,
+} from "../lib/helpers";
 
 const theme = themes.dark; // I know, we are now removing ability to switch theme without hard reload, but what the hell...
 
@@ -44,6 +48,8 @@ interface ExtendedAppProps extends AppProps {
 
 initializeFirebase();
 
+const FIVE_MINUTES_IN_MS = ONE_MINUTE_IN_MS * 5;
+
 function MyApp({ Component, pageProps }: ExtendedAppProps) {
   const { authedUser, authError } = pageProps;
   const store = useRef(
@@ -53,13 +59,22 @@ function MyApp({ Component, pageProps }: ExtendedAppProps) {
     }),
   ).current;
   const isLoggedIn = useStore(store, (state) => state.isLoggedIn);
-  const [user, setUser] = useStore(store, (state) => [
+  const [user, setUser, logoutUser] = useStore(store, (state) => [
     state.user,
     state.setUser,
+    state.logoutUser,
   ]);
 
-  useClickAnyWhere(() => {
+  // TODO: This interval could be extracted in aseparate hook or such, so that this file gets cleaner
+  useInterval(() => {
     async function doRefresh() {
+      if (user && user.sessionExpires - Date.now() < 0) {
+        // Session time expired - lets logout
+        logoutUser();
+        location.reload();
+        return;
+      }
+
       if (
         !user ||
         (user.sessionExpires &&
@@ -73,14 +88,17 @@ function MyApp({ Component, pageProps }: ExtendedAppProps) {
         const newToken = await refresh();
         if (newToken) {
           setCookies("idToken", newToken);
-          setUser({ ...user, sessionExpires: Date.now() + ONE_HOUR_IN_MS });
+          setUser({
+            ...user,
+            sessionExpires: Date.now() + ONE_HOUR_IN_MS,
+          });
         }
       } catch (err) {
         console.log("Refresh token failed", JSON.stringify(err));
       }
     }
     void doRefresh();
-  });
+  }, FIVE_MINUTES_IN_MS);
 
   return (
     <>
