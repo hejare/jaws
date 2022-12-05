@@ -5,8 +5,7 @@ import fetch from "node-fetch";
 import Button from "../atoms/buttons/Button";
 import styled from "styled-components";
 import { DailyRunStatus } from "../../db/dailyRunsMeta";
-
-export const ONE_MINUTE_IN_MS = 60000;
+import { ONE_MINUTE_IN_MS } from "../../lib/helpers";
 
 const TriggerButton = styled(Button)`
   text-align: center;

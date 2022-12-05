@@ -19,13 +19,13 @@ export const getServerSidePropsAllPages = async ({
         authedUser = {
           idToken: idToken as string,
           userId: userData.uid,
-          sessionExpires: userData.exp, // Like this: 1670002416
+          sessionExpires: userData.exp * 1000, // Like this: 1670002416
           displayName: userData.name || "",
           email: userData.email || "",
         };
       } catch (e: any) {
         authError = {
-          code: e.code,
+          code: e.code || null,
           message: e.message,
         };
       }
