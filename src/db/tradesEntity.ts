@@ -24,6 +24,7 @@ export const handleSaveOrder = async (
     quantity,
     alpacaOrderId,
     createdAtISOString,
+    userRef: "ludde@hejare.se",
   };
 
   if (breakoutRef) {
