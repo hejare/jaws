@@ -27,7 +27,7 @@ export const getDateTime = (timestampInput: number | string | null) => {
   }
 
   const timestamp =
-    typeof timestampInput === "string" && !!isNaN(Date.parse(timestampInput))
+    typeof timestampInput === "string" && isNaN(Date.parse(timestampInput))
       ? parseInt(timestampInput)
       : timestampInput;
 
