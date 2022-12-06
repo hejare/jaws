@@ -69,7 +69,6 @@ interface Props {
   onClose: () => void;
   image: string;
   enableOnClickOutside?: boolean;
-  rating: number;
   breakoutValue: number;
   symbol: string;
 }
@@ -91,7 +90,6 @@ export default function BreakoutModal({
   onClose,
   image,
   breakoutRef,
-  rating,
   breakoutValue,
   symbol,
 }: Props) {
@@ -248,7 +246,7 @@ export default function BreakoutModal({
         />
       </ImageContainer>
       <RatingContainer>
-        <Rating initialValue={rating} breakoutRef={breakoutRef} />
+        <Rating breakoutRef={breakoutRef} />
       </RatingContainer>
     </Modal>
   );

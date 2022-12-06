@@ -182,7 +182,7 @@ const OrdersList = ({ data }: Props) => {
     <Table
       columns={columns}
       data={data}
-      rowKey={() => Math.random()}
+      rowKey={({ id }: { id: string }) => id}
       title={renderTitle}
       footer={renderFooter}
     />

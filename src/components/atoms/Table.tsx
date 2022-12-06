@@ -27,6 +27,7 @@ const Table = (props: any) => {
   return (
     <StyledRcTable
       rowClassName={(record: any, i: number) => `row-${i % 2}`}
+      expandable={false}
       {...props}
     />
   );

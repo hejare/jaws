@@ -31,7 +31,6 @@ interface Props {
   image: string;
   enableOnClickOutside?: boolean;
   breakoutRef: string;
-  currentRating?: number;
 }
 
 export default function ImageModal({
@@ -40,7 +39,6 @@ export default function ImageModal({
   image,
   enableOnClickOutside,
   breakoutRef,
-  currentRating,
 }: Props) {
   return (
     <Modal
@@ -54,7 +52,7 @@ export default function ImageModal({
       </ImageContainer>
       {breakoutRef && (
         <RatingContainer>
-          <Rating initialValue={currentRating} breakoutRef={breakoutRef} />
+          <Rating breakoutRef={breakoutRef} />
         </RatingContainer>
       )}
     </Modal>

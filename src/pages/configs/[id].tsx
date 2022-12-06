@@ -16,14 +16,6 @@ export type PartialOrderDataType = {
   symbol?: string;
 };
 
-export type PartialBreakoutDataType = {
-  image?: string;
-  tickerRef?: string;
-  relativeStrength?: number;
-  breakoutValue?: number;
-  configRef?: string;
-};
-
 // eslint-disable-next-line no-unused-vars
 enum STATUS {
   LOADING,

@@ -5,10 +5,10 @@ import CircularButton, {
 } from "../atoms/buttons/CircularButton";
 import RatingStar from "../atoms/RatingStar";
 import * as backendService from "../../services/backendService";
+import { useBreakoutsStore } from "../../store/breakoutsStore";
 
 interface Props {
   breakoutRef: string;
-  initialValue?: number;
 }
 
 const RatingContainer = styled.div`
@@ -19,6 +19,9 @@ const StyledCircularButton = styled(CircularButton)`
   margin-right: 4px;
   font-size: 0.6em;
   padding: 12px;
+  white-space: nowrap;
+  ${({ ratedZero }: { ratedZero?: boolean }) =>
+    ratedZero ? "background-color: red;" : ""}
 `;
 
 const RatingsWrapper = styled.div`
@@ -30,12 +33,16 @@ const RatingsWrapper = styled.div`
   background-color: ${({ theme }) => theme.palette.background.backdrop};
 `;
 
-const Rating = ({ initialValue = 0, breakoutRef }: Props) => {
+const Rating = ({ breakoutRef }: Props) => {
   const [hoverNumber, setHoverNumber] = useState(-1);
-  const [rating, setRating] = useState(initialValue);
+
+  const [rating, setRating] = useBreakoutsStore((state) => [
+    state.breakouts.find((b) => b.breakoutRef === breakoutRef)?.rating,
+    state.setRating,
+  ]);
 
   const setValue = (value: number) => {
-    setRating(value);
+    setRating(breakoutRef, value);
     const userRef = "ludde@hejare.se"; // TODO
     void backendService.setRating({ breakoutRef, userRef, value });
   };
@@ -46,7 +53,7 @@ const Rating = ({ initialValue = 0, breakoutRef }: Props) => {
     return [...Array(n)].map((e, i) => (
       <RatingStar
         key={i}
-        isFilled={hoverNumber === -1 && rating > i}
+        isFilled={hoverNumber === -1 && !!rating && rating > i}
         onHover={setHoverNumber}
         starNumber={i}
         isHovered={hoverNumber >= i}
@@ -59,12 +66,22 @@ const Rating = ({ initialValue = 0, breakoutRef }: Props) => {
 
   return (
     <RatingsWrapper>
-      <StyledCircularButton
-        size={CIRCULAR_BUTTON_SIZE.SMALL}
-        onClick={() => setValue(0)}
-      >
-        X
-      </StyledCircularButton>
+      {rating === -1 ? (
+        <StyledCircularButton
+          ratedZero
+          size={CIRCULAR_BUTTON_SIZE.SMALL}
+          onClick={() => setValue(0)}
+        >
+          :(
+        </StyledCircularButton>
+      ) : (
+        <StyledCircularButton
+          size={CIRCULAR_BUTTON_SIZE.SMALL}
+          onClick={() => setValue(-1)}
+        >
+          X
+        </StyledCircularButton>
+      )}
       <RatingContainer>{fiveStars()}</RatingContainer>
     </RatingsWrapper>
   );

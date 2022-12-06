@@ -125,7 +125,7 @@ const AssetssList = ({ data }: Props) => {
     <Table
       columns={columns}
       data={data}
-      rowKey={() => Math.random()}
+      rowKey={({ asset_id }: { asset_id: string }) => asset_id}
       title={renderTitle}
       footer={renderFooter}
     />
