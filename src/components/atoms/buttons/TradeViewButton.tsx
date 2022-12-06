@@ -7,7 +7,7 @@ const TradeViewButton = ({
   symbol: string;
   children: React.ReactNode;
 }) => (
-  <NavButton href={`https://www.tradingview.com/symbols/${symbol}`}>
+  <NavButton href={`https://www.tradingview.com/chart/?symbol=${symbol}`}>
     {children}
   </NavButton>
 );
