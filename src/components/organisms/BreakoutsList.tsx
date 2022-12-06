@@ -1,7 +1,6 @@
 import getNextJSConfig from "next/config";
 import Table, { Operations } from "../atoms/Table";
 import { DailyRunStatus } from "../../db/dailyRunsMeta";
-import Ticker from "../atoms/Ticker";
 import { memo } from "react";
 import { useModal } from "use-modal-hook";
 import styled from "styled-components";
@@ -169,7 +168,6 @@ const BreakoutsList = ({ data, disableBuy }: Props) => {
     <Table
       columns={columns}
       data={data}
-      rowKey={() => Math.random()}
       title={renderTitle}
       footer={renderFooter}
     />

@@ -87,7 +87,6 @@ const DailyRunsList = ({ data }: Props) => {
     <Table
       columns={columns}
       data={data}
-      rowKey={() => Math.random()}
       title={renderTitle}
       footer={renderFooter}
     />
