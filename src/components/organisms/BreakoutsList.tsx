@@ -9,16 +9,8 @@ import ImageModal from "../molecules/ImageModal";
 import Rating from "../molecules/Rating";
 import Button from "../atoms/buttons/Button";
 import TradeViewButton from "../atoms/buttons/TradeViewButton";
+import { BreakoutStoreType } from "../../store/breakoutsStore";
 
-export type PartialBreakoutDataType = {
-  image: string;
-  tickerRef: string;
-  relativeStrength: number;
-  breakoutValue: number;
-  configRef: string;
-  breakoutRef: string;
-  rating?: number;
-};
 // const cancellableStatus = [DailyRunStatus.INITIATED] as const;
 const nonCancellableStatus = [DailyRunStatus.COMPLETED] as const;
 
@@ -32,7 +24,7 @@ const StyledImage = styled.img`
   }
 `;
 interface Props {
-  data: PartialBreakoutDataType[];
+  data: BreakoutStoreType[];
   disableBuy?: boolean;
 }
 interface ModalProps {
@@ -40,7 +32,6 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   image: string;
-  rating: number;
   breakoutValue: number;
   symbol: string;
 }
@@ -52,7 +43,6 @@ const BreakoutsList = ({ data, disableBuy }: Props) => {
       onClose,
       image,
       breakoutRef,
-      rating,
       breakoutValue,
       symbol,
     }: ModalProps) => (
@@ -61,7 +51,6 @@ const BreakoutsList = ({ data, disableBuy }: Props) => {
         onClose={onClose}
         image={image}
         breakoutRef={breakoutRef}
-        rating={rating}
         breakoutValue={breakoutValue}
         symbol={symbol}
       />
@@ -70,12 +59,11 @@ const BreakoutsList = ({ data, disableBuy }: Props) => {
   const [showBreakoutModal] = useModal(TheBreakoutModal, {});
 
   const TheImageModal = memo(
-    ({ isOpen, onClose, image, breakoutRef, rating }: ModalProps) => (
+    ({ isOpen, onClose, image, breakoutRef }: ModalProps) => (
       <ImageModal
         isOpen={isOpen}
         onClose={onClose}
         image={image}
-        currentRating={rating}
         breakoutRef={breakoutRef}
         enableOnClickOutside
       />
@@ -114,13 +102,12 @@ const BreakoutsList = ({ data, disableBuy }: Props) => {
       key: "image",
       width: 50,
       className: "image",
-      render: (item: PartialBreakoutDataType) => (
+      render: (item: BreakoutStoreType) => (
         <StyledImage
           onClick={() =>
             showImageModal({
               image: `${IMAGE_SERVICE_BASE_URL as string}/${item.image}`,
               breakoutRef: item.breakoutRef,
-              rating: item.rating,
             })
           }
           src={`${IMAGE_SERVICE_BASE_URL as string}/${item.image}`}
@@ -132,16 +119,14 @@ const BreakoutsList = ({ data, disableBuy }: Props) => {
       dataIndex: "",
       key: "rating",
       width: 100,
-      render: (item: any) => (
-        <Rating initialValue={item.rating} breakoutRef={item.breakoutRef} />
-      ),
+      render: (item: any) => <Rating breakoutRef={item.breakoutRef} />,
     },
     {
       title: "Operations",
       dataIndex: "",
       key: "operations",
       className: "operations",
-      render: (item: PartialBreakoutDataType) => (
+      render: (item: BreakoutStoreType) => (
         <Operations>
           {!disableBuy && (
             <Button
@@ -149,7 +134,6 @@ const BreakoutsList = ({ data, disableBuy }: Props) => {
                 void showBreakoutModal({
                   image: `${IMAGE_SERVICE_BASE_URL as string}/${item.image}`,
                   breakoutRef: item.breakoutRef,
-                  rating: item.rating,
                   symbol: item.tickerRef,
                   breakoutValue: item.breakoutValue,
                 });
@@ -168,6 +152,7 @@ const BreakoutsList = ({ data, disableBuy }: Props) => {
     <Table
       columns={columns}
       data={data}
+      rowKey={({ breakoutRef }: { breakoutRef: string }) => breakoutRef}
       title={renderTitle}
       footer={renderFooter}
     />

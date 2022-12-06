@@ -6,6 +6,7 @@ import Button from "../../components/atoms/buttons/Button";
 import PageContainer from "../../components/atoms/PageContainer";
 import TextDisplay from "../../components/atoms/TextDisplay";
 import { getServerSidePropsAllPages } from "../../lib/getServerSidePropsAllPages";
+import { BreakoutStoreType } from "../../store/breakoutsStore";
 import { handleResult } from "../../util";
 
 // TODO add smart sell button
@@ -20,14 +21,6 @@ export type PartialOrderDataType = {
   filled_at?: string;
   notional?: string;
   symbol?: string;
-};
-
-export type PartialBreakoutDataType = {
-  image?: string;
-  tickerRef?: string;
-  relativeStrength?: number;
-  breakoutValue?: number;
-  configRef?: string;
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -90,7 +83,7 @@ const TickerPage: NextPage = () => {
       <TextDisplay>
         <h2>Breakouts</h2>
         {breakouts && breakouts.length > 0 ? (
-          breakouts.map((breakout: PartialBreakoutDataType, i) => (
+          breakouts.map((breakout: BreakoutStoreType, i) => (
             <div key={i}>
               <h4>Breakout</h4>
               <div>Breakout value:{breakout.breakoutValue}</div>

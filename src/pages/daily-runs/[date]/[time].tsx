@@ -9,9 +9,7 @@ import {
   BreakoutWithRatingDataType,
   ExistingBreakoutDataType,
 } from "../../../db/breakoutsEntity";
-import BreakoutsList, {
-  PartialBreakoutDataType,
-} from "../../../components/organisms/BreakoutsList";
+import BreakoutsList from "../../../components/organisms/BreakoutsList";
 import { handleLimitPrice } from "../../../util/handleLimitPrice";
 import { ErrorDataParsedType } from "../../../db/errorsMeta";
 import {
@@ -23,6 +21,7 @@ import { isToday } from "../../../lib/helpers";
 import NavButton from "../../../components/atoms/buttons/NavButton";
 import PageContainer from "../../../components/atoms/PageContainer";
 import { getServerSidePropsAllPages } from "../../../lib/getServerSidePropsAllPages";
+import { useBreakoutsStore } from "../../../store/breakoutsStore";
 
 // eslint-disable-next-line no-unused-vars
 enum STATUS {
@@ -52,9 +51,11 @@ const DailyRun: NextPage = () => {
   const dateString = `${date as string}`;
   const [dataFetchStatus, setDataFetchStatus] = useState(STATUS.LOADING);
   const [dailyRun, setDailyRun] = useState<DailyRunDataType>();
-  const [breakoutsData, setBreakoutsData] = useState<PartialBreakoutDataType[]>(
-    [],
-  );
+
+  const [breakoutsData, setBreakoutsData] = useBreakoutsStore((state) => [
+    state.breakouts,
+    state.setBreakouts,
+  ]);
 
   useEffect(() => {
     fetch(`/api/data/daily-runs/${date as string}/${time as string}`)

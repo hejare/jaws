@@ -5,10 +5,10 @@ import CircularButton, {
 } from "../atoms/buttons/CircularButton";
 import RatingStar from "../atoms/RatingStar";
 import * as backendService from "../../services/backendService";
+import { useBreakoutsStore } from "../../store/breakoutsStore";
 
 interface Props {
   breakoutRef: string;
-  initialValue?: number;
 }
 
 const RatingContainer = styled.div`
@@ -33,12 +33,16 @@ const RatingsWrapper = styled.div`
   background-color: ${({ theme }) => theme.palette.background.backdrop};
 `;
 
-const Rating = ({ initialValue = 0, breakoutRef }: Props) => {
+const Rating = ({ breakoutRef }: Props) => {
   const [hoverNumber, setHoverNumber] = useState(-1);
-  const [rating, setRating] = useState(initialValue);
+
+  const [rating, setRating] = useBreakoutsStore((state) => [
+    state.breakouts.find((b) => b.breakoutRef === breakoutRef)?.rating,
+    state.setRating,
+  ]);
 
   const setValue = (value: number) => {
-    setRating(value);
+    setRating(breakoutRef, value);
     const userRef = "ludde@hejare.se"; // TODO
     void backendService.setRating({ breakoutRef, userRef, value });
   };
