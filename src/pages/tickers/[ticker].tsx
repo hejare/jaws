@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import Button from "../../components/atoms/buttons/Button";
 import PageContainer from "../../components/atoms/PageContainer";
 import TextDisplay from "../../components/atoms/TextDisplay";
+import { handleSellOrderByTickerId } from "../../lib/brokerHandler";
 import { getServerSidePropsAllPages } from "../../lib/getServerSidePropsAllPages";
 import { BreakoutStoreType } from "../../store/breakoutsStore";
 import { handleResult } from "../../util";
@@ -103,8 +104,9 @@ const TickerPage: NextPage = () => {
         ) : (
           <div>No asset for this ticker</div>
         )}
-        <Button onClick={() => console.log("smart sell button do smth...")}>
-          Sell
+        {/* TODO percentage should be possible to set from UI */}
+        <Button onClick={() => handleSellOrderByTickerId(ticker, 100)}>
+          Sell 100%
         </Button>
       </TextDisplay>
     </PageContainer>

@@ -15,6 +15,33 @@ const base64EncodedKeys = buff.toString("base64");
 const accountId = "b75acdbc-3fb6-3fb3-b253-b0bf7d86b8bb"; // public info
 const brokerApiBaseUrl = "https://broker-api.sandbox.alpaca.markets/v1";
 
+export const closeOpenPosition = async (symbol: string, percentage: string) => {
+  try {
+    if (
+      !symbol ||
+      typeof symbol !== "string" ||
+      symbol.length < 2 ||
+      symbol.length > 5 ||
+      !percentage
+    ) {
+      throw Error;
+    }
+    const res = await fetch(
+      `${brokerApiBaseUrl}/trading/accounts/${accountId}/positions/${symbol}?percentage=${percentage}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Basic ${base64EncodedKeys}`,
+        },
+      },
+    );
+    return await handleResult(res);
+  } catch (e) {
+    console.log(e);
+    throw Error(`Unable to close position - ${e as string}`);
+  }
+};
+
 export const postOrder = async (
   ticker: string,
   orderType: string,
