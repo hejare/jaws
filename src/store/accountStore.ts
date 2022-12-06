@@ -15,7 +15,7 @@ interface AccountProps {
   user: User | null;
 }
 
-interface AccountState extends AccountProps {
+export interface AccountState extends AccountProps {
   setIsLoggedIn: (isLoggedIn: boolean) => void;
   setUser: (user: User | null) => void;
   logoutUser: () => void;
