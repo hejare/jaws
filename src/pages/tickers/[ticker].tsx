@@ -54,8 +54,6 @@ const TickerPage: NextPage = () => {
     fetch(`/api/broker/tickers/${ticker}`)
       .then(handleResult)
       .then((result) => {
-        console.log(result); // todo want amount
-        const assetID = result.asset_id; // with this we can sell all
         setAsset(result.asset);
         setOrders(result.orders);
       })
