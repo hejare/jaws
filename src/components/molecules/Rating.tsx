@@ -19,6 +19,9 @@ const StyledCircularButton = styled(CircularButton)`
   margin-right: 4px;
   font-size: 0.6em;
   padding: 12px;
+  white-space: nowrap;
+  ${({ ratedZero }: { ratedZero?: boolean }) =>
+    ratedZero ? "background-color: red;" : ""}
 `;
 
 const RatingsWrapper = styled.div`
@@ -46,7 +49,7 @@ const Rating = ({ initialValue = 0, breakoutRef }: Props) => {
     return [...Array(n)].map((e, i) => (
       <RatingStar
         key={i}
-        isFilled={hoverNumber === -1 && rating > i}
+        isFilled={hoverNumber === -1 && !!rating && rating > i}
         onHover={setHoverNumber}
         starNumber={i}
         isHovered={hoverNumber >= i}
@@ -59,12 +62,22 @@ const Rating = ({ initialValue = 0, breakoutRef }: Props) => {
 
   return (
     <RatingsWrapper>
-      <StyledCircularButton
-        size={CIRCULAR_BUTTON_SIZE.SMALL}
-        onClick={() => setValue(0)}
-      >
-        X
-      </StyledCircularButton>
+      {rating === -1 ? (
+        <StyledCircularButton
+          ratedZero
+          size={CIRCULAR_BUTTON_SIZE.SMALL}
+          onClick={() => setValue(0)}
+        >
+          :(
+        </StyledCircularButton>
+      ) : (
+        <StyledCircularButton
+          size={CIRCULAR_BUTTON_SIZE.SMALL}
+          onClick={() => setValue(-1)}
+        >
+          X
+        </StyledCircularButton>
+      )}
       <RatingContainer>{fiveStars()}</RatingContainer>
     </RatingsWrapper>
   );
