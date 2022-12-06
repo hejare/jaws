@@ -24,8 +24,7 @@ export default async function handler(
           !(percentage instanceof Array)
         ) {
           await closeOpenPosition(ticker, percentage)
-            .then((result) => {
-              console.log("closed positions: ", result);
+            .then(() => {
               responseData.status = "OK";
             })
             .catch((e) => {
