@@ -33,6 +33,9 @@ const sellOrder = async (symbol: string, percentage: number) => {
     symbol.length < 2 ||
     symbol.length > 5
   ) {
+    console.log(
+      "Did not sell. Symbol must be a defined string between 2-4 chars",
+    );
     return;
   }
   const resp = await fetch(
