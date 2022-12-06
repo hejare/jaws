@@ -15,17 +15,31 @@ import {
 } from "../../services/alpacaMeta";
 import { getDateTime, ONE_MINUTE_IN_MS } from "../../lib/helpers";
 import { INDICATOR } from "../../lib/priceHandler";
+import Button from "../atoms/buttons/Button";
+import { TradeViewWidget } from "../atoms/TradeViewWidget";
 
 const InfoContainer = styled.div`
   height: 100%;
-  width: 50%;
   font-size: 12px;
   padding-right: 16px;
+  display: flex;
+  flex-direction: column;
+  place-content: space-between;
 `;
 
 const ImageContainer = styled.div`
-  color: white;
   height: 100%;
+`;
+
+const IframeContainer = styled.div`
+  width: -webkit-fill-available;
+`;
+
+const ButtonsContainer = styled.div`
+  width: 100px;
+`;
+const StyledButton = styled(Button)`
+  margin-bottom: 8px;
 `;
 
 const StyledImage = styled.img`
@@ -45,9 +59,7 @@ const RatingContainer = styled.div`
   right: 20px;
 `;
 
-const Info = styled.div`
-  height: calc(100% - 60px); // 60 = StyledButton height + padding
-`;
+const Info = styled.div``;
 
 const OrderDetails = styled.div`
   padding: 0 4px;
@@ -117,7 +129,7 @@ export default function BreakoutModal({
     ),
   );
   const [showModal] = useModal(TheImageModal, {});
-
+  const [showingImage, setShowingImage] = useState(true);
   const [shares, setShares] = useState<number>(0);
   const [entryPrice, setEntryPrice] = useState<number>(0);
 
@@ -215,36 +227,47 @@ export default function BreakoutModal({
               </OrderDetails>
             )}
         </Info>
-        {orderStatus === SUMMED_ORDER_STATUS.OPEN_FOR_PLACEMENT && (
-          <PlaceOrderButton
-            onClick={() => {
-              setOrderStatus(SUMMED_ORDER_STATUS.IN_PROGRESS);
-              setOrderDetails({
-                qty: shares.toString(),
-                limit_price: entryPrice.toString(),
-                created_at: Date.now().toString(),
-                canceled_at: Date.now().toString(),
-                expired_at: Date.now().toString(),
-                filled_at: Date.now().toString(),
-              });
-            }}
-            symbol={symbol}
-            entryPrice={entryPrice}
-            shares={shares}
-            breakoutRef={breakoutRef}
-          />
-        )}
+        <ButtonsContainer>
+          <StyledButton onClick={() => setShowingImage(!showingImage)}>
+            {showingImage ? "Show Tradeview" : "Show Graph"}
+          </StyledButton>
+          {orderStatus === SUMMED_ORDER_STATUS.OPEN_FOR_PLACEMENT && (
+            <PlaceOrderButton
+              onClick={() => {
+                setOrderStatus(SUMMED_ORDER_STATUS.IN_PROGRESS);
+                setOrderDetails({
+                  qty: shares.toString(),
+                  limit_price: entryPrice.toString(),
+                  created_at: Date.now().toString(),
+                  canceled_at: Date.now().toString(),
+                  expired_at: Date.now().toString(),
+                  filled_at: Date.now().toString(),
+                });
+              }}
+              symbol={symbol}
+              entryPrice={entryPrice}
+              shares={shares}
+              breakoutRef={breakoutRef}
+            />
+          )}
+        </ButtonsContainer>
       </InfoContainer>
 
-      <ImageContainer>
-        <StyledImage
-          onClick={() => {
-            setEnableOnClickOutside(false);
-            showModal({});
-          }}
-          src={image}
-        />
-      </ImageContainer>
+      {showingImage ? (
+        <ImageContainer>
+          <StyledImage
+            onClick={() => {
+              setEnableOnClickOutside(false);
+              showModal({});
+            }}
+            src={image}
+          />
+        </ImageContainer>
+      ) : (
+        <IframeContainer>
+          <TradeViewWidget ticker={symbol} />
+        </IframeContainer>
+      )}
       <RatingContainer>
         <Rating breakoutRef={breakoutRef} />
       </RatingContainer>

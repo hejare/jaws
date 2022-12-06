@@ -22,9 +22,8 @@ const Box = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: ${({ size }: { size?: string }) => (size === "large" ? "90%" : "70%")};
-  height: ${({ size }: { size?: string }) =>
-    size === "large" ? "90%" : "70%"};
+  width: 90%;
+  height: 90%;
   background-color: ${({ theme }) => theme.palette.background.secondary};
   box-shadow: 24;
   padding: 16px;
@@ -62,7 +61,6 @@ export default function Modal({
   isOpen,
   onClose,
   children,
-  size,
   enableOnClickOutside,
 }: Props) {
   const ref = React.useRef(null);
@@ -83,7 +81,7 @@ export default function Modal({
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <Box ref={enableOnClickOutside ? ref : null} size={size}>
+      <Box ref={enableOnClickOutside ? ref : null}>
         <CancelButtonContainer>
           <CircularButton onClick={handleClose}>
             <>X</>

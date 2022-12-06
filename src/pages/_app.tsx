@@ -112,10 +112,15 @@ function MyApp({ Component, pageProps }: ExtendedAppProps) {
         <title>Jaws</title>
         <meta name="description" content="Jaws - the Frontend for Sharkster" />
         <link rel="icon" href="/favicon.ico" />
+        <link rel="preconnect" href="https://s3.tradingview.com" />
         <meta
           name="viewport"
           content="minimum-scale=1, maximum-scale=5, initial-scale=1, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover"
         />
+        <script
+          type="text/javascript"
+          src="https://s3.tradingview.com/tv.js"
+        ></script>
       </Head>
       <ThemeProvider theme={theme}>
         <AccountContext.Provider value={store}>

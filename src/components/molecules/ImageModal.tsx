@@ -44,7 +44,6 @@ export default function ImageModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      size="large"
       enableOnClickOutside={enableOnClickOutside}
     >
       <ImageContainer>
