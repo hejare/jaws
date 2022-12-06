@@ -26,6 +26,26 @@ const handlePostOrder = async (
   console.log(data);
 };
 
+const sellOrder = async (symbol: string, percentage: number) => {
+  if (
+    !symbol ||
+    typeof symbol !== "string" ||
+    symbol.length < 2 ||
+    symbol.length > 5
+  ) {
+    return;
+  }
+  const resp = await fetch(
+    `/api/broker/account/assets/${symbol}?percentage=${percentage}`,
+    {
+      method: "DELETE",
+    },
+  );
+
+  const data = await convertResult(resp);
+  console.log(data);
+};
+
 export const handleBuyOrder = (
   ticker: string,
   price: number,
@@ -35,8 +55,12 @@ export const handleBuyOrder = (
   return handlePostOrder(ticker, price, "buy", quantity, breakoutRef);
 };
 
-export const handleSellOrder = (ticker: string) =>
-  handlePostOrder(ticker, 1, "sell", 1); // ?refactor handlepostorder to not need breakout value here
+export const handleSellOrderByTickerId = (
+  ticker: string,
+  percentage: number,
+) => {
+  return sellOrder(ticker, percentage);
+};
 
 export const handleDeleteOrder = async (order_id: string) => {
   const resp = await fetch(`/api/broker/orders/${order_id}`, {

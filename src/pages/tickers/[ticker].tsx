@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import Button from "../../components/atoms/buttons/Button";
 import PageContainer from "../../components/atoms/PageContainer";
 import TextDisplay from "../../components/atoms/TextDisplay";
+import { handleSellOrderByTickerId } from "../../lib/brokerHandler";
 import { getServerSidePropsAllPages } from "../../lib/getServerSidePropsAllPages";
 import { handleResult } from "../../util";
 
@@ -53,6 +54,8 @@ const TickerPage: NextPage = () => {
     fetch(`/api/broker/tickers/${ticker}`)
       .then(handleResult)
       .then((result) => {
+        console.log(result); // todo want amount
+        const assetID = result.asset_id; // with this we can sell all
         setAsset(result.asset);
         setOrders(result.orders);
       })
@@ -110,7 +113,7 @@ const TickerPage: NextPage = () => {
         ) : (
           <div>No asset for this ticker</div>
         )}
-        <Button onClick={() => console.log("smart sell button do smth...")}>
+        <Button onClick={() => handleSellOrderByTickerId(ticker, 50)}>
           Sell
         </Button>
       </TextDisplay>
