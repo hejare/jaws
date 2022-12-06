@@ -15,16 +15,7 @@ const base64EncodedKeys = buff.toString("base64");
 const accountId = "b75acdbc-3fb6-3fb3-b253-b0bf7d86b8bb"; // public info
 const brokerApiBaseUrl = "https://broker-api.sandbox.alpaca.markets/v1";
 
-export const closeOpenPosition = async (
-  symbol: string,
-  percentage: string,
-  qty?: string,
-) => {
-  const body: BodyInit = JSON.stringify({
-    qty,
-    percentage,
-  });
-
+export const closeOpenPosition = async (symbol: string, percentage: string) => {
   try {
     if (
       !symbol ||
@@ -42,7 +33,6 @@ export const closeOpenPosition = async (
         headers: {
           Authorization: `Basic ${base64EncodedKeys}`,
         },
-        body,
       },
     );
     return await handleResult(res);

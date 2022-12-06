@@ -34,7 +34,7 @@ const sellOrder = async (symbol: string, percentage: number) => {
     symbol.length > 5
   ) {
     console.log(
-      "Did not sell. Symbol must be a defined string between 2-4 chars",
+      "Did not sell. Symbol must be a defined string between 2-4 chars ",
     );
     return;
   }
@@ -45,8 +45,7 @@ const sellOrder = async (symbol: string, percentage: number) => {
     },
   );
 
-  const data = await convertResult(resp);
-  console.log(data);
+  return convertResult(resp);
 };
 
 export const handleBuyOrder = (
