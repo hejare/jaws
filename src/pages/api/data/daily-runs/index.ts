@@ -14,7 +14,10 @@ export default async function handler(
   errors.map(({ runId, message, misc, timestamp }) => {
     dailyRuns.find((dailyRun) => {
       if (dailyRun.runId == runId) {
-        dailyRun.error = { message, misc, timestamp };
+        if (!dailyRun.errors) {
+          dailyRun.errors = [];
+        }
+        dailyRun.errors.push({ message, misc, timestamp });
         return true;
       }
       return false;
