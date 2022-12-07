@@ -15,7 +15,7 @@ export const TradeViewWidget = ({ ticker }: { ticker: string }) => {
     if (TradingView) {
       new TradingView.widget({
         autosize: true,
-        symbol: `NASDAQ:${ticker}`,
+        symbol: `${ticker}`,
         interval: "D",
         timezone: "Etc/UTC",
         theme: "dark",
