@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getBreakoutsByDailyRun } from "../../../../../db/breakoutsEntity";
 import { getDailyRun } from "../../../../../db/dailyRunsEntity";
-import { getError } from "../../../../../db/errorsEntity";
+import { getErrors } from "../../../../../db/errorsEntity";
 import {
   getRatingsForDailyRunAndUser,
   extendBreakoutsWithRatings,
@@ -23,9 +23,9 @@ export default async function handler(
 
   let extraData = {};
 
-  const error = await getError(runId);
-  if (error) {
-    extraData = { error: error };
+  const errors = await getErrors(runId);
+  if (errors) {
+    extraData = { errors: errors };
   }
   const breakouts = await getBreakoutsByDailyRun(runId);
 

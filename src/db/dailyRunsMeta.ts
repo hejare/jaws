@@ -13,9 +13,9 @@ export type DailyRunDataType = {
   breakoutsCount: number;
   rangeStart: number;
   rangeEnd: number;
-  error?: {
+  errors?: {
     message: string;
     timestamp: number;
     misc: Record<string, any>;
-  };
+  }[];
 };

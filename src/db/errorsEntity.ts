@@ -1,21 +1,23 @@
 import { db } from "../services/firestoreService";
 import { ErrorDataDBType, ErrorDataParsedType } from "./errorsMeta";
 
-export async function getError(refId: string) {
+export async function getErrors(refId: string) {
+  const result: any = [];
   const query = db.collection("errors");
-  const results = await query.doc(refId).get();
+  const docs = await query.where("runId", "==", refId).get();
 
-  if (!results.data()) {
-    return null;
-  }
-  const doc = results;
-  const { runId, message, timestamp, miscJson } = doc.data() as ErrorDataDBType;
-  return {
-    message,
-    timestamp,
-    runId,
-    misc: JSON.parse(miscJson),
-  } as ErrorDataParsedType;
+  docs.forEach((doc: any) => {
+    const { runId, message, timestamp, miscJson } =
+      doc.data() as ErrorDataDBType;
+    result.push({
+      message,
+      timestamp,
+      runId,
+      misc: JSON.parse(miscJson),
+    } as ErrorDataParsedType);
+  });
+
+  return result;
 }
 
 export async function getErrorsByDate(date: string) {
@@ -57,7 +59,12 @@ export async function getSpecificErrors(runIds: string[]) {
   return result;
 }
 
-export async function postError(runId: string, message: string, misc: any) {
+export async function postError(
+  runId: string,
+  message: string,
+  misc: any,
+  errorKey?: string,
+) {
   const timestamp = Date.now();
   const data = {
     runId,
@@ -65,6 +72,9 @@ export async function postError(runId: string, message: string, misc: any) {
     timestamp: timestamp,
     miscJson: JSON.stringify(misc),
   };
-  await db.collection("errors").doc(timestamp.toString()).set(data);
+  await db
+    .collection("errors")
+    .doc(errorKey || timestamp.toString())
+    .set(data);
   return data;
 }

@@ -22,6 +22,7 @@ import NavButton from "../../../components/atoms/buttons/NavButton";
 import PageContainer from "../../../components/atoms/PageContainer";
 import { getServerSidePropsAllPages } from "../../../lib/getServerSidePropsAllPages";
 import { useBreakoutsStore } from "../../../store/breakoutsStore";
+import Button from "../../../components/atoms/buttons/Button";
 
 // eslint-disable-next-line no-unused-vars
 enum STATUS {
@@ -37,6 +38,9 @@ const ErrorContainer = styled.div`
   padding: 4px;
 `;
 
+const ErrorButton = styled(Button)`
+  background-color: ${({ theme }) => theme.palette.text.error};
+`;
 const StyledNavButton = styled(NavButton)`
   margin-top: 32px;
 `;
@@ -51,6 +55,7 @@ const DailyRun: NextPage = () => {
   const dateString = `${date as string}`;
   const [dataFetchStatus, setDataFetchStatus] = useState(STATUS.LOADING);
   const [dailyRun, setDailyRun] = useState<DailyRunDataType>();
+  const [errorsVisible, setErrorsVisible] = useState(false);
 
   const [breakoutsData, setBreakoutsData] = useBreakoutsStore((state) => [
     state.breakouts,
@@ -115,12 +120,20 @@ const DailyRun: NextPage = () => {
           <div>
             <span>Status: {dailyRun.status}</span>
           </div>
-          {dailyRun.error && (
-            <ErrorContainer>
-              <div>Message: {dailyRun.error.message}</div>
-              <div>cell: {dailyRun.error.misc.cell}</div>
-            </ErrorContainer>
+          {dailyRun.errors && (
+            <ErrorButton onClick={() => setErrorsVisible(!errorsVisible)}>
+              {errorsVisible ? "Hide" : "Show"} {dailyRun.errors.length} errors!
+            </ErrorButton>
           )}
+
+          {errorsVisible &&
+            dailyRun.errors &&
+            dailyRun.errors.map((error: any, idx: number) => (
+              <ErrorContainer key={idx}>
+                <div>Message: {error.message}</div>
+                <div>cell: {error.misc.cell}</div>
+              </ErrorContainer>
+            ))}
           <div>
             {dailyRun.timeInitiated && (
               <div>
@@ -130,9 +143,8 @@ const DailyRun: NextPage = () => {
             <div>
               Ended:{" "}
               {dailyRun.timeEnded
-                ? `${formatTimestampToUtc(dailyRun.timeEnded)} (${(
-                    dailyRun.duration / 60
-                  ).toFixed(2)}min)`
+                ? `${formatTimestampToUtc(dailyRun.timeEnded)}
+                (${(dailyRun.duration / 60).toFixed(2)}min)`
                 : "(ongoing)"}
             </div>
           </div>

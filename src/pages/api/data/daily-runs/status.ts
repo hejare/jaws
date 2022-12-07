@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getLatestDailyRun } from "../../../../db/dailyRunsEntity";
 import { DailyRunDataType, DailyRunStatus } from "../../../../db/dailyRunsMeta";
-import { getError } from "../../../../db/errorsEntity";
+import { getErrors } from "../../../../db/errorsEntity";
 
 export default async function handler(
   req: NextApiRequest,
@@ -18,10 +18,10 @@ export default async function handler(
   }
   const { runId } = dailyRun;
 
-  const error = await getError(runId);
+  const errors = await getErrors(runId);
 
   res.status(200).json({
     ...dailyRun,
-    error,
+    errors,
   });
 }
