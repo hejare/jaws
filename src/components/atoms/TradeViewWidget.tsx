@@ -12,8 +12,8 @@ const Widget = styled.div`
 
 export const TradeViewWidget = ({ ticker }: { ticker: string }) => {
   useEffect(() => {
-    if (typeof window.TradingView !== "undefined") {
-      new window.TradingView.widget({
+    if (TradingView) {
+      new TradingView.widget({
         autosize: true,
         symbol: `NASDAQ:${ticker}`,
         interval: "D",
