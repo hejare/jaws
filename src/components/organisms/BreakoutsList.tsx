@@ -10,6 +10,7 @@ import Rating from "../molecules/Rating";
 import Button from "../atoms/buttons/Button";
 import TradeViewButton from "../atoms/buttons/TradeViewButton";
 import { BreakoutStoreType } from "../../store/breakoutsStore";
+import NavButton from "../atoms/buttons/NavButton";
 
 // const cancellableStatus = [DailyRunStatus.INITIATED] as const;
 const nonCancellableStatus = [DailyRunStatus.COMPLETED] as const;
@@ -89,6 +90,9 @@ const BreakoutsList = ({ data, disableBuy }: Props) => {
       dataIndex: "tickerRef",
       key: "tickerRef",
       width: 100,
+      render: (ticker: string) => (
+        <NavButton href={`/tickers/${ticker}`}>{ticker}</NavButton>
+      ),
     },
     {
       title: "Buy price",
@@ -142,7 +146,6 @@ const BreakoutsList = ({ data, disableBuy }: Props) => {
               Prepare Order
             </Button>
           )}
-          <TradeViewButton symbol={item.tickerRef}>TradeView</TradeViewButton>
         </Operations>
       ),
     },
