@@ -9,10 +9,11 @@ const Widget = styled.div`
   height: -webkit-fill-available;
   width: -webkit-fill-available;
 `;
+let TradingView: any;
 export const TradeViewWidget = ({ ticker }: { ticker: string }) => {
   useEffect(() => {
-    if (typeof global.TradingView !== "undefined") {
-      new global.TradingView.widget({
+    if (typeof TradingView !== "undefined") {
+      new TradingView.widget({
         autosize: true,
         symbol: `NASDAQ:${ticker}`,
         interval: "D",
