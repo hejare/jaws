@@ -120,7 +120,7 @@ const DailyRun: NextPage = () => {
           <div>
             <span>Status: {dailyRun.status}</span>
           </div>
-          {dailyRun.errors && (
+          {dailyRun.errors && dailyRun.errors.length > 0 && (
             <ErrorButton onClick={() => setErrorsVisible(!errorsVisible)}>
               {errorsVisible ? "Hide" : "Show"} {dailyRun.errors.length} errors!
             </ErrorButton>
