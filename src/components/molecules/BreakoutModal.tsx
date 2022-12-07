@@ -17,6 +17,7 @@ import { getDateTime, ONE_MINUTE_IN_MS } from "../../lib/helpers";
 import { INDICATOR } from "../../lib/priceHandler";
 import Button from "../atoms/buttons/Button";
 import { TradeViewWidget } from "../atoms/TradeViewWidget";
+import ErrorMessage from "../atoms/ErrorMessage";
 
 const InfoContainer = styled.div`
   height: 100%;
@@ -64,13 +65,8 @@ const Info = styled.div``;
 const OrderDetails = styled.div`
   padding: 0 4px;
   border-radius: 5px;
-  background-color: ${({
-    theme,
-    indicator,
-  }: {
-    theme: any;
-    indicator: INDICATOR;
-  }) => theme.palette.indicator[indicator.toLowerCase()]}}
+  background-color: ${({ theme, indicator }) =>
+    theme.palette.indicator[indicator.toLowerCase()]}}
   color: ${({ theme, indicator }: { theme: any; indicator: INDICATOR }) =>
     indicator === INDICATOR.NEUTRAL ? theme.palette.text.secondary : "inherit"}}
 
@@ -132,6 +128,7 @@ export default function BreakoutModal({
   const [showingImage, setShowingImage] = useState(true);
   const [shares, setShares] = useState<number>(0);
   const [entryPrice, setEntryPrice] = useState<number>(0);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const setValues = async () => {
@@ -228,9 +225,12 @@ export default function BreakoutModal({
             )}
         </Info>
         <ButtonsContainer>
-          <StyledButton onClick={() => setShowingImage(!showingImage)}>
-            {showingImage ? "Show Tradeview" : "Show Graph"}
-          </StyledButton>
+          <ErrorMessage>{errorMessage}</ErrorMessage>
+          {!errorMessage && (
+            <StyledButton onClick={() => setShowingImage(!showingImage)}>
+              {showingImage ? "Show Tradeview" : "Show Graph"}
+            </StyledButton>
+          )}
           {orderStatus === SUMMED_ORDER_STATUS.OPEN_FOR_PLACEMENT && (
             <PlaceOrderButton
               onClick={() => {
@@ -261,6 +261,12 @@ export default function BreakoutModal({
               showModal({});
             }}
             src={image}
+            onError={() => {
+              setErrorMessage(
+                "Graph not accessible - will not be able to view Sharkster generated image",
+              );
+              setShowingImage(false);
+            }}
           />
         </ImageContainer>
       ) : (
