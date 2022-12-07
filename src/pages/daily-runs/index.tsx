@@ -28,14 +28,14 @@ const DailyRuns: NextPage = () => {
             duration,
             runId,
             status,
-            error,
+            errors,
             timeEnded,
             timeInitiated,
             breakoutsCount,
           }: DailyRunDataType) => ({
             runId,
             status,
-            error,
+            errors,
             timeInitiated: timeInitiated
               ? formatTimestampToUtc(timeInitiated)
               : "n/a",
