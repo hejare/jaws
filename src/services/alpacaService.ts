@@ -1,5 +1,6 @@
 import fetch, { BodyInit } from "node-fetch";
 import { convertResult, handleResult } from "../util";
+import { Side } from "./alpacaMeta";
 
 const {
   ALPACA_API_KEY_ID = "[NOT_DEFINED_IN_ENV]",
@@ -44,14 +45,14 @@ export const closeOpenPosition = async (symbol: string, percentage: string) => {
 
 export const postOrder = async (
   ticker: string,
-  orderType: string,
+  type: Side,
   price: number,
   quantity: number,
 ) => {
   const body: BodyInit = JSON.stringify({
     symbol: ticker,
     qty: 1, // TODO: UNDO OVERRIDING OF QUANTITY: quantity,
-    side: orderType,
+    side: type,
     time_in_force: "day",
     type: "limit",
     limit_price: price,

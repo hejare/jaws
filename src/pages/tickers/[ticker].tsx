@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import fetch from "node-fetch";
 import { useEffect, useState } from "react";
 import Button from "../../components/atoms/buttons/Button";
+import NavButton from "../../components/atoms/buttons/NavButton";
 import PageContainer from "../../components/atoms/PageContainer";
 import TextDisplay from "../../components/atoms/TextDisplay";
 import { handleSellOrderByTickerId } from "../../lib/brokerHandler";
@@ -66,6 +67,9 @@ const TickerPage: NextPage = () => {
 
   return (
     <PageContainer>
+      <NavButton goBack href="">
+        Go back
+      </NavButton>
       <h1>{`${ticker.toUpperCase()}`}</h1>
       <TextDisplay>
         <h2>Orders</h2>

@@ -1,11 +1,11 @@
 import { handleDeleteOrder } from "../../lib/brokerHandler";
 import { getDateTime } from "../../lib/helpers";
+import { Side } from "../../services/alpacaMeta";
 import Button from "../atoms/buttons/Button";
 import Table from "../atoms/Table";
 import PriceDisplay from "../molecules/PriceDisplay";
 
-export type OrderType = "buy" | "sell";
-
+// statuses from apaca:
 const cancellableOrderStatus = [
   "new",
   "partially_filled",
@@ -17,6 +17,7 @@ const cancellableOrderStatus = [
 
 type CancellableOrderStatus = typeof cancellableOrderStatus[number];
 
+// statuses from alpaca:
 const nonCancellableOrderStatus = [
   "filled",
   "canceled",
@@ -41,7 +42,7 @@ export interface Order {
   notional: string;
   created_at: string;
   filled_at?: string;
-  side: OrderType;
+  side: Side;
 }
 
 type OrdersListData = {
