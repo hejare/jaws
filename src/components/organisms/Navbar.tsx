@@ -92,7 +92,7 @@ const Navbar = () => {
         setCookies("idToken", user.idToken);
         setIsLoggedIn(true);
         setUser(user);
-        void router.push(router.pathname);
+        location.reload();
       })
       .catch((e) => console.error(e));
   };
