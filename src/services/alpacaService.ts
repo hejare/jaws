@@ -1,4 +1,5 @@
 import fetch, { BodyInit } from "node-fetch";
+import { getISOStringForToday } from "../lib/helpers";
 import { convertResult, handleResult } from "../util";
 import { Side } from "./alpacaMeta";
 
@@ -92,6 +93,32 @@ export const getOrders = async () => {
   }
 };
 
+export const getTodaysOrders = async () => {
+  try {
+    const res = await fetch(
+      `${brokerApiBaseUrl}/trading/accounts/${accountId}/orders?status=all&after=${getISOStringForToday()}`,
+      {
+        headers: {
+          Authorization: `Basic ${base64EncodedKeys}`,
+        },
+      },
+    );
+    return await handleResult(res);
+  } catch (e:
+    | Error
+    | { error: { error: { code: number; message: string } } }
+    | any) {
+    console.log(e);
+    let message = "";
+    if (e instanceof Error) {
+      message = e.message;
+    } else if (e.error.error) {
+      message = e.error.error.message;
+    }
+    throw Error(`Unable to get orders - ${message}`);
+  }
+};
+
 export const getOrdersByTicker = async (ticker: string) => {
   try {
     const res = await fetch(
@@ -126,6 +153,7 @@ const getAssetByTicker = async (ticker: string) => {
 };
 
 export const getAssetAndOrdersByTicker = async (ticker: string) => {
+  // TODO: Refactor to usePromise.all
   const orders = await getOrdersByTicker(ticker);
   const asset = await getAssetByTicker(ticker);
   return { orders, asset };

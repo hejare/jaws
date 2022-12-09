@@ -7,16 +7,10 @@ import {
 
 export async function postTrade(data: TradesDataType) {
   await db.collection("trades").doc(data.breakoutRef).set(data);
-  return {
-    ...data,
-  };
 }
 
 export async function putTrade(data: ExtendedTradesDataType) {
   await db.collection("trades").doc(data.breakoutRef).set(data);
-  return {
-    ...data,
-  };
 }
 
 export async function getTrades(ticker: string) {

@@ -5,9 +5,10 @@ export enum TRADE_TYPE {
 }
 
 export enum TRADE_STATUS {
-  READY = "READY",
-  ACTIVE = "ACTIVE",
-  FILLED = "FILLED",
+  READY = "READY", // not even sent to Alpaca yet
+  ACTIVE = "ACTIVE", // not filled yet
+  PARTIALLY_FILLED = "PARTIALLY_FILLED", // not totally filled yet
+  FILLED = "FILLED", // "buy" or "sell" type process, should now be concidered done
   OPEN = "OPEN",
   CLOSED = "CLOSED",
   CANCELLED = "CANCELLED",

@@ -102,16 +102,18 @@ const TickerPage: NextPage = () => {
       <TextDisplay>
         <h2>Asset</h2>
         {asset ? (
-          <div>
-            <div>Entry price: {asset.avg_entry_price}</div>
-          </div>
+          <>
+            <div>
+              <div>Entry price: {asset.avg_entry_price}</div>
+            </div>
+            {/* TODO percentage should be possible to set from UI */}
+            <Button onClick={() => handleSellOrderByTickerId(ticker, 100)}>
+              Sell 100%
+            </Button>
+          </>
         ) : (
           <div>No asset for this ticker</div>
         )}
-        {/* TODO percentage should be possible to set from UI */}
-        <Button onClick={() => handleSellOrderByTickerId(ticker, 100)}>
-          Sell 100%
-        </Button>
       </TextDisplay>
     </PageContainer>
   );

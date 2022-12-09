@@ -7,7 +7,7 @@ import {
 import { TRADE_STATUS } from "../db/tradesMeta";
 import { getLastTradePrice } from "../services/polygonService";
 import * as alpacaService from "../services/alpacaService";
-import { Side } from "../services/alpacaMeta";
+import { AlpacaOrderStatusType, Side } from "../services/alpacaMeta";
 
 export const isPriceWithinBuyRange = (
   currentPrice: number,
@@ -63,9 +63,47 @@ export const deleteActiveOrder = async (orderId: string) => {
     console.log(e);
   });
   const existingTrade = await getTradeByOrderId(orderId);
-  if (existingTrade) {
+  if (existingTrade && existingTrade.status === TRADE_STATUS.ACTIVE) {
     await deleteTrade(existingTrade.breakoutRef).catch((e) => {
       console.log(e);
     });
   }
+};
+
+export const triggerUpdateBuyOrders = async () => {
+  // Get all "ACTIVE" orders:
+  const activeTrades = await getTradesByStatus(TRADE_STATUS.ACTIVE);
+
+  const orderIds = activeTrades.map(({ alpacaOrderId }) => alpacaOrderId);
+  const orders = await alpacaService.getTodaysOrders();
+
+  const TradesPromises: Promise<void>[] = [];
+  activeTrades.forEach((trade) => {
+    const existingTrades = orders.find(
+      ({ id }: { id: string }) => id === trade.alpacaOrderId,
+    );
+    if (existingTrades.status === AlpacaOrderStatusType.FILLED) {
+      TradesPromises.push(
+        putTrade({
+          ...trade,
+          status: TRADE_STATUS.FILLED,
+        }).catch((e) => {
+          console.log(e);
+        }),
+      );
+    } else if (
+      existingTrades.status === AlpacaOrderStatusType.PARTIALLY_FILLED
+    ) {
+      TradesPromises.push(
+        putTrade({
+          ...trade,
+          status: TRADE_STATUS.PARTIALLY_FILLED,
+        }).catch((e) => {
+          console.log(e);
+        }),
+      );
+    }
+  });
+  await Promise.all(TradesPromises);
+  return { activeTrades, orderIds, orders };
 };

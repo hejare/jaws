@@ -21,6 +21,12 @@ export const getTodayWithDashes = () => {
   return `${now.getFullYear()}-${addZero(nowMonth)}-${addZero(nowDate)}`;
 };
 
+export const getISOStringForToday = () => {
+  const date = getTodayWithDashes(); // I know, this could have been done better, but I am lazy...
+  const nowDate = new Date(date);
+  return nowDate.toISOString();
+};
+
 export const isToday = (datetime: string) => {
   const d = new Date(datetime);
   const now = new Date();

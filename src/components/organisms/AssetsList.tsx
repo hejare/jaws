@@ -4,6 +4,7 @@ import PriceDisplay from "../molecules/PriceDisplay";
 import PercentageDisplay from "../molecules/PercentageDisplay";
 import TradeViewButton from "../atoms/buttons/TradeViewButton";
 import QuantityDisplay from "../molecules/QuantityDisplay";
+import NavButton from "../atoms/buttons/NavButton";
 
 type AssetsListData = {
   symbol: string;
@@ -30,6 +31,9 @@ const AssetssList = ({ data }: Props) => {
       dataIndex: "symbol",
       key: "symbol",
       width: 200,
+      render: (ticker: string) => (
+        <NavButton href={`/tickers/${ticker}`}>{ticker}</NavButton>
+      ),
     },
     {
       title: "Value",
@@ -56,8 +60,8 @@ const AssetssList = ({ data }: Props) => {
               diff > 0
                 ? INDICATOR.POSITIVE
                 : diff === 0
-                ? INDICATOR.NEUTRAL
-                : INDICATOR.NEGATIVE
+                  ? INDICATOR.NEUTRAL
+                  : INDICATOR.NEGATIVE
             }
           />
         );
@@ -101,8 +105,8 @@ const AssetssList = ({ data }: Props) => {
             change_today > 0
               ? INDICATOR.POSITIVE
               : change_today === 0
-              ? INDICATOR.NEUTRAL
-              : INDICATOR.NEGATIVE
+                ? INDICATOR.NEUTRAL
+                : INDICATOR.NEGATIVE
           }
           value={parseFloat(change_today) * 100}
         />
