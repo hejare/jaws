@@ -106,15 +106,13 @@ const Navbar = () => {
         <Link href={`/daily-runs/${today}`}>
           <NavBarItem
             active={
+              pathName === "/daily-runs" ||
               pathName === "/daily-runs/[date]" ||
               pathName === "/daily-runs/[date]/[time]"
             }
           >
             Todays run
           </NavBarItem>
-        </Link>
-        <Link href="/daily-runs">
-          <NavBarItem active={pathName === "/daily-runs"}>All runs</NavBarItem>
         </Link>
         <Link href="/orders">
           <NavBarItem active={pathName === "/orders"}>All orders</NavBarItem>
