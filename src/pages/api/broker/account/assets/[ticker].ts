@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { ResponseDataType } from "../../../../../db/ResponseDataMeta";
-import { closeOpenPosition } from "../../../../../services/alpacaService";
+import { takeProfitSellOrder } from "../../../../../services/alpacaService";
 
 interface ExtendedResponseDataType extends ResponseDataType {
   orders?: Record<string, any>;
@@ -11,19 +11,15 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   const { query, method } = req;
-  const { ticker, percentage } = query;
+  const { ticker } = query;
 
   try {
     const responseData: ExtendedResponseDataType = { status: "INIT" };
     switch (method) {
-      case "DELETE":
-        if (
-          ticker &&
-          !(ticker instanceof Array) &&
-          percentage &&
-          !(percentage instanceof Array)
-        ) {
-          await closeOpenPosition(ticker, percentage)
+      // THIS SHOULD BE TRIGGERED BY CRON JOB (OR JAWS SERVER?) WHEN VALUE HAS INCREASED BY 10%.
+      case "GET":
+        if (ticker && !(ticker instanceof Array)) {
+          await takeProfitSellOrder(ticker)
             .then(() => {
               responseData.status = "OK";
             })

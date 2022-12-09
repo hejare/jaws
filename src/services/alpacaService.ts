@@ -44,7 +44,33 @@ export const closeOpenPosition = async (symbol: string, percentage: string) => {
   }
 };
 
-export const postOrder = async (
+/* After 10% increase in value, sell 50% of the position */
+const getHalfPositionValue = (ticker: string) => {
+  const holdingInTicker = 100; // todo sell get real value
+  return holdingInTicker * 0.5;
+};
+
+// INFO: this is triggered when price has went up with 10% or more.
+export const takeProfitSellOrder = async (symbol: string) => {
+  if (
+    !symbol ||
+    typeof symbol !== "string" ||
+    symbol.length < 2 ||
+    symbol.length > 5
+  ) {
+    throw Error;
+  }
+  const body: BodyInit = JSON.stringify({
+    side: "sell",
+    symbol: symbol,
+    time_in_force: "day",
+    notional: getHalfPositionValue(symbol),
+  });
+
+  await postOrder(body);
+};
+
+export const postNewBuyOrder = async (
   ticker: string,
   type: Side,
   price: number,
@@ -59,6 +85,11 @@ export const postOrder = async (
     limit_price: price,
   });
 
+  await postOrder(body);
+};
+
+/* Used for all orders (both with side "buy" and "sell") */
+const postOrder = async (body: BodyInit) => {
   try {
     const res = await fetch(
       `${brokerApiBaseUrl}/trading/accounts/${accountId}/orders`,
