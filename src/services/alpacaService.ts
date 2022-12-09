@@ -45,8 +45,9 @@ export const closeOpenPosition = async (symbol: string, percentage: string) => {
 };
 
 /* After 10% increase in value, sell 50% of the position */
-const getHalfPositionValue = (ticker: string) => {
-  const holdingInTicker = 100; // todo sell get real value
+const getHalfPositionValue = async (ticker: string) => {
+  const assetInfo = await getAssetByTicker(ticker);
+  const holdingInTicker = assetInfo.market_value; // ? question OR: assetInfo.current_price OR assetInfo.lastday_price?
   return holdingInTicker * 0.5;
 };
 
@@ -60,11 +61,13 @@ export const takeProfitSellOrder = async (symbol: string) => {
   ) {
     throw Error;
   }
+
+  const value = await getHalfPositionValue(symbol);
   const body: BodyInit = JSON.stringify({
     side: "sell",
     symbol: symbol,
     time_in_force: "day",
-    notional: getHalfPositionValue(symbol),
+    notional: value,
   });
 
   await postOrder(body);
