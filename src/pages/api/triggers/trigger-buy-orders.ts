@@ -1,33 +1,35 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { ResponseDataType } from "../../../../../db/ResponseDataMeta";
-import { deleteActiveOrder } from "../../../../../lib/tradesHandler";
+import { triggerBuyOrders } from "../../../lib/tradesHandler";
+
+type ResponseDataType = {
+  status: string;
+  message?: string;
+  meta?: Record<string, any>;
+};
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { query, method } = req;
-  const { key: id } = query;
-
+  const { method } = req;
   try {
     const responseData: ResponseDataType = { status: "INIT" };
-
     switch (method) {
-      case "DELETE":
-        if (id && !(id instanceof Array)) {
-          await deleteActiveOrder(id)
-            .then(() => {
-              responseData.status = "OK";
-            })
-            .catch((e) => {
-              responseData.status = "NOK";
-              responseData.message = e.message;
-            });
-        }
+      case "GET":
+        await triggerBuyOrders()
+          .then((results) => {
+            responseData.status = "OK";
+            responseData.meta = results;
+          })
+          .catch((e) => {
+            responseData.status = "NOK";
+            responseData.message = e.message;
+          });
         break;
       default:
         throw new Error(`Unsupported method: ${method as string}`);
     }
+
     res.status(200).json(responseData);
   } catch (e) {
     let message;

@@ -4,7 +4,10 @@ export enum SUMMED_ORDER_STATUS {
   OPEN_FOR_PLACEMENT = "OPEN_FOR_PLACEMENT",
 }
 
-export type Side = "buy" | "sell";
+export enum Side {
+  BUY = "buy",
+  SELL = "sell",
+}
 
 export type AlpacaOrderType = {
   id: string;

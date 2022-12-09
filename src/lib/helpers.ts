@@ -14,6 +14,13 @@ export const getToday = () => {
   return `${now.getFullYear()}${addZero(nowMonth)}${addZero(nowDate)}`;
 };
 
+export const getTodayWithDashes = () => {
+  const now = new Date();
+  const nowDate = now.getDate();
+  const nowMonth = now.getMonth() + 1;
+  return `${now.getFullYear()}-${addZero(nowMonth)}-${addZero(nowDate)}`;
+};
+
 export const isToday = (datetime: string) => {
   const d = new Date(datetime);
   const now = new Date();

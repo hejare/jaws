@@ -24,3 +24,8 @@ export interface TradesDataType {
   alpacaOrderId?: string;
   userRef?: string;
 }
+
+export interface ExtendedTradesDataType extends TradesDataType {
+  placed?: number;
+  alpacaOrderId?: string;
+}

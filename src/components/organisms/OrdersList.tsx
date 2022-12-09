@@ -171,9 +171,7 @@ const OrdersList = ({ data }: Props) => {
         return disabled ? (
           ""
         ) : (
-          <Button onClick={() => handleDeleteOrder(data.orderId)}>
-            Cancel
-          </Button>
+          <Button onClick={() => handleDeleteOrder(data.id)}>Cancel</Button>
         );
       },
     },
