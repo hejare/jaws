@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { OrderType } from "../../../../components/organisms/OrdersList";
 import { ResponseDataType } from "../../../../db/ResponseDataMeta";
-import { handleSaveOrder } from "../../../../db/tradesEntity";
-import { getOrders, postOrder } from "../../../../services/alpacaService";
+import { postTrade } from "../../../../db/tradesEntity";
+import { TRADE_STATUS, TRADE_TYPE } from "../../../../db/tradesMeta";
+import * as alpacaService from "../../../../services/alpacaService";
 
 interface ExtendedResponseDataType extends ResponseDataType {
   orders?: Record<string, any>;
@@ -18,7 +18,8 @@ export default async function handler(
     const responseData: ExtendedResponseDataType = { status: "INIT" };
     switch (method) {
       case "GET":
-        await getOrders()
+        await alpacaService
+          .getOrders()
           .then((result) => {
             responseData.status = "OK";
             responseData.orders = result;
@@ -32,38 +33,59 @@ export default async function handler(
         const body = JSON.parse(req.body);
         const {
           ticker,
-          orderType,
+          type,
+          status,
           price,
           quantity,
           breakoutRef,
         }: {
           ticker: string;
-          orderType: OrderType;
+          type: TRADE_TYPE;
+          status: TRADE_STATUS;
           price: number;
           quantity: number;
           breakoutRef: string;
         } = body;
 
-        await postOrder(ticker, orderType, price, quantity)
-          .then(async (result) => {
-            const alpacaOrderId = result.id;
-            const created_at = Date.parse(result.created_at).toString(); // result.created_at: '2022-12-05T11:02:02.058370387Z'
-            await handleSaveOrder(
-              ticker,
-              orderType,
-              price,
-              quantity,
-              alpacaOrderId,
-              created_at,
-              breakoutRef,
-            );
-            responseData.status = "OK";
-          })
-          .catch((e) => {
-            console.log(e);
-            responseData.status = "NOK";
-            responseData.message = e.message;
-          });
+        responseData.status = "OK";
+        await postTrade({
+          ticker,
+          type,
+          status,
+          price,
+          quantity,
+          created: Date.now(),
+          breakoutRef,
+          userRef: "ludde@hejare.se", // TODO: Extract from auth cookie/token
+        }).catch((e) => {
+          console.log(e);
+          responseData.status = "NOK";
+          responseData.message = e.message;
+        });
+
+        // const created_at = Date.parse(result.created_at).toString(); // result.created_at: '2022-12-05T11:02:02.058370387Z'
+        // await alpacaService
+        //   .postOrder(ticker, type, price, quantity)
+        //   .then(async (result) => {
+        //     const alpacaOrderId = result.id;
+        //     const created_at = Date.parse(result.created_at).toString(); // result.created_at: '2022-12-05T11:02:02.058370387Z'
+        //     await handleSaveOrder(
+        //       ticker,
+        //       type,
+        //       status,
+        //       price,
+        //       quantity,
+        //       alpacaOrderId,
+        //       created_at,
+        //       breakoutRef,
+        //     );
+        //     responseData.status = "OK";
+        //   })
+        //   .catch((e) => {
+        //     console.log(e);
+        //     responseData.status = "NOK";
+        //     responseData.message = e.message;
+        //   });
 
         break;
       default:

@@ -23,6 +23,7 @@ import PageContainer from "../../../components/atoms/PageContainer";
 import { getServerSidePropsAllPages } from "../../../lib/getServerSidePropsAllPages";
 import { useBreakoutsStore } from "../../../store/breakoutsStore";
 import Button from "../../../components/atoms/buttons/Button";
+import { ButtonsContainer } from "../../../components/atoms/ButtonsContainer";
 
 // eslint-disable-next-line no-unused-vars
 enum STATUS {
@@ -41,9 +42,7 @@ const ErrorContainer = styled.div`
 const ErrorButton = styled(Button)`
   background-color: ${({ theme }) => theme.palette.text.error};
 `;
-const StyledNavButton = styled(NavButton)`
-  margin-top: 32px;
-`;
+
 interface DailyRunFetchDataType extends DailyRunDataType {
   breakouts?: ExistingBreakoutDataType[];
   error?: ErrorDataParsedType;
@@ -105,9 +104,22 @@ const DailyRun: NextPage = () => {
   const configId = breakoutsData.length > 0 ? breakoutsData[0].configRef : null;
   return (
     <PageContainer>
-      <NavButton goBack href="">
-        Go back
-      </NavButton>
+      <ButtonsContainer>
+        {configId && (
+          <NavButton href={`/configs/${configId}`}>
+            View Configuration
+          </NavButton>
+        )}
+        {dailyRun && dailyRun.errors && dailyRun.errors.length > 0 && (
+          <ErrorButton onClick={() => setErrorsVisible(!errorsVisible)}>
+            {errorsVisible ? "Hide" : "Show"} {dailyRun.errors.length} errors!
+          </ErrorButton>
+        )}
+        <NavButton goBack href="">
+          Go back
+        </NavButton>
+      </ButtonsContainer>
+
       <h1>DAILY RUN</h1>
       <h3>
         Date: {date} (Time: {formatTimeString(time)})
@@ -120,11 +132,6 @@ const DailyRun: NextPage = () => {
           <div>
             <span>Status: {dailyRun.status}</span>
           </div>
-          {dailyRun.errors && dailyRun.errors.length > 0 && (
-            <ErrorButton onClick={() => setErrorsVisible(!errorsVisible)}>
-              {errorsVisible ? "Hide" : "Show"} {dailyRun.errors.length} errors!
-            </ErrorButton>
-          )}
 
           {errorsVisible &&
             dailyRun.errors &&
@@ -152,11 +159,6 @@ const DailyRun: NextPage = () => {
             Symbol Range: {dailyRun.rangeStart}-{dailyRun.rangeEnd}
           </div>
         </div>
-      )}
-      {configId && (
-        <StyledNavButton href={`/configs/${configId}`}>
-          View Configuration
-        </StyledNavButton>
       )}
       <BreakoutsList
         data={breakoutsData}

@@ -2,34 +2,46 @@ import { db } from "../services/firestoreService";
 import { TradesDataType } from "./tradesMeta";
 
 export async function postTrade(data: TradesDataType) {
-  await db.collection("trades").doc().set(data);
+  await db.collection("trades").doc(data.breakoutRef).set(data);
   return {
     ...data,
   };
 }
 
-export const handleSaveOrder = async (
-  ticker: string,
-  orderType: string,
-  price: number,
-  quantity: number,
-  alpacaOrderId: string,
-  created: string,
-  breakoutRef?: string,
-) => {
-  const data: TradesDataType = {
-    ticker,
-    orderType: orderType.toUpperCase(),
-    price,
-    quantity,
-    alpacaOrderId,
-    created,
-    userRef: "ludde@hejare.se",
-  };
-
-  if (breakoutRef) {
-    data.breakoutRef = breakoutRef;
+export async function getTrades(ticker: string) {
+  const query = db.collection("trades");
+  const results = await query.where("ticker", "==", ticker).get();
+  if (results.size === 0) {
+    return null;
   }
 
-  await postTrade(data);
-};
+  const doc = results.docs[0];
+  return {
+    ...doc.data(),
+  } as TradesDataType;
+}
+
+export async function getLatestTrade(ticker: string) {
+  const docs = await db.collection("trades").orderBy("created", "desc").get();
+
+  const result: TradesDataType[] = [];
+  docs.forEach((doc: any) => {
+    const data = doc.data();
+    if (data.ticker === ticker) {
+      result.push({
+        ...data,
+      });
+    }
+  });
+
+  if (result.length === 0) {
+    return null;
+  }
+  return result[0];
+}
+
+export async function deleteTrade(ref: string) {
+  const query = db.collection("trades");
+  const results = await query.doc(ref).delete();
+  return results;
+}

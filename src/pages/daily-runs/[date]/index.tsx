@@ -15,13 +15,7 @@ import {
 import PageContainer from "../../../components/atoms/PageContainer";
 import NavButton from "../../../components/atoms/buttons/NavButton";
 import { getServerSidePropsAllPages } from "../../../lib/getServerSidePropsAllPages";
-
-const ButtonsContainer = styled.div`
-  margin-top: 32px;
-  display: flex;
-  flex-direction: row;
-  gap: 5px;
-`;
+import { ButtonsContainer } from "../../../components/atoms/ButtonsContainer";
 
 // eslint-disable-next-line no-unused-vars
 enum STATUS {
@@ -79,14 +73,13 @@ const DailyRunsDate: NextPage = () => {
 
   return (
     <PageContainer>
-      <NavButton goBack href="">
-        Go back
-      </NavButton>
-      {isToday(formatDateString(date)) && (
-        <ButtonsContainer>
-          <TriggerDailyRunButton />
-        </ButtonsContainer>
-      )}
+      <ButtonsContainer>
+        <NavButton goBack href="">
+          Go back
+        </NavButton>
+        <NavButton href="/daily-runs">List All Daily Runs</NavButton>
+        {isToday(formatDateString(date)) && <TriggerDailyRunButton />}
+      </ButtonsContainer>
       {dataFetchStatus === STATUS.READY && <DailyRunsList data={data} />}
     </PageContainer>
   );

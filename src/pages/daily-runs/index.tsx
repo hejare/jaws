@@ -8,6 +8,7 @@ import { DailyRunDataType } from "../../db/dailyRunsMeta";
 import PageContainer from "../../components/atoms/PageContainer";
 import { formatTimestampToUtc } from "../../util/handleFormatDateString";
 import { getServerSidePropsAllPages } from "../../lib/getServerSidePropsAllPages";
+import NavButton from "../../components/atoms/buttons/NavButton";
 
 // eslint-disable-next-line no-unused-vars
 enum STATUS {
@@ -57,6 +58,9 @@ const DailyRuns: NextPage = () => {
 
   return (
     <PageContainer>
+      <NavButton goBack href="">
+        Go back
+      </NavButton>
       {dataFetchStatus === STATUS.READY && <DailyRunsList data={data} />}
     </PageContainer>
   );

@@ -1,29 +1,37 @@
 import fetch, { BodyInit } from "node-fetch";
-import { Order, OrderType } from "../components/organisms/OrdersList";
+import { Order } from "../components/organisms/OrdersList";
+import { TRADE_STATUS, TRADE_TYPE } from "../db/tradesMeta";
 import { convertResult } from "../util";
 
-const handlePostOrder = async (
+export const handleBuyOrder = async (
   ticker: string,
   price: number,
-  orderType: OrderType,
   quantity: number,
-  breakoutRef?: string,
+  breakoutRef: string,
 ) => {
   const body: BodyInit = JSON.stringify({
     ticker,
-    orderType,
+    type: TRADE_TYPE.BUY,
+    status: TRADE_STATUS.READY,
     price,
     quantity,
     breakoutRef,
   });
 
-  const resp = await fetch("/api/broker/orders/", {
+  const resp = await fetch("/api/broker/orders", {
     method: "POST",
     body,
   });
 
-  const data = await convertResult(resp);
-  console.log(data);
+  return convertResult(resp);
+};
+
+export const handleCancelOrder = async (ref: string) => {
+  const resp = await fetch(`/api/data/trades/${ref}`, {
+    method: "DELETE",
+  });
+
+  return convertResult(resp);
 };
 
 const sellOrder = async (symbol: string, percentage: number) => {
@@ -33,6 +41,7 @@ const sellOrder = async (symbol: string, percentage: number) => {
     symbol.length < 2 ||
     symbol.length > 5
   ) {
+    // TODO: Move to a kind of "validator" helper / handler
     console.log(
       "Did not sell. Symbol must be a defined string between 2-4 chars ",
     );
@@ -46,15 +55,6 @@ const sellOrder = async (symbol: string, percentage: number) => {
   );
 
   return convertResult(resp);
-};
-
-export const handleBuyOrder = (
-  ticker: string,
-  price: number,
-  quantity: number,
-  breakoutRef: string,
-) => {
-  return handlePostOrder(ticker, price, "buy", quantity, breakoutRef);
 };
 
 export const handleSellOrderByTickerId = (

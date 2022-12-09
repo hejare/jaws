@@ -4,6 +4,8 @@ export enum SUMMED_ORDER_STATUS {
   OPEN_FOR_PLACEMENT = "OPEN_FOR_PLACEMENT",
 }
 
+export type Side = "buy" | "sell";
+
 export type AlpacaOrderType = {
   id: string;
   client_order_id: string;
@@ -27,7 +29,7 @@ export type AlpacaOrderType = {
   order_class: "";
   order_type: "limit"; // TODO
   type: "limit"; // TODO
-  side: "buy"; // TODO
+  side: Side;
   time_in_force: "day";
   limit_price: string;
   stop_price: null; // TODO

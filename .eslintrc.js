@@ -48,7 +48,7 @@ module.exports = {
         "no-case-declarations": 0,
         "react/require-default-props": "off",
         "prefer-destructuring": "off",
-        "prettier/prettier": "error",
+        "prettier/prettier": "warn",
         "react-hooks/exhaustive-deps": 0,
         "react/jsx-props-no-spreading": "off",
         "react/react-in-jsx-scope": "off",
