@@ -65,7 +65,7 @@ export default async function handler(
 
         // const created_at = Date.parse(result.created_at).toString(); // result.created_at: '2022-12-05T11:02:02.058370387Z'
         // await alpacaService
-        //   .postOrder(ticker, type, price, quantity)
+        //   .postNewBuyOrder(ticker, type, price, quantity)
         //   .then(async (result) => {
         //     const alpacaOrderId = result.id;
         //     const created_at = Date.parse(result.created_at).toString(); // result.created_at: '2022-12-05T11:02:02.058370387Z'
