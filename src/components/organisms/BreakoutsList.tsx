@@ -8,9 +8,9 @@ import BreakoutModal from "../molecules/BreakoutModal";
 import ImageModal from "../molecules/ImageModal";
 import Rating from "../molecules/Rating";
 import Button from "../atoms/buttons/Button";
-import TradeViewButton from "../atoms/buttons/TradeViewButton";
 import { BreakoutStoreType } from "../../store/breakoutsStore";
 import NavButton from "../atoms/buttons/NavButton";
+import CancelOrderButton from "../molecules/CancelOrderButton";
 
 // const cancellableStatus = [DailyRunStatus.INITIATED] as const;
 const nonCancellableStatus = [DailyRunStatus.COMPLETED] as const;
@@ -133,18 +133,21 @@ const BreakoutsList = ({ data, disableBuy }: Props) => {
       render: (item: BreakoutStoreType) => (
         <Operations>
           {!disableBuy && (
-            <Button
-              onClick={() => {
-                void showBreakoutModal({
-                  image: `${IMAGE_SERVICE_BASE_URL as string}/${item.image}`,
-                  breakoutRef: item.breakoutRef,
-                  symbol: item.tickerRef,
-                  breakoutValue: item.breakoutValue,
-                });
-              }}
-            >
-              Prepare Order
-            </Button>
+            <>
+              <Button
+                onClick={() => {
+                  void showBreakoutModal({
+                    image: `${IMAGE_SERVICE_BASE_URL as string}/${item.image}`,
+                    breakoutRef: item.breakoutRef,
+                    symbol: item.tickerRef,
+                    breakoutValue: item.breakoutValue,
+                  });
+                }}
+              >
+                Prepare Order
+              </Button>
+              <CancelOrderButton ticker={item.tickerRef} />
+            </>
           )}
         </Operations>
       ),

@@ -40,3 +40,10 @@ export const getAccountOrderStatusByTicker = async (ticker: string) => {
   });
   return convertResult(resp);
 };
+
+export const getTradesDataByTicker = async (ticker: string) => {
+  const resp = await fetch(`/api/data/trades/${ticker}`, {
+    headers: baseHeaders,
+  });
+  return convertResult(resp);
+};

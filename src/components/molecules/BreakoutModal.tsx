@@ -233,20 +233,9 @@ export default function BreakoutModal({
           )}
           {orderStatus === SUMMED_ORDER_STATUS.OPEN_FOR_PLACEMENT && (
             <PlaceOrderButton
-              onClick={() => {
-                setOrderStatus(SUMMED_ORDER_STATUS.IN_PROGRESS);
-                setOrderDetails({
-                  qty: shares.toString(),
-                  limit_price: entryPrice.toString(),
-                  created_at: Date.now().toString(),
-                  canceled_at: Date.now().toString(),
-                  expired_at: Date.now().toString(),
-                  filled_at: Date.now().toString(),
-                });
-              }}
-              symbol={symbol}
+              ticker={symbol}
               entryPrice={entryPrice}
-              shares={shares}
+              quantity={shares}
               breakoutRef={breakoutRef}
             />
           )}

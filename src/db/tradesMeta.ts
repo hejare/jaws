@@ -10,6 +10,7 @@ export enum TRADE_STATUS {
   FILLED = "FILLED",
   OPEN = "OPEN",
   CLOSED = "CLOSED",
+  CANCELLED = "CANCELLED",
 }
 
 export interface TradesDataType {
@@ -19,7 +20,7 @@ export interface TradesDataType {
   price: number;
   quantity: number;
   created: number;
+  breakoutRef: string; // Important! Used as _ref
   alpacaOrderId?: string;
-  breakoutRef?: string;
   userRef?: string;
 }

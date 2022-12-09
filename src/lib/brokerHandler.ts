@@ -26,6 +26,14 @@ export const handleBuyOrder = async (
   return convertResult(resp);
 };
 
+export const handleCancelOrder = async (ref: string) => {
+  const resp = await fetch(`/api/data/trades/${ref}`, {
+    method: "DELETE",
+  });
+
+  return convertResult(resp);
+};
+
 const sellOrder = async (symbol: string, percentage: number) => {
   if (
     !symbol ||

@@ -1,12 +1,12 @@
 import styled from "styled-components";
 import Button from "../atoms/buttons/Button";
-import { handleBuyOrder } from "../../lib/brokerHandler";
+import { handleCancelOrder } from "../../lib/brokerHandler";
 import { useEffect, useState } from "react";
 import * as backendService from "../../services/backendService";
 import { useInterval } from "usehooks-ts";
 import { ONE_MINUTE_IN_MS } from "../../lib/helpers";
 import { useTradesStore } from "../../store/tradesStore";
-import { TRADE_STATUS, TRADE_TYPE } from "../../db/tradesMeta";
+import { TRADE_STATUS } from "../../db/tradesMeta";
 
 const StyledButton = styled(Button)`
   text-align: center;
@@ -14,28 +14,26 @@ const StyledButton = styled(Button)`
 
 interface Props {
   ticker: string;
-  entryPrice: number;
-  quantity: number;
-  breakoutRef: string;
   disabled?: boolean;
   onClick?: () => void;
 }
 
-const PlaceOrderButton = ({
+const CancelOrderButton = ({
   ticker,
-  entryPrice,
-  quantity,
-  breakoutRef,
   disabled: forceDisabled,
   onClick,
 }: Props) => {
   const [interval, setInterval] = useState(0);
   const [disabled, setDisabled] = useState(forceDisabled);
 
-  const [trade, upsertTrade] = useTradesStore((state) => [
-    state.trades.find((t) => t.ticker === ticker),
-    state.upsertTrade,
-  ]);
+  const [trade, upsertTrade, updateTrade, deleteTrade] = useTradesStore(
+    (state) => [
+      state.trades.find((t) => t.ticker === ticker),
+      state.upsertTrade,
+      state.updateTrade,
+      state.deleteTrade,
+    ],
+  );
 
   useInterval(() => {
     setInterval(ONE_MINUTE_IN_MS);
@@ -43,6 +41,8 @@ const PlaceOrderButton = ({
       // Todo: Optimize by only setTrade if different?
       if (data) {
         upsertTrade(ticker, data);
+      } else {
+        deleteTrade(ticker);
       }
     });
   }, interval);
@@ -52,41 +52,39 @@ const PlaceOrderButton = ({
       setDisabled(true);
     } else {
       // TODO: Extend logics depending on STATUS which might be like "CANCELLED", "REJECTED" or such
-      if (trade) {
-        setDisabled(true);
-      } else {
+      if (trade?.status === TRADE_STATUS.READY) {
         setDisabled(false);
+      } else {
+        setDisabled(true);
       }
     }
   }, [trade]);
 
-  const size = (quantity * entryPrice).toFixed(2);
+  const show =
+    trade &&
+    [TRADE_STATUS.READY, TRADE_STATUS.CANCELLED].includes(trade.status);
 
+  if (!show) {
+    return <></>;
+  }
   return (
     <StyledButton
       disabled={disabled}
-      onClick={() => {
+      onClick={async () => {
         setDisabled(true);
-        upsertTrade(ticker, {
-          ticker,
-          breakoutRef,
-          status: TRADE_STATUS.READY,
-          type: TRADE_TYPE.BUY,
+        updateTrade(ticker, {
+          status: TRADE_STATUS.CANCELLED,
         });
-        void handleBuyOrder(ticker, entryPrice, quantity, breakoutRef);
         typeof onClick === "function" && onClick();
+        await handleCancelOrder(trade.breakoutRef);
+        setInterval(0);
       }}
     >
       <div>
-        {!trade
-          ? "PLACE ORDER"
-          : trade.status === TRADE_STATUS.READY
-            ? "ON ITS WAY TO THE MARKET"
-            : trade.status}
+        {trade.status === TRADE_STATUS.CANCELLED ? "CANCELLED" : "CANCEL"}
       </div>
-      <div>${size}</div>
     </StyledButton>
   );
 };
 
-export default PlaceOrderButton;
+export default CancelOrderButton;
