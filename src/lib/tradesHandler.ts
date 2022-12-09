@@ -72,8 +72,11 @@ export const deleteActiveOrder = async (orderId: string) => {
 };
 
 export const triggerUpdateBuyOrders = async () => {
-  // Get all "ACTIVE" orders:
+  // Get all "ACTIVE" & "PARTIALLY_FILLED" orders:
   const activeTrades = await getTradesByStatus(TRADE_STATUS.ACTIVE);
+  const partiallyFilledTrades = await getTradesByStatus(
+    TRADE_STATUS.PARTIALLY_FILLED,
+  );
 
   const orderIds = activeTrades.map(({ alpacaOrderId }) => alpacaOrderId);
   const orders = await alpacaService.getTodaysOrders();
@@ -105,8 +108,23 @@ export const triggerUpdateBuyOrders = async () => {
       );
     }
   });
+  partiallyFilledTrades.forEach((trade) => {
+    const existingTrades = orders.find(
+      ({ id }: { id: string }) => id === trade.alpacaOrderId,
+    );
+    if (existingTrades.status === AlpacaOrderStatusType.FILLED) {
+      TradesPromises.push(
+        putTrade({
+          ...trade,
+          status: TRADE_STATUS.FILLED,
+        }).catch((e) => {
+          console.log(e);
+        }),
+      );
+    }
+  });
   await Promise.all(TradesPromises);
-  return { activeTrades, orderIds, orders };
+  return { activeTrades, partiallyFilledTrades, orderIds, orders };
 };
 
 export const triggerClearOldBuyOrders = async () => {
