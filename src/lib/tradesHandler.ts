@@ -128,11 +128,18 @@ export const triggerUpdateBuyOrders = async () => {
 };
 
 export const triggerClearOldBuyOrders = async () => {
-  // Get all "READY" orders:
+  // Get all "READY" and "ACTIVE" orders:
   const readyTrades = await getTradesByStatus(TRADE_STATUS.READY);
+  const activeTrades = await getTradesByStatus(TRADE_STATUS.ACTIVE);
 
+  // Delete all old ones:
   const promises: Promise<void>[] = [];
   readyTrades.forEach((trade) => {
+    if (!isToday(trade.created)) {
+      promises.push(deleteTrade(trade.breakoutRef));
+    }
+  });
+  activeTrades.forEach((trade) => {
     if (!isToday(trade.created)) {
       promises.push(deleteTrade(trade.breakoutRef));
     }
