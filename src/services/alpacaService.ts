@@ -51,6 +51,10 @@ const getHalfPositionValue = async (ticker: string) => {
   return holdingInTicker * 0.5;
 };
 
+export const stopLossSellOrder = () => {
+  // TODO sell
+};
+
 // INFO: this is triggered when price has went up with 10% or more.
 export const takeProfitSellOrder = async (symbol: string) => {
   if (
