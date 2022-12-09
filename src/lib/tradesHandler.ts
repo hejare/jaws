@@ -8,6 +8,7 @@ import { TRADE_STATUS } from "../db/tradesMeta";
 import { getLastTradePrice } from "../services/polygonService";
 import * as alpacaService from "../services/alpacaService";
 import { AlpacaOrderStatusType, Side } from "../services/alpacaMeta";
+import { isToday } from "./helpers";
 
 export const isPriceWithinBuyRange = (
   currentPrice: number,
@@ -106,4 +107,18 @@ export const triggerUpdateBuyOrders = async () => {
   });
   await Promise.all(TradesPromises);
   return { activeTrades, orderIds, orders };
+};
+
+export const triggerClearOldBuyOrders = async () => {
+  // Get all "READY" orders:
+  const readyTrades = await getTradesByStatus(TRADE_STATUS.READY);
+
+  const promises: Promise<void>[] = [];
+  readyTrades.forEach((trade) => {
+    if (!isToday(trade.created)) {
+      promises.push(deleteTrade(trade.breakoutRef));
+    }
+  });
+  await Promise.all(promises);
+  return { readyTrades };
 };

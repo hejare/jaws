@@ -27,7 +27,8 @@ export const getISOStringForToday = () => {
   return nowDate.toISOString();
 };
 
-export const isToday = (datetime: string) => {
+export const isToday = (datetime: string | number) => {
+  // Note: if number, its a timestamp
   const d = new Date(datetime);
   const now = new Date();
   return now.toDateString() === d.toDateString();

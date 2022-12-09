@@ -47,8 +47,8 @@ export async function getLatestTrade(ticker: string) {
 
 export async function deleteTrade(ref: string) {
   const query = db.collection("trades");
-  const results = await query.doc(ref).delete();
-  return results;
+  await query.doc(ref).delete();
+  return;
 }
 
 export async function getTradesByStatus(status: TRADE_STATUS) {
