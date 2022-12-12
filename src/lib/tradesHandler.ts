@@ -4,11 +4,15 @@ import {
   getTradesByStatus,
   putTrade,
 } from "../db/tradesEntity";
-import { TRADE_STATUS } from "../db/tradesMeta";
+import { TradesDataType, TRADE_STATUS } from "../db/tradesMeta";
 import { getLastTradePrice } from "../services/polygonService";
 import * as alpacaService from "../services/alpacaService";
 import { AlpacaOrderStatusType, Side } from "../services/alpacaMeta";
 import { isToday } from "./helpers";
+
+interface ExtendedTradesDataType extends TradesDataType {
+  lastTradePrice: number | null;
+}
 
 export const isPriceWithinBuyRange = (
   currentPrice: number,
@@ -36,7 +40,8 @@ export const triggerBuyOrders = async () => {
       // Send order to alpaca:
       AlpacaTradePromises.push(
         alpacaService
-          .postOrder(ticker, Side.BUY, price, quantity)
+          // TODO använde postOrder direkt ist för postNewBuyOrder, kolla att det fungerar!!
+          .postNewBuyOrder(ticker, Side.BUY, price, quantity)
           .then(async (result) => {
             const placed = Date.parse(result.created_at); // result.created_at: '2022-12-05T11:02:02.058370387Z'
             console.log("ALPACA ORDER DONE:", result);
@@ -146,4 +151,38 @@ export const triggerClearOldBuyOrders = async () => {
   });
   await Promise.all(promises);
   return { readyTrades };
+};
+
+export const performStopLoss = (trades: ExtendedTradesDataType[]) => {
+  return "OK"; // return array of orders that stop loss were performed on
+};
+
+export const performTakeProfit = (trades: ExtendedTradesDataType[]) => {
+  const takeProfitTrades = trades.filter((trade) => {
+    const lastTradePrice = trade.lastTradePrice;
+    if (!lastTradePrice) return false;
+    return trade.price * 1.1 <= lastTradePrice;
+  });
+
+  // todo perform take profit
+  return takeProfitTrades;
+};
+
+async function populateArray(trades: TradesDataType[]) {
+  const myArray: ExtendedTradesDataType[] = [];
+  await Promise.all(
+    trades.map(async (trade) => {
+      const lastTradePrice = await getLastTradePrice(trade.ticker);
+      myArray.push({ ...trade, lastTradePrice });
+    }),
+  );
+  return myArray;
+}
+
+export const triggerStopLossTakeProfit = async () => {
+  const filledTrades = await getTradesByStatus(TRADE_STATUS.FILLED);
+  const newFilledTrades = await populateArray(filledTrades);
+
+  const takeProfitTrades = performTakeProfit(newFilledTrades);
+  console.log("takeProfitTrades ", takeProfitTrades);
 };
