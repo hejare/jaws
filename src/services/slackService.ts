@@ -6,7 +6,11 @@ import {
 
 const { SLACK_WEBHOOK_API_KEY = "[NOT_DEFINED_IN_ENV]" } = process.env;
 
-export const postSlackMessage = async (runId: string) => {
+export const postSlackMessage = async (
+  runId: string,
+  numberOfBreakouts: number,
+  alteredConfigRef: string | null,
+) => {
   const [unformatedDate, unformatedTime] = runId.split("_");
 
   // 131023 -> 13:10
@@ -22,6 +26,16 @@ export const postSlackMessage = async (runId: string) => {
         text: {
           type: "mrkdwn",
           text: `Time to check out todays run! \n <https://jaws-sharkster.netlify.app/daily-runs/${unformatedDate}/${unformatedTime}|Daily run for ${date} at ${time}>`,
+        },
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `Breakouts: ${numberOfBreakouts} ${alteredConfigRef
+              ? ` (<https://jaws-sharkster.netlify.app/configs/${alteredConfigRef}|Config> is altered since last run)`
+              : ""
+            }`,
         },
       },
     ],

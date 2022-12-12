@@ -117,9 +117,11 @@ export const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
   const latestConfig = await getLatestConfig();
   let configRef: string | undefined = latestConfig?._ref;
 
+  let configIsNew = false;
   if (!configRef || (latestConfig && !isConfigSame(latestConfig, newConfig))) {
     const { _ref } = await postConfig(newConfig);
     configRef = _ref;
+    configIsNew = true;
   }
 
   const promises = breakouts.map((breakout) => {
@@ -147,7 +149,11 @@ export const storeDailyRun = async (dailyRunBody: DailyRunBody) => {
     return handleBreakout();
   });
   await Promise.all(promises);
-  await postSlackMessage(runId);
+  await postSlackMessage(
+    runId,
+    breakouts.length,
+    configIsNew ? configRef : null,
+  );
 };
 
 export const storeDailyRunError = async (dailyRunBody: DailyRunErrorBody) => {
