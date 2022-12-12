@@ -17,6 +17,49 @@ const base64EncodedKeys = buff.toString("base64");
 const accountId = "b75acdbc-3fb6-3fb3-b253-b0bf7d86b8bb"; // public info
 const brokerApiBaseUrl = "https://broker-api.sandbox.alpaca.markets/v1";
 
+/* After 10% increase in value, sell 50% of the position */
+const getHoldingInTicker = async (ticker: string) => {
+  const assetInfo = await getAssetByTicker(ticker);
+  return assetInfo.current_price; // existing params for price: current_price, lastday_price, market_value.
+};
+
+/* Used for all orders (both with side "buy" and "sell") */
+const postOrder = async (body: BodyInit) => {
+  try {
+    const res = await fetch(
+      `${brokerApiBaseUrl}/trading/accounts/${accountId}/orders`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${base64EncodedKeys}`,
+        },
+        body,
+      },
+    );
+    return await handleResult(res);
+  } catch (e) {
+    console.log(e);
+    throw Error(`Unable to post order - ${e as string}`);
+  }
+};
+
+const getAssetByTicker = async (ticker: string) => {
+  try {
+    const res = await fetch(
+      `${brokerApiBaseUrl}/trading/accounts/${accountId}/positions/${ticker.toUpperCase()}`,
+      {
+        headers: {
+          Authorization: `Basic ${base64EncodedKeys}`,
+        },
+      },
+    );
+    return await handleResult(res);
+  } catch (e: any) {
+    console.log(e);
+    throw Error(`Unable to get asset for ${ticker} - ${e.message as string}`);
+  }
+};
+
 export const closeOpenPosition = async (symbol: string, percentage: string) => {
   try {
     if (
@@ -44,18 +87,21 @@ export const closeOpenPosition = async (symbol: string, percentage: string) => {
   }
 };
 
-/* After 10% increase in value, sell 50% of the position */
-const getHalfPositionValue = async (ticker: string) => {
-  const assetInfo = await getAssetByTicker(ticker);
-  const holdingInTicker = assetInfo.market_value; // ? question OR: assetInfo.current_price OR assetInfo.lastday_price?
-  return holdingInTicker * 0.5;
+/* Closes the position (sells 100%). */
+export const stopLossSellOrder = async (symbol: string) => {
+  if (
+    !symbol ||
+    typeof symbol !== "string" ||
+    symbol.length < 2 ||
+    symbol.length > 5
+  ) {
+    throw Error;
+  }
+
+  await deleteOrder(symbol);
 };
 
-export const stopLossSellOrder = () => {
-  // TODO sell
-};
-
-// INFO: this is triggered when price has went up with 10% or more.
+/* This is triggered when price has went up with 10% or more.*/
 export const takeProfitSellOrder = async (symbol: string) => {
   if (
     !symbol ||
@@ -66,12 +112,12 @@ export const takeProfitSellOrder = async (symbol: string) => {
     throw Error;
   }
 
-  const value = await getHalfPositionValue(symbol);
+  const value = await getHoldingInTicker(symbol);
   const body: BodyInit = JSON.stringify({
     side: "sell",
     symbol: symbol,
     time_in_force: "day",
-    notional: value,
+    notional: value * 0.5, // sell 50%
   });
 
   await postOrder(body);
@@ -93,26 +139,6 @@ export const postNewBuyOrder = async (
   });
 
   await postOrder(body);
-};
-
-/* Used for all orders (both with side "buy" and "sell") */
-const postOrder = async (body: BodyInit) => {
-  try {
-    const res = await fetch(
-      `${brokerApiBaseUrl}/trading/accounts/${accountId}/orders`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Basic ${base64EncodedKeys}`,
-        },
-        body,
-      },
-    );
-    return await handleResult(res);
-  } catch (e) {
-    console.log(e);
-    throw Error(`Unable to post order - ${e as string}`);
-  }
 };
 
 export const getOrders = async () => {
@@ -170,23 +196,6 @@ export const getOrdersByTicker = async (ticker: string) => {
     return await handleResult(res);
   } catch (e) {
     throw Error(`Unable to get order - ${e as string}`);
-  }
-};
-
-const getAssetByTicker = async (ticker: string) => {
-  try {
-    const res = await fetch(
-      `${brokerApiBaseUrl}/trading/accounts/${accountId}/positions/${ticker.toUpperCase()}`,
-      {
-        headers: {
-          Authorization: `Basic ${base64EncodedKeys}`,
-        },
-      },
-    );
-    return await handleResult(res);
-  } catch (e: any) {
-    console.log(e);
-    throw Error(`Unable to get asset for ${ticker} - ${e.message as string}`);
   }
 };
 
