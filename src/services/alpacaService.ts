@@ -3,6 +3,8 @@ import { getISOStringForToday } from "../lib/helpers";
 import { convertResult, handleResult } from "../util";
 import { Side } from "./alpacaMeta";
 
+// TODO create endpoint and test that take-profit and stop-loss works
+
 const {
   ALPACA_API_KEY_ID = "[NOT_DEFINED_IN_ENV]",
   ALPACA_API_KEY_VALUE = "[NOT_DEFINED_IN_ENV]",
@@ -112,6 +114,8 @@ export const takeProfitSellOrder = async (symbol: string) => {
     throw Error;
   }
 
+  console.log("Take profit on: ", symbol);
+
   const value = await getHoldingInTicker(symbol);
   const body: BodyInit = JSON.stringify({
     side: "sell",
@@ -120,7 +124,7 @@ export const takeProfitSellOrder = async (symbol: string) => {
     notional: value * 0.5, // sell 50%
   });
 
-  await postOrder(body);
+  return postOrder(body);
 };
 
 export const postNewBuyOrder = async (
@@ -138,7 +142,7 @@ export const postNewBuyOrder = async (
     limit_price: price,
   });
 
-  await postOrder(body);
+  return postOrder(body);
 };
 
 export const getOrders = async () => {

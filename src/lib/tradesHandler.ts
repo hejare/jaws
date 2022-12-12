@@ -153,19 +153,36 @@ export const triggerClearOldBuyOrders = async () => {
   return { readyTrades };
 };
 
-export const performStopLoss = (trades: ExtendedTradesDataType[]) => {
-  return "OK"; // return array of orders that stop loss were performed on
+export const isStopLossOrder = (
+  trade: ExtendedTradesDataType,
+  stopLossLimit: number,
+) => {
+  const lastTradePrice = trade.lastTradePrice;
+  if (lastTradePrice && trade.price - lastTradePrice >= stopLossLimit) {
+    console.log("is stop loss");
+    // return true;
+  }
+
+  return false; // return array of orders that stop loss were performed on
 };
 
-export const performTakeProfit = (trades: ExtendedTradesDataType[]) => {
-  const takeProfitTrades = trades.filter((trade) => {
-    const lastTradePrice = trade.lastTradePrice;
-    if (!lastTradePrice) return false;
-    return trade.price * 1.1 <= lastTradePrice;
-  });
+const isTakeProfitOrder = (trade: ExtendedTradesDataType) => {
+  const lastTradePrice = trade.lastTradePrice;
+  return lastTradePrice && trade.price * 1.1 <= lastTradePrice;
+};
 
-  // todo perform take profit
-  return takeProfitTrades;
+export const performActions = (
+  trades: ExtendedTradesDataType[],
+  stopLossLimit: number,
+) => {
+  trades.forEach((trade) => {
+    if (isTakeProfitOrder(trade)) {
+      void alpacaService.takeProfitSellOrder(trade.ticker);
+    } else if (isStopLossOrder(trade, stopLossLimit)) {
+      console.log("perform stop loss");
+      void alpacaService.stopLossSellOrder(trade.ticker);
+    }
+  });
 };
 
 async function populateArray(trades: TradesDataType[]) {
@@ -182,7 +199,7 @@ async function populateArray(trades: TradesDataType[]) {
 export const triggerStopLossTakeProfit = async () => {
   const filledTrades = await getTradesByStatus(TRADE_STATUS.FILLED);
   const newFilledTrades = await populateArray(filledTrades);
-
-  const takeProfitTrades = performTakeProfit(newFilledTrades);
-  console.log("takeProfitTrades ", takeProfitTrades);
+  const balance = await alpacaService.getAccountCashBalance();
+  const stopLossLimit = balance; // TODO + assetsTotVal
+  performActions(newFilledTrades, stopLossLimit);
 };
