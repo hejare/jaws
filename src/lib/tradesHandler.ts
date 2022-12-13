@@ -179,7 +179,7 @@ export const performActions = (
   });
 };
 
-async function populateArray(trades: TradesDataType[]) {
+async function populateArrayWithLastTradePrice(trades: TradesDataType[]) {
   const populatedArray: ExtendedTradesDataType[] = [];
   await Promise.all(
     trades.map(async (trade) => {
@@ -192,8 +192,9 @@ async function populateArray(trades: TradesDataType[]) {
 
 export const triggerStopLossTakeProfit = async () => {
   try {
+    // refactor to use promise.all?
     const filledTrades = await getTradesByStatus(TRADE_STATUS.FILLED);
-    const newFilledTrades = await populateArray(filledTrades);
+    const newFilledTrades = await populateArrayWithLastTradePrice(filledTrades);
     const balance = await alpacaService.getPortfolioValue();
     const stopLossLimit = balance * 0.05; // 5% of total value
     performActions(newFilledTrades, stopLossLimit);
