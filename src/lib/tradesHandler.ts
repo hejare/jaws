@@ -158,14 +158,10 @@ export const isStopLossOrder = (
   stopLossLimit: number,
 ) => {
   const lastTradePrice = trade.lastTradePrice;
-  if (lastTradePrice && trade.price - lastTradePrice >= stopLossLimit) {
-    console.log("is stop loss");
-    // return true;
-  }
-
-  return false; // return array of orders that stop loss were performed on
+  return lastTradePrice && trade.price - lastTradePrice >= stopLossLimit;
 };
 
+/* After 10% increase in value, we take profit */
 const isTakeProfitOrder = (trade: ExtendedTradesDataType) => {
   const lastTradePrice = trade.lastTradePrice;
   return lastTradePrice && trade.price * 1.1 <= lastTradePrice;
@@ -179,7 +175,6 @@ export const performActions = (
     if (isTakeProfitOrder(trade)) {
       void alpacaService.takeProfitSellOrder(trade.ticker);
     } else if (isStopLossOrder(trade, stopLossLimit)) {
-      console.log("perform stop loss");
       void alpacaService.stopLossSellOrder(trade.ticker);
     }
   });
@@ -197,9 +192,14 @@ async function populateArray(trades: TradesDataType[]) {
 }
 
 export const triggerStopLossTakeProfit = async () => {
-  const filledTrades = await getTradesByStatus(TRADE_STATUS.FILLED);
-  const newFilledTrades = await populateArray(filledTrades);
-  const balance = await alpacaService.getAccountCashBalance();
-  const stopLossLimit = balance; // TODO + assetsTotVal
-  performActions(newFilledTrades, stopLossLimit);
+  try {
+    const filledTrades = await getTradesByStatus(TRADE_STATUS.FILLED);
+    const newFilledTrades = await populateArray(filledTrades);
+    const balance = await alpacaService.getPortfolioValue();
+    const stopLossLimit = balance * 0.05; // 5% of total value
+    performActions(newFilledTrades, stopLossLimit);
+  } catch (e) {
+    console.log(e);
+    throw Error(`Unable to handle stop-loss & take-profit ${e as string}`);
+  }
 };

@@ -19,10 +19,9 @@ const base64EncodedKeys = buff.toString("base64");
 const accountId = "b75acdbc-3fb6-3fb3-b253-b0bf7d86b8bb"; // public info
 const brokerApiBaseUrl = "https://broker-api.sandbox.alpaca.markets/v1";
 
-/* After 10% increase in value, sell 50% of the position */
 const getHoldingInTicker = async (ticker: string) => {
   const assetInfo = await getAssetByTicker(ticker);
-  return assetInfo.current_price; // existing params for price: current_price, lastday_price, market_value.
+  return assetInfo.current_price;
 };
 
 /* Used for all orders (both with side "buy" and "sell") */
@@ -100,6 +99,7 @@ export const stopLossSellOrder = async (symbol: string) => {
     throw Error;
   }
 
+  console.log(`Stop loss on ${symbol}`);
   await deleteOrder(symbol);
 };
 
@@ -114,8 +114,6 @@ export const takeProfitSellOrder = async (symbol: string) => {
     throw Error;
   }
 
-  console.log("Take profit on: ", symbol);
-
   const value = await getHoldingInTicker(symbol);
   const body: BodyInit = JSON.stringify({
     side: "sell",
@@ -124,6 +122,7 @@ export const takeProfitSellOrder = async (symbol: string) => {
     notional: value * 0.5, // sell 50%
   });
 
+  console.log(`Take profit on ${symbol}`);
   return postOrder(body);
 };
 
@@ -251,4 +250,18 @@ export const getAccountAssets = async () => {
     },
   );
   return convertResult(res);
+};
+
+/* The total balance (cash balance + assets value) */
+export const getPortfolioValue = async () => {
+  const res = await fetch(
+    `${brokerApiBaseUrl}/trading/accounts/${accountId}/account`,
+    {
+      headers: {
+        Authorization: `Basic ${base64EncodedKeys}`,
+      },
+    },
+  );
+  const result = await convertResult(res);
+  return result.portfolio_value;
 };

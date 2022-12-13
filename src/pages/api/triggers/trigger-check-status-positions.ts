@@ -19,7 +19,6 @@ export default async function handler(
         await triggerStopLossTakeProfit()
           .then(() => {
             responseData.status = "OK";
-            // todo msg on what actions where performed
           })
           .catch((e) => {
             responseData.status = "NOK";
@@ -30,7 +29,6 @@ export default async function handler(
       default:
         throw new Error(`Unsupported method: ${method as string}`);
     }
-
     res.status(200).json(responseData);
   } catch (e) {
     let message;
