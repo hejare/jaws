@@ -4,11 +4,15 @@ import {
   getTradesByStatus,
   putTrade,
 } from "../db/tradesEntity";
-import { TRADE_STATUS } from "../db/tradesMeta";
+import { TradesDataType, TRADE_STATUS } from "../db/tradesMeta";
 import { getLastTradePrice } from "../services/polygonService";
 import * as alpacaService from "../services/alpacaService";
 import { AlpacaOrderStatusType, Side } from "../services/alpacaMeta";
 import { isToday } from "./helpers";
+
+interface ExtendedTradesDataType extends TradesDataType {
+  lastTradePrice: number | null;
+}
 
 export const isPriceWithinBuyRange = (
   currentPrice: number,
@@ -36,7 +40,7 @@ export const triggerBuyOrders = async () => {
       // Send order to alpaca:
       AlpacaTradePromises.push(
         alpacaService
-          .postOrder(ticker, Side.BUY, price, quantity)
+          .postNewBuyOrder(ticker, Side.BUY, price, quantity)
           .then(async (result) => {
             const placed = Date.parse(result.created_at); // result.created_at: '2022-12-05T11:02:02.058370387Z'
             console.log("ALPACA ORDER DONE:", result);
@@ -146,4 +150,56 @@ export const triggerClearOldBuyOrders = async () => {
   });
   await Promise.all(promises);
   return { readyTrades };
+};
+
+export const isStopLossOrder = (
+  trade: ExtendedTradesDataType,
+  stopLossLimit: number,
+) => {
+  const lastTradePrice = trade.lastTradePrice;
+  return lastTradePrice && trade.price - lastTradePrice >= stopLossLimit;
+};
+
+/* After 10% increase in value, we take profit */
+const isTakeProfitOrder = (trade: ExtendedTradesDataType) => {
+  const lastTradePrice = trade.lastTradePrice;
+  return lastTradePrice && trade.price * 1.1 <= lastTradePrice;
+};
+
+export const performActions = (
+  trades: ExtendedTradesDataType[],
+  stopLossLimit: number,
+) => {
+  trades.forEach((trade) => {
+    if (isTakeProfitOrder(trade)) {
+      void alpacaService.takeProfitSellOrder(trade.ticker);
+    } else if (isStopLossOrder(trade, stopLossLimit)) {
+      void alpacaService.stopLossSellOrder(trade.ticker);
+    }
+  });
+};
+
+async function populateArrayWithLastTradePrice(trades: TradesDataType[]) {
+  const populatedArray: ExtendedTradesDataType[] = [];
+  await Promise.all(
+    trades.map(async (trade) => {
+      const lastTradePrice = await getLastTradePrice(trade.ticker);
+      populatedArray.push({ ...trade, lastTradePrice });
+    }),
+  );
+  return populatedArray;
+}
+
+export const triggerStopLossTakeProfit = async () => {
+  try {
+    // refactor to use promise.all?
+    const filledTrades = await getTradesByStatus(TRADE_STATUS.FILLED);
+    const newFilledTrades = await populateArrayWithLastTradePrice(filledTrades);
+    const balance = await alpacaService.getPortfolioValue();
+    const stopLossLimit = balance * 0.05; // 5% of total value
+    performActions(newFilledTrades, stopLossLimit);
+  } catch (e) {
+    console.log(e);
+    throw Error(`Unable to handle stop-loss & take-profit ${e as string}`);
+  }
 };

@@ -17,6 +17,48 @@ const base64EncodedKeys = buff.toString("base64");
 const accountId = "b75acdbc-3fb6-3fb3-b253-b0bf7d86b8bb"; // public info
 const brokerApiBaseUrl = "https://broker-api.sandbox.alpaca.markets/v1";
 
+const getHoldingInTicker = async (ticker: string) => {
+  const assetInfo = await getAssetByTicker(ticker);
+  return assetInfo.current_price;
+};
+
+/* Used for all orders (both with side "buy" and "sell") */
+const postOrder = async (body: BodyInit) => {
+  try {
+    const res = await fetch(
+      `${brokerApiBaseUrl}/trading/accounts/${accountId}/orders`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${base64EncodedKeys}`,
+        },
+        body,
+      },
+    );
+    return await handleResult(res);
+  } catch (e) {
+    console.log(e);
+    throw Error(`Unable to post order - ${e as string}`);
+  }
+};
+
+const getAssetByTicker = async (ticker: string) => {
+  try {
+    const res = await fetch(
+      `${brokerApiBaseUrl}/trading/accounts/${accountId}/positions/${ticker.toUpperCase()}`,
+      {
+        headers: {
+          Authorization: `Basic ${base64EncodedKeys}`,
+        },
+      },
+    );
+    return await handleResult(res);
+  } catch (e: any) {
+    console.log(e);
+    throw Error(`Unable to get asset for ${ticker} - ${e.message as string}`);
+  }
+};
+
 export const closeOpenPosition = async (symbol: string, percentage: string) => {
   try {
     if (
@@ -44,7 +86,45 @@ export const closeOpenPosition = async (symbol: string, percentage: string) => {
   }
 };
 
-export const postOrder = async (
+/* Closes the position (sells 100%). */
+export const stopLossSellOrder = async (symbol: string) => {
+  if (
+    !symbol ||
+    typeof symbol !== "string" ||
+    symbol.length < 2 ||
+    symbol.length > 5
+  ) {
+    throw Error;
+  }
+
+  console.log(`Stop loss on ${symbol}`);
+  await deleteOrder(symbol);
+};
+
+/* This is triggered when price has went up with 10% or more.*/
+export const takeProfitSellOrder = async (symbol: string) => {
+  if (
+    !symbol ||
+    typeof symbol !== "string" ||
+    symbol.length < 2 ||
+    symbol.length > 5
+  ) {
+    throw Error;
+  }
+
+  const value = await getHoldingInTicker(symbol);
+  const body: BodyInit = JSON.stringify({
+    side: "sell",
+    symbol: symbol,
+    time_in_force: "day",
+    notional: value * 0.5, // sell 50%
+  });
+
+  console.log(`Take profit on ${symbol}`);
+  return postOrder(body);
+};
+
+export const postNewBuyOrder = async (
   ticker: string,
   type: Side,
   price: number,
@@ -59,22 +139,7 @@ export const postOrder = async (
     limit_price: price,
   });
 
-  try {
-    const res = await fetch(
-      `${brokerApiBaseUrl}/trading/accounts/${accountId}/orders`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Basic ${base64EncodedKeys}`,
-        },
-        body,
-      },
-    );
-    return await handleResult(res);
-  } catch (e) {
-    console.log(e);
-    throw Error(`Unable to post order - ${e as string}`);
-  }
+  return postOrder(body);
 };
 
 export const getOrders = async () => {
@@ -135,23 +200,6 @@ export const getOrdersByTicker = async (ticker: string) => {
   }
 };
 
-const getAssetByTicker = async (ticker: string) => {
-  try {
-    const res = await fetch(
-      `${brokerApiBaseUrl}/trading/accounts/${accountId}/positions/${ticker.toUpperCase()}`,
-      {
-        headers: {
-          Authorization: `Basic ${base64EncodedKeys}`,
-        },
-      },
-    );
-    return await handleResult(res);
-  } catch (e: any) {
-    console.log(e);
-    throw Error(`Unable to get asset for ${ticker} - ${e.message as string}`);
-  }
-};
-
 export const getAssetAndOrdersByTicker = async (ticker: string) => {
   // TODO: Refactor to usePromise.all
   const orders = await getOrdersByTicker(ticker);
@@ -200,4 +248,18 @@ export const getAccountAssets = async () => {
     },
   );
   return convertResult(res);
+};
+
+/* The total balance (cash balance + assets value) */
+export const getPortfolioValue = async () => {
+  const res = await fetch(
+    `${brokerApiBaseUrl}/trading/accounts/${accountId}/account`,
+    {
+      headers: {
+        Authorization: `Basic ${base64EncodedKeys}`,
+      },
+    },
+  );
+  const result = await convertResult(res);
+  return result.portfolio_value;
 };
