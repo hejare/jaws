@@ -40,7 +40,7 @@ export const triggerBuyOrders = async () => {
       // Send order to alpaca:
       AlpacaTradePromises.push(
         alpacaService
-          .postNewBuyOrder(ticker, Side.BUY, price, quantity)
+          .postNewBuyOrder(ticker, price, quantity)
           .then(async (result) => {
             const placed = Date.parse(result.created_at); // result.created_at: '2022-12-05T11:02:02.058370387Z'
             console.log("ALPACA ORDER DONE:", result);
