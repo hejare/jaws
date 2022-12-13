@@ -126,14 +126,13 @@ export const takeProfitSellOrder = async (symbol: string) => {
 
 export const postNewBuyOrder = async (
   ticker: string,
-  type: Side,
   price: number,
   quantity: number,
 ) => {
   const body: BodyInit = JSON.stringify({
     symbol: ticker,
     qty: 1, // TODO: UNDO OVERRIDING OF QUANTITY: quantity,
-    side: type,
+    side: Side.BUY,
     time_in_force: "day",
     type: "limit",
     limit_price: price,
