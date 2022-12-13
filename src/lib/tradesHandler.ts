@@ -40,7 +40,6 @@ export const triggerBuyOrders = async () => {
       // Send order to alpaca:
       AlpacaTradePromises.push(
         alpacaService
-          // TODO använde postOrder direkt ist för postNewBuyOrder, kolla att det fungerar!!
           .postNewBuyOrder(ticker, Side.BUY, price, quantity)
           .then(async (result) => {
             const placed = Date.parse(result.created_at); // result.created_at: '2022-12-05T11:02:02.058370387Z'
@@ -181,14 +180,14 @@ export const performActions = (
 };
 
 async function populateArray(trades: TradesDataType[]) {
-  const myArray: ExtendedTradesDataType[] = [];
+  const populatedArray: ExtendedTradesDataType[] = [];
   await Promise.all(
     trades.map(async (trade) => {
       const lastTradePrice = await getLastTradePrice(trade.ticker);
-      myArray.push({ ...trade, lastTradePrice });
+      populatedArray.push({ ...trade, lastTradePrice });
     }),
   );
-  return myArray;
+  return populatedArray;
 }
 
 export const triggerStopLossTakeProfit = async () => {

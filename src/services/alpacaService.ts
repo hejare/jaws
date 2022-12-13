@@ -3,8 +3,6 @@ import { getISOStringForToday } from "../lib/helpers";
 import { convertResult, handleResult } from "../util";
 import { Side } from "./alpacaMeta";
 
-// TODO create endpoint and test that take-profit and stop-loss works
-
 const {
   ALPACA_API_KEY_ID = "[NOT_DEFINED_IN_ENV]",
   ALPACA_API_KEY_VALUE = "[NOT_DEFINED_IN_ENV]",
