@@ -10,3 +10,7 @@
 **api/triggers/trigger-clear-old-orders**
 - Runs at 04:00,
 - takes all "READY" trades that are not today's date and discards them.
+
+**api/triggers/trigger-check-status-positions**
+- Runs every 5 minutes,
+- Takes all "FILLED" trades, and on each trade, checks if it is stop-loss or take-profit. Then, performs stop-loss and/or take-profit actions accordingly. 
