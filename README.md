@@ -21,6 +21,7 @@ This is a blank project for Jaws with TypeScript.
 ## Cron jobs
 * Cron jobs for triggering jaws are setup with [cron-job.org](https://console.cron-job.org/). 
 * Login with hej@hejare.se email adress to view, edit and create new cron jobs
+* [Info](docs/scheduling.md) about what each cron job does and when it is triggered 
 
 ## _Further Documentation_
 
@@ -28,6 +29,9 @@ This is a blank project for Jaws with TypeScript.
 - [Atomic Driven Design pattern](docs/adr.md)
 - [Managing Netlify](docs/netlify.md)
 - [Alpaca API learning points/quick facts](https://github.com/hejare/jaws/blob/main/docs/alpaca-api-learning-points.md)
+- [Scheduled cron jobs](docs/scheduling.md)
+
+
 ### HejHejare Github
 Read about this in the projects common document on the drive:
 https://docs.google.com/document/d/1TH65nCqeNXUf9YC2UzaN9GPmo0goyH4fQQZpBcwnTdo/edit#heading=h.1mxg2mhnkz13
