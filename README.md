@@ -11,8 +11,12 @@ This is a blank project for Jaws with TypeScript.
 
 
 ## [Alpaca API](https://broker-app.alpaca.markets/dev) login details
+* This is our broker
 * [Docs](https://alpaca.markets/docs/api-references/broker-api/)
 * hej@hejare.se, ask Anna or Leo for password. 
+
+## [Polygon API](https://polygon.io/docs/stocks/getting-started)
+* We use Polygon API for retrieving historical stock data.
 
 ## Firebase Cloud Firestore
 - Link to [project console](https://console.firebase.google.com/u/0/project/jaws-sharkster/overview)
