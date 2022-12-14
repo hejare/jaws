@@ -7,7 +7,7 @@ import {
 import { TradesDataType, TRADE_STATUS } from "../db/tradesMeta";
 import {
   getLastTradePrice,
-  getMovingAverage,
+  getSimpleMovingAverage,
 } from "../services/polygonService";
 import * as alpacaService from "../services/alpacaService";
 import { AlpacaOrderStatusType, Side } from "../services/alpacaMeta";
@@ -191,7 +191,7 @@ async function populateTradesData(trades: TradesDataType[]) {
   await Promise.all(
     trades.map(async (trade) => {
       const lastTradePrice = await getLastTradePrice(trade.ticker);
-      const movingAvg10 = await getMovingAverage(trade.ticker, 10);
+      const movingAvg10 = await getSimpleMovingAverage(trade.ticker, 10);
       populatedArray.push({ ...trade, lastTradePrice, movingAvg10 });
     }),
   );

@@ -44,11 +44,13 @@ export const getLastTradesMedianPrice = async (symbol: string) => {
       return prices[prices.length / 2 - 1];
     });
 };
-//https://polygon.io/docs/stocks/get_v1_indicators_sma__stockticker#:~:text=1605195918306274000%0A%20%20%20%20%7D%0A%7D-,Simple%20Moving%20Average%20(SMA),-GET
-export const getMovingAverage = async (symbol: string, timeRange: MADays) => {
+/* node-fetch since polygonClient doesn't have support for this endpoint */
+export const getSimpleMovingAverage = async (
+  symbol: string,
+  timeRange: MADays,
+) => {
   const url = `https://api.polygon.io/v1/indicators/sma/${symbol}?timespan=day&adjusted=true&window=${timeRange}&series_type=close&order=desc&limit=1&apiKey=${POLYGON_KEY}`;
   const response = await fetch(url);
   const data = await handleResult(response);
   return data.results.values[0].value;
-  // polygonClient doesn't have support for this endpoint?
 };
