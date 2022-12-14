@@ -5,13 +5,17 @@ import {
   putTrade,
 } from "../db/tradesEntity";
 import { TradesDataType, TRADE_STATUS } from "../db/tradesMeta";
-import { getLastTradePrice } from "../services/polygonService";
+import {
+  getLastTradePrice,
+  getMovingAverage,
+} from "../services/polygonService";
 import * as alpacaService from "../services/alpacaService";
 import { AlpacaOrderStatusType, Side } from "../services/alpacaMeta";
 import { isToday } from "./helpers";
 
 interface ExtendedTradesDataType extends TradesDataType {
   lastTradePrice: number | null;
+  movingAvg10: number;
 }
 
 export const isPriceWithinBuyRange = (
@@ -157,7 +161,10 @@ export const isStopLossOrder = (
   stopLossLimit: number,
 ) => {
   const lastTradePrice = trade.lastTradePrice;
-  return lastTradePrice && trade.price - lastTradePrice >= stopLossLimit;
+  if (!lastTradePrice) return false;
+  if (trade.price - lastTradePrice >= stopLossLimit) return true;
+  if (lastTradePrice < trade.movingAvg10) return true; // ? <= or < ?
+  return false;
 };
 
 /* After 10% increase in value, we take profit */
@@ -179,12 +186,13 @@ export const performActions = (
   });
 };
 
-async function populateArrayWithLastTradePrice(trades: TradesDataType[]) {
+async function populateTradesData(trades: TradesDataType[]) {
   const populatedArray: ExtendedTradesDataType[] = [];
   await Promise.all(
     trades.map(async (trade) => {
       const lastTradePrice = await getLastTradePrice(trade.ticker);
-      populatedArray.push({ ...trade, lastTradePrice });
+      const movingAvg10 = await getMovingAverage(trade.ticker, 10);
+      populatedArray.push({ ...trade, lastTradePrice, movingAvg10 });
     }),
   );
   return populatedArray;
@@ -192,10 +200,12 @@ async function populateArrayWithLastTradePrice(trades: TradesDataType[]) {
 
 export const triggerStopLossTakeProfit = async () => {
   try {
-    // refactor to use promise.all?
     const filledTrades = await getTradesByStatus(TRADE_STATUS.FILLED);
-    const newFilledTrades = await populateArrayWithLastTradePrice(filledTrades);
-    const balance = await alpacaService.getPortfolioValue();
+
+    const [newFilledTrades, balance] = await Promise.all([
+      populateTradesData(filledTrades),
+      alpacaService.getPortfolioValue(),
+    ]);
     const stopLossLimit = balance * 0.05; // 5% of total value
     performActions(newFilledTrades, stopLossLimit);
   } catch (e) {
