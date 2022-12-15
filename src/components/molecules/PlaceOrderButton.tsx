@@ -6,7 +6,7 @@ import * as backendService from "../../services/backendService";
 import { useInterval } from "usehooks-ts";
 import { ONE_MINUTE_IN_MS } from "../../lib/helpers";
 import { useTradesStore } from "../../store/tradesStore";
-import { TRADE_STATUS, TRADE_TYPE } from "../../db/tradesMeta";
+import { TRADE_STATUS, TRADE_SIDE } from "../../db/tradesMeta";
 
 const StyledButton = styled(Button)`
   text-align: center;
@@ -71,7 +71,7 @@ const PlaceOrderButton = ({
           ticker,
           breakoutRef,
           status: TRADE_STATUS.READY,
-          type: TRADE_TYPE.BUY,
+          type: TRADE_SIDE.BUY,
         });
         void handleBuyOrder(ticker, entryPrice, quantity, breakoutRef);
         typeof onClick === "function" && onClick();
@@ -81,8 +81,8 @@ const PlaceOrderButton = ({
         {!trade
           ? "PLACE ORDER"
           : trade.status === TRADE_STATUS.READY
-            ? "ON ITS WAY TO THE MARKET"
-            : trade.status}
+          ? "ON ITS WAY TO THE MARKET"
+          : trade.status}
       </div>
       <div>${size}</div>
     </StyledButton>

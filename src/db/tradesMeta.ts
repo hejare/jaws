@@ -1,5 +1,5 @@
 // These are also mapped all the way to lowercased and sent to alpacaca (as prop "side")
-export enum TRADE_TYPE {
+export enum TRADE_SIDE {
   BUY = "BUY",
   SELL = "SELL",
 }
@@ -16,7 +16,7 @@ export enum TRADE_STATUS {
 
 export interface TradesDataType {
   ticker: string;
-  type: TRADE_TYPE;
+  type: TRADE_SIDE;
   status: TRADE_STATUS;
   price: number;
   quantity: number;

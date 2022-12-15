@@ -1,9 +1,9 @@
 import create from "zustand";
-import { TRADE_STATUS, TRADE_TYPE } from "../db/tradesMeta";
+import { TRADE_STATUS, TRADE_SIDE } from "../db/tradesMeta";
 
 export type TradesStoreType = {
   ticker: string;
-  type: TRADE_TYPE;
+  type: TRADE_SIDE;
   status: TRADE_STATUS;
   breakoutRef: string;
 };

@@ -1,6 +1,6 @@
 import fetch, { BodyInit } from "node-fetch";
 import { Order } from "../components/organisms/OrdersList";
-import { TRADE_STATUS, TRADE_TYPE } from "../db/tradesMeta";
+import { TRADE_STATUS, TRADE_SIDE } from "../db/tradesMeta";
 import { convertResult } from "../util";
 
 export const handleBuyOrder = async (
@@ -11,7 +11,7 @@ export const handleBuyOrder = async (
 ) => {
   const body: BodyInit = JSON.stringify({
     ticker,
-    type: TRADE_TYPE.BUY,
+    type: TRADE_SIDE.BUY,
     status: TRADE_STATUS.READY,
     price,
     quantity,

@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { ResponseDataType } from "../../../../db/ResponseDataMeta";
 import { postTrade } from "../../../../db/tradesEntity";
-import { TRADE_STATUS, TRADE_TYPE } from "../../../../db/tradesMeta";
+import { TRADE_STATUS, TRADE_SIDE } from "../../../../db/tradesMeta";
 import * as alpacaService from "../../../../services/alpacaService";
 
 interface ExtendedResponseDataType extends ResponseDataType {
@@ -40,7 +40,7 @@ export default async function handler(
           breakoutRef,
         }: {
           ticker: string;
-          type: TRADE_TYPE;
+          type: TRADE_SIDE;
           status: TRADE_STATUS;
           price: number;
           quantity: number;
