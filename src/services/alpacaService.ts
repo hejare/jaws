@@ -118,6 +118,7 @@ export const takeProfitSellOrder = async (symbol: string) => {
     symbol: symbol,
     time_in_force: "day",
     notional: value * 0.5, // sell 50%
+    type: "market",
   });
 
   console.log(`Take profit on ${symbol}`);

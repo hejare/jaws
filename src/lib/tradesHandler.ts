@@ -2,9 +2,10 @@ import {
   deleteTrade,
   getTradeByOrderId,
   getTradesByStatus,
+  postTrade,
   putTrade,
 } from "../db/tradesEntity";
-import { TradesDataType, TRADE_STATUS } from "../db/tradesMeta";
+import { TradesDataType, TRADE_STATUS, TRADE_TYPE } from "../db/tradesMeta";
 import {
   getLastTradePrice,
   getSimpleMovingAverage,
@@ -14,8 +15,8 @@ import { AlpacaOrderStatusType, Side } from "../services/alpacaMeta";
 import { isToday } from "./helpers";
 
 interface ExtendedTradesDataType extends TradesDataType {
-  lastTradePrice: number | null;
-  movingAvg10: number;
+  lastTradePrice?: number | null;
+  movingAvg10?: number;
 }
 
 export const isPriceWithinBuyRange = (
@@ -161,9 +162,10 @@ export const isStopLossOrder = (
   stopLossLimit: number,
 ) => {
   const lastTradePrice = trade.lastTradePrice;
+  const movingAvg = trade.movingAvg10;
   if (!lastTradePrice) return false;
   if (trade.price - lastTradePrice >= stopLossLimit) return true;
-  if (lastTradePrice <= trade.movingAvg10) return true; // ? <= or < ?
+  if (movingAvg && lastTradePrice <= movingAvg) return true; // ? <= or < ?
   return false;
 };
 
@@ -171,6 +173,55 @@ export const isStopLossOrder = (
 const isTakeProfitOrder = (trade: ExtendedTradesDataType) => {
   const lastTradePrice = trade.lastTradePrice;
   return lastTradePrice && trade.price * 1.1 <= lastTradePrice;
+};
+
+const depopulateTradeArray = (
+  trade: ExtendedTradesDataType,
+): TradesDataType => {
+  delete trade.lastTradePrice;
+  delete trade.movingAvg10;
+  return trade;
+};
+
+const updateTrade = async (trade: ExtendedTradesDataType) => {
+  const depopulatedTradeArray = depopulateTradeArray(trade);
+  try {
+    await putTrade(depopulatedTradeArray);
+  } catch (e) {
+    console.log(e);
+    throw Error(`${e as string}`);
+  }
+};
+
+// TODO how to handle the assets that are not fractionable?
+const handleTakeProfitOrder = async (trade: ExtendedTradesDataType) => {
+  try {
+    const result = await alpacaService.takeProfitSellOrder(trade.ticker);
+    const originalTradeEntity = depopulateTradeArray(trade);
+
+    const sellTradeDBEntity: ExtendedTradesDataType = {
+      breakoutRef: originalTradeEntity.breakoutRef,
+      ticker: originalTradeEntity.ticker,
+      userRef: originalTradeEntity.userRef,
+      price: originalTradeEntity.price, // update this once filled?
+      alpacaOrderId: result.id,
+      created: Date.now(),
+      type: TRADE_TYPE.SELL,
+      status: TRADE_STATUS.ACTIVE,
+      quantity: result.qty,
+    };
+
+    await Promise.all([
+      putTrade({
+        ...originalTradeEntity,
+        quantity: trade.quantity - result.qty,
+      }),
+      postTrade(sellTradeDBEntity),
+    ]);
+  } catch (e) {
+    console.log(e);
+    throw Error(`Error when handling take-profit-order ${e as string}`);
+  }
 };
 
 export const performActions = (
@@ -181,11 +232,12 @@ export const performActions = (
   trades.forEach((trade) => {
     const { ticker, breakoutRef } = trade;
     if (isTakeProfitOrder(trade)) {
-      void alpacaService.takeProfitSellOrder(ticker);
+      void handleTakeProfitOrder(trade);
       messageArray.push(`Take profit ${ticker}: breakoutRef: ${breakoutRef}`);
     } else if (isStopLossOrder(trade, stopLossLimit)) {
       void alpacaService.stopLossSellOrder(trade.ticker);
       messageArray.push(`Stop loss ${ticker}: breakoutRef: ${breakoutRef}`);
+      void updateTrade({ ...trade, status: TRADE_STATUS.CLOSED });
     }
   });
 
