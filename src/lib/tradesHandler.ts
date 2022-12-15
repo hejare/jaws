@@ -193,10 +193,12 @@ const updateTrade = async (trade: ExtendedTradesDataType) => {
   }
 };
 
-// TODO how to handle the assets that are not fractionable?
 const handleTakeProfitOrder = async (trade: ExtendedTradesDataType) => {
   try {
-    const result = await alpacaService.takeProfitSellOrder(trade.ticker);
+    const result = await alpacaService.takeProfitSellOrder(
+      trade.ticker,
+      trade.quantity,
+    );
     const originalTradeEntity = depopulateTradeArray(trade);
 
     const sellTradeDBEntity: ExtendedTradesDataType = {

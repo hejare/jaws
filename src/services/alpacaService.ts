@@ -101,8 +101,8 @@ export const stopLossSellOrder = async (symbol: string) => {
   await deleteOrder(symbol);
 };
 
-/* This is triggered when price has went up with 10% or more.*/
-export const takeProfitSellOrder = async (symbol: string) => {
+/* This is triggered when price has went up with 10% or more. */
+export const takeProfitSellOrder = (symbol: string, totalQuantity: number) => {
   if (
     !symbol ||
     typeof symbol !== "string" ||
@@ -112,12 +112,14 @@ export const takeProfitSellOrder = async (symbol: string) => {
     throw Error;
   }
 
-  const value = await getHoldingInTicker(symbol);
+  // sell ~50%, floored value to prevent fractional trades.
+  const quantity = Math.floor(totalQuantity * 0.5);
+
   const body: BodyInit = JSON.stringify({
     side: "sell",
     symbol: symbol,
     time_in_force: "day",
-    notional: value * 0.5, // sell 50%
+    qty: quantity,
     type: "market",
   });
 
