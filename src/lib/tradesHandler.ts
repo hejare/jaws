@@ -238,6 +238,7 @@ export const performActions = (
     } else if (isStopLossOrder(trade, stopLossLimit)) {
       void alpacaService.stopLossSellOrder(trade.ticker);
       messageArray.push(`Stop loss ${ticker}: breakoutRef: ${breakoutRef}`);
+      // TODO do we care about the order once sold? I.e do we need to save at what price we sold?
       void updateTrade({
         ...trade,
         status: TRADE_STATUS.CLOSED,
@@ -271,7 +272,7 @@ export const triggerStopLossTakeProfit = async () => {
       populateTradesData(filledTrades),
       alpacaService.getPortfolioValue(),
     ]);
-    const stopLossLimit = balance * 0.05; // 5% of total value
+    const stopLossLimit = balance * 0.005; // 0.5% of total value
     return performActions(newFilledTrades, stopLossLimit);
   } catch (e) {
     console.log(e);
