@@ -17,6 +17,7 @@ import { isToday } from "./helpers";
 interface ExtendedTradesDataType extends TradesDataType {
   lastTradePrice?: number | null;
   movingAvg10?: number;
+  sold?: number;
 }
 
 export const isPriceWithinBuyRange = (
@@ -237,7 +238,11 @@ export const performActions = (
     } else if (isStopLossOrder(trade, stopLossLimit)) {
       void alpacaService.stopLossSellOrder(trade.ticker);
       messageArray.push(`Stop loss ${ticker}: breakoutRef: ${breakoutRef}`);
-      void updateTrade({ ...trade, status: TRADE_STATUS.CLOSED });
+      void updateTrade({
+        ...trade,
+        status: TRADE_STATUS.CLOSED,
+        sold: Date.now(),
+      });
     }
   });
 
