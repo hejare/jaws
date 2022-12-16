@@ -12,6 +12,7 @@ export enum TRADE_STATUS {
   OPEN = "OPEN",
   CLOSED = "CLOSED",
   CANCELLED = "CANCELLED",
+  TAKE_PROFIT = "TAKE PROFIT", // order is filled and later resulted in a take-profit order.
 }
 
 export interface TradesDataType {

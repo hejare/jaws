@@ -172,6 +172,7 @@ export const isStopLossOrder = (
 
 /* After 10% increase in value, we take profit */
 const isTakeProfitOrder = (trade: ExtendedTradesDataType) => {
+  if (trade.status == TRADE_STATUS.TAKE_PROFIT) return false;
   const lastTradePrice = trade.lastTradePrice;
   return lastTradePrice && trade.price * 1.1 <= lastTradePrice;
 };
@@ -216,6 +217,7 @@ const handleTakeProfitOrder = async (trade: ExtendedTradesDataType) => {
       putTrade({
         ...originalTradeEntity,
         quantity: trade.quantity - result.qty,
+        status: TRADE_STATUS.TAKE_PROFIT,
       }),
       postTrade(sellTradeDBEntity),
     ]);
@@ -232,10 +234,7 @@ export const performActions = (
   const messageArray: string[] = [];
   trades.forEach((trade) => {
     const { ticker, breakoutRef } = trade;
-    if (isTakeProfitOrder(trade)) {
-      void handleTakeProfitOrder(trade);
-      messageArray.push(`Take profit ${ticker}: breakoutRef: ${breakoutRef}`);
-    } else if (isStopLossOrder(trade, stopLossLimit)) {
+    if (isStopLossOrder(trade, stopLossLimit)) {
       void alpacaService.stopLossSellOrder(trade.ticker);
       messageArray.push(`Stop loss ${ticker}: breakoutRef: ${breakoutRef}`);
       void updateTrade({
@@ -243,6 +242,9 @@ export const performActions = (
         status: TRADE_STATUS.CLOSED,
         sold: Date.now(),
       });
+    } else if (isTakeProfitOrder(trade)) {
+      void handleTakeProfitOrder(trade);
+      messageArray.push(`Take profit ${ticker}: breakoutRef: ${breakoutRef}`);
     }
   });
 
