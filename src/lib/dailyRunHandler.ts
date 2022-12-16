@@ -47,15 +47,16 @@ const isNotebookIdle = (
 
 export const triggerDailyrun = async () => {
   const sessions = await getSessions();
-  const isIdle = isNotebookIdle(sessions);
-
-  if (!isIdle) {
-    return Promise.reject(
-      new Error(
-        "Process is not idle. Could be due to previous execution is still ongoing.",
-      ),
-    );
-  }
+  // NOTE: I comment this part out for now, since it was blocking the daily-runs when a "unknown" anaconda process was not in "idle" state.
+  // TODO: Should be investigated further in the future.
+  // const isIdle = isNotebookIdle(sessions);
+  // if (!isIdle) {
+  //   return Promise.reject(
+  //     new Error(
+  //       "Process is not idle. Could be due to previous execution is still ongoing.",
+  //     ),
+  //   );
+  // }
   const newRunId = getNewRunId();
   await postDailyRun(newRunId);
   void triggerDailyRun(newRunId);
