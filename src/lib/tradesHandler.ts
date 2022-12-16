@@ -11,7 +11,7 @@ import {
   getSimpleMovingAverage,
 } from "../services/polygonService";
 import * as alpacaService from "../services/alpacaService";
-import { AlpacaOrderStatusType, Side } from "../services/alpacaMeta";
+import { AlpacaOrderStatusType } from "../services/alpacaMeta";
 import { isToday } from "./helpers";
 
 interface ExtendedTradesDataType extends TradesDataType {
@@ -170,7 +170,6 @@ export const isStopLossOrder = (
   return false;
 };
 
-// TODO anna kolla om ej redan gjort take profit på denna
 /* After 10% increase in value, we take profit */
 const isTakeProfitOrder = (trade: ExtendedTradesDataType) => {
   const lastTradePrice = trade.lastTradePrice;
@@ -239,7 +238,6 @@ export const performActions = (
     } else if (isStopLossOrder(trade, stopLossLimit)) {
       void alpacaService.stopLossSellOrder(trade.ticker);
       messageArray.push(`Stop loss ${ticker}: breakoutRef: ${breakoutRef}`);
-      // TODO do we care about the order once sold? I.e do we need to save at what price we sold?
       void updateTrade({
         ...trade,
         status: TRADE_STATUS.CLOSED,
