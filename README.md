@@ -35,6 +35,8 @@ This is a blank project for Jaws with TypeScript.
 - [Alpaca API learning points/quick facts](https://github.com/hejare/jaws/blob/main/docs/alpaca-api-learning-points.md)
 - [Scheduled cron jobs](docs/scheduling.md)
 
+### Check status Sharkster daily run sessions:
+http://3.84.38.201:8888/api/sessions
 
 ### HejHejare Github
 Read about this in the projects common document on the drive:
