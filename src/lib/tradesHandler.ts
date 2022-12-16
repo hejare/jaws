@@ -201,26 +201,11 @@ const handleTakeProfitOrder = async (trade: ExtendedTradesDataType) => {
     );
     const originalTradeEntity = depopulateTrade(trade);
 
-    const sellTradeDBEntity: ExtendedTradesDataType = {
-      breakoutRef: originalTradeEntity.breakoutRef,
-      ticker: originalTradeEntity.ticker,
-      userRef: originalTradeEntity.userRef,
-      price: originalTradeEntity.price, // update this once filled?
-      alpacaOrderId: result.id,
-      created: Date.now(),
-      side: TRADE_SIDE.SELL,
-      status: TRADE_STATUS.ACTIVE,
-      quantity: result.qty,
-    };
-
-    await Promise.all([
-      putTrade({
-        ...originalTradeEntity,
-        quantity: trade.quantity - result.qty,
-        status: TRADE_STATUS.TAKE_PROFIT,
-      }),
-      postTrade(sellTradeDBEntity),
-    ]);
+    await putTrade({
+      ...originalTradeEntity,
+      quantity: trade.quantity - result.qty,
+      status: TRADE_STATUS.TAKE_PROFIT,
+    });
   } catch (e) {
     console.log(e);
     throw Error(`Error when handling take-profit-order ${e as string}`);
