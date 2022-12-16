@@ -11,7 +11,7 @@ export const handleBuyOrder = async (
 ) => {
   const body: BodyInit = JSON.stringify({
     ticker,
-    type: TRADE_SIDE.BUY,
+    side: TRADE_SIDE.BUY,
     status: TRADE_STATUS.READY,
     price,
     quantity,

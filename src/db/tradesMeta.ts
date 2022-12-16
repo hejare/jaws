@@ -16,7 +16,7 @@ export enum TRADE_STATUS {
 
 export interface TradesDataType {
   ticker: string;
-  type: TRADE_SIDE;
+  side: TRADE_SIDE;
   status: TRADE_STATUS;
   price: number;
   quantity: number;

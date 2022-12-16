@@ -71,7 +71,7 @@ const PlaceOrderButton = ({
           ticker,
           breakoutRef,
           status: TRADE_STATUS.READY,
-          type: TRADE_SIDE.BUY,
+          side: TRADE_SIDE.BUY,
         });
         void handleBuyOrder(ticker, entryPrice, quantity, breakoutRef);
         typeof onClick === "function" && onClick();

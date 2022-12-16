@@ -33,14 +33,14 @@ export default async function handler(
         const body = JSON.parse(req.body);
         const {
           ticker,
-          type,
+          side,
           status,
           price,
           quantity,
           breakoutRef,
         }: {
           ticker: string;
-          type: TRADE_SIDE;
+          side: TRADE_SIDE;
           status: TRADE_STATUS;
           price: number;
           quantity: number;
@@ -50,7 +50,7 @@ export default async function handler(
         responseData.status = "OK";
         await postTrade({
           ticker,
-          type,
+          side,
           status,
           price,
           quantity,
