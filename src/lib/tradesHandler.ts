@@ -5,7 +5,7 @@ import {
   postTrade,
   putTrade,
 } from "../db/tradesEntity";
-import { TradesDataType, TRADE_STATUS, TRADE_TYPE } from "../db/tradesMeta";
+import { TradesDataType, TRADE_STATUS, TRADE_SIDE } from "../db/tradesMeta";
 import {
   getLastTradePrice,
   getSimpleMovingAverage,
@@ -170,6 +170,7 @@ export const isStopLossOrder = (
   return false;
 };
 
+// TODO anna kolla om ej redan gjort take profit på denna
 /* After 10% increase in value, we take profit */
 const isTakeProfitOrder = (trade: ExtendedTradesDataType) => {
   const lastTradePrice = trade.lastTradePrice;
@@ -207,7 +208,7 @@ const handleTakeProfitOrder = async (trade: ExtendedTradesDataType) => {
       price: originalTradeEntity.price, // update this once filled?
       alpacaOrderId: result.id,
       created: Date.now(),
-      type: TRADE_TYPE.SELL,
+      side: TRADE_SIDE.SELL,
       status: TRADE_STATUS.ACTIVE,
       quantity: result.qty,
     };
