@@ -162,8 +162,8 @@ export const isStopLossOrder = (
   stopLossLimit: number,
 ) => {
   const lastTradePrice = trade.lastTradePrice;
-  const movingAvg = trade.movingAvg10;
   if (!lastTradePrice) return false;
+  const movingAvg = trade.movingAvg10;
   if (trade.price - lastTradePrice >= stopLossLimit) return true;
   if (movingAvg && lastTradePrice <= movingAvg) return true; // ? <= or < ?
   return false;
