@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { ResponseDataType } from "../../../../db/ResponseDataMeta";
 import { postTrade } from "../../../../db/tradesEntity";
-import { TRADE_STATUS, TRADE_TYPE } from "../../../../db/tradesMeta";
+import { TRADE_STATUS, TRADE_SIDE } from "../../../../db/tradesMeta";
 import * as alpacaService from "../../../../services/alpacaService";
 
 interface ExtendedResponseDataType extends ResponseDataType {
@@ -33,14 +33,14 @@ export default async function handler(
         const body = JSON.parse(req.body);
         const {
           ticker,
-          type,
+          side,
           status,
           price,
           quantity,
           breakoutRef,
         }: {
           ticker: string;
-          type: TRADE_TYPE;
+          side: TRADE_SIDE;
           status: TRADE_STATUS;
           price: number;
           quantity: number;
@@ -50,7 +50,7 @@ export default async function handler(
         responseData.status = "OK";
         await postTrade({
           ticker,
-          type,
+          side,
           status,
           price,
           quantity,
@@ -65,7 +65,7 @@ export default async function handler(
 
         // const created_at = Date.parse(result.created_at).toString(); // result.created_at: '2022-12-05T11:02:02.058370387Z'
         // await alpacaService
-        //   .postNewBuyOrder(ticker, type, price, quantity)
+        //   .postNewBuyOrder(ticker, price, quantity)
         //   .then(async (result) => {
         //     const alpacaOrderId = result.id;
         //     const created_at = Date.parse(result.created_at).toString(); // result.created_at: '2022-12-05T11:02:02.058370387Z'
@@ -86,7 +86,6 @@ export default async function handler(
         //     responseData.status = "NOK";
         //     responseData.message = e.message;
         //   });
-
         break;
       default:
         throw new Error(`Unsupported method: ${method as string}`);
