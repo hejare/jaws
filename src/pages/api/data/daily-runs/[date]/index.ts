@@ -16,19 +16,21 @@ export default async function handler(
   const dailyRuns: DailyRunDataType[] = await getDailyRunByDate(date);
   const runIds = dailyRuns.map(({ runId }: { runId: string }) => runId);
 
-  const errors = await getSpecificErrors(runIds);
-  errors.map(({ runId, message, misc, timestamp }) => {
-    dailyRuns.find((dailyRun) => {
-      if (dailyRun.runId == runId) {
-        if (!dailyRun.errors) {
-          dailyRun.errors = [];
+  if (runIds.length > 0) {
+    const errors = await getSpecificErrors(runIds);
+    errors.map(({ runId, message, misc, timestamp }) => {
+      dailyRuns.find((dailyRun) => {
+        if (dailyRun.runId == runId) {
+          if (!dailyRun.errors) {
+            dailyRun.errors = [];
+          }
+          dailyRun.errors.push({ message, misc, timestamp });
+          return true;
         }
-        dailyRun.errors.push({ message, misc, timestamp });
-        return true;
-      }
-      return false;
+        return false;
+      });
     });
-  });
+  }
 
   res.status(200).json(dailyRuns);
 }
