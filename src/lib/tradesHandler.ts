@@ -175,18 +175,16 @@ const isTakeProfitOrder = (trade: ExtendedTradesDataType) => {
   return lastTradePrice && trade.price * 1.1 <= lastTradePrice;
 };
 
-const depopulateTradeArray = (
-  trade: ExtendedTradesDataType,
-): TradesDataType => {
+const depopulateTrade = (trade: ExtendedTradesDataType): TradesDataType => {
   delete trade.lastTradePrice;
   delete trade.movingAvg10;
   return trade;
 };
 
 const updateTrade = async (trade: ExtendedTradesDataType) => {
-  const depopulatedTradeArray = depopulateTradeArray(trade);
+  const depopulatedTrade = depopulateTrade(trade);
   try {
-    await putTrade(depopulatedTradeArray);
+    await putTrade(depopulatedTrade);
   } catch (e) {
     console.log(e);
     throw Error(`${e as string}`);
@@ -199,7 +197,7 @@ const handleTakeProfitOrder = async (trade: ExtendedTradesDataType) => {
       trade.ticker,
       trade.quantity,
     );
-    const originalTradeEntity = depopulateTradeArray(trade);
+    const originalTradeEntity = depopulateTrade(trade);
 
     const sellTradeDBEntity: ExtendedTradesDataType = {
       breakoutRef: originalTradeEntity.breakoutRef,
