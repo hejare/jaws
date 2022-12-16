@@ -2,16 +2,22 @@ import {
   deleteTrade,
   getTradeByOrderId,
   getTradesByStatus,
+  postTrade,
   putTrade,
 } from "../db/tradesEntity";
-import { TradesDataType, TRADE_STATUS } from "../db/tradesMeta";
-import { getLastTradePrice } from "../services/polygonService";
+import { TradesDataType, TRADE_STATUS, TRADE_TYPE } from "../db/tradesMeta";
+import {
+  getLastTradePrice,
+  getSimpleMovingAverage,
+} from "../services/polygonService";
 import * as alpacaService from "../services/alpacaService";
 import { AlpacaOrderStatusType, Side } from "../services/alpacaMeta";
 import { isToday } from "./helpers";
 
 interface ExtendedTradesDataType extends TradesDataType {
-  lastTradePrice: number | null;
+  lastTradePrice?: number | null;
+  movingAvg10?: number;
+  sold?: number;
 }
 
 export const isPriceWithinBuyRange = (
@@ -157,7 +163,11 @@ export const isStopLossOrder = (
   stopLossLimit: number,
 ) => {
   const lastTradePrice = trade.lastTradePrice;
-  return lastTradePrice && trade.price - lastTradePrice >= stopLossLimit;
+  if (!lastTradePrice) return false;
+  const movingAvg = trade.movingAvg10;
+  if (trade.price - lastTradePrice >= stopLossLimit) return true;
+  if (movingAvg && lastTradePrice <= movingAvg) return true; // ? <= or < ?
+  return false;
 };
 
 /* After 10% increase in value, we take profit */
@@ -166,25 +176,89 @@ const isTakeProfitOrder = (trade: ExtendedTradesDataType) => {
   return lastTradePrice && trade.price * 1.1 <= lastTradePrice;
 };
 
+const depopulateTrade = (trade: ExtendedTradesDataType): TradesDataType => {
+  delete trade.lastTradePrice;
+  delete trade.movingAvg10;
+  return trade;
+};
+
+const updateTrade = async (trade: ExtendedTradesDataType) => {
+  const depopulatedTrade = depopulateTrade(trade);
+  try {
+    await putTrade(depopulatedTrade);
+  } catch (e) {
+    console.log(e);
+    throw Error(`${e as string}`);
+  }
+};
+
+const handleTakeProfitOrder = async (trade: ExtendedTradesDataType) => {
+  try {
+    const result = await alpacaService.takeProfitSellOrder(
+      trade.ticker,
+      trade.quantity,
+    );
+    const originalTradeEntity = depopulateTrade(trade);
+
+    const sellTradeDBEntity: ExtendedTradesDataType = {
+      breakoutRef: originalTradeEntity.breakoutRef,
+      ticker: originalTradeEntity.ticker,
+      userRef: originalTradeEntity.userRef,
+      price: originalTradeEntity.price, // update this once filled?
+      alpacaOrderId: result.id,
+      created: Date.now(),
+      type: TRADE_TYPE.SELL,
+      status: TRADE_STATUS.ACTIVE,
+      quantity: result.qty,
+    };
+
+    await Promise.all([
+      putTrade({
+        ...originalTradeEntity,
+        quantity: trade.quantity - result.qty,
+      }),
+      postTrade(sellTradeDBEntity),
+    ]);
+  } catch (e) {
+    console.log(e);
+    throw Error(`Error when handling take-profit-order ${e as string}`);
+  }
+};
+
 export const performActions = (
   trades: ExtendedTradesDataType[],
   stopLossLimit: number,
 ) => {
+  const messageArray: string[] = [];
   trades.forEach((trade) => {
+    const { ticker, breakoutRef } = trade;
     if (isTakeProfitOrder(trade)) {
-      void alpacaService.takeProfitSellOrder(trade.ticker);
+      void handleTakeProfitOrder(trade);
+      messageArray.push(`Take profit ${ticker}: breakoutRef: ${breakoutRef}`);
     } else if (isStopLossOrder(trade, stopLossLimit)) {
       void alpacaService.stopLossSellOrder(trade.ticker);
+      messageArray.push(`Stop loss ${ticker}: breakoutRef: ${breakoutRef}`);
+      // TODO do we care about the order once sold? I.e do we need to save at what price we sold?
+      void updateTrade({
+        ...trade,
+        status: TRADE_STATUS.CLOSED,
+        sold: Date.now(),
+      });
     }
   });
+
+  messageArray.length < 1 &&
+    messageArray.push("No stop loss or take profit performed");
+  return messageArray;
 };
 
-async function populateArrayWithLastTradePrice(trades: TradesDataType[]) {
+async function populateTradesData(trades: TradesDataType[]) {
   const populatedArray: ExtendedTradesDataType[] = [];
   await Promise.all(
     trades.map(async (trade) => {
       const lastTradePrice = await getLastTradePrice(trade.ticker);
-      populatedArray.push({ ...trade, lastTradePrice });
+      const movingAvg10 = await getSimpleMovingAverage(trade.ticker, 10);
+      populatedArray.push({ ...trade, lastTradePrice, movingAvg10 });
     }),
   );
   return populatedArray;
@@ -192,12 +266,14 @@ async function populateArrayWithLastTradePrice(trades: TradesDataType[]) {
 
 export const triggerStopLossTakeProfit = async () => {
   try {
-    // refactor to use promise.all?
     const filledTrades = await getTradesByStatus(TRADE_STATUS.FILLED);
-    const newFilledTrades = await populateArrayWithLastTradePrice(filledTrades);
-    const balance = await alpacaService.getPortfolioValue();
-    const stopLossLimit = balance * 0.05; // 5% of total value
-    performActions(newFilledTrades, stopLossLimit);
+
+    const [newFilledTrades, balance] = await Promise.all([
+      populateTradesData(filledTrades),
+      alpacaService.getPortfolioValue(),
+    ]);
+    const stopLossLimit = balance * 0.005; // 0.5% of total value
+    return performActions(newFilledTrades, stopLossLimit);
   } catch (e) {
     console.log(e);
     throw Error(`Unable to handle stop-loss & take-profit ${e as string}`);

@@ -17,8 +17,9 @@ export default async function handler(
     switch (method) {
       case "GET":
         await triggerStopLossTakeProfit()
-          .then(() => {
+          .then((result) => {
             responseData.status = "OK";
+            responseData.meta = result;
           })
           .catch((e) => {
             responseData.status = "NOK";
