@@ -114,7 +114,7 @@ export const takeProfitSellOrder = (symbol: string, totalQuantity: number) => {
 
   // sell ~50%, floored value to prevent fractional trades.
   let quantity = 0;
-  quantity = Math.ceil(totalQuantity * 0.5);
+  quantity = Math.floor(totalQuantity * 0.5);
 
   const body: BodyInit = JSON.stringify({
     side: "sell",
