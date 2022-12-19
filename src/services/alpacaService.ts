@@ -135,7 +135,7 @@ export const postNewBuyOrder = async (
 ) => {
   const body: BodyInit = JSON.stringify({
     symbol: ticker,
-    qty: 1, // TODO: UNDO OVERRIDING OF QUANTITY: quantity,
+    qty: quantity, // TODO: UNDO OVERRIDING OF QUANTITY: quantity,
     side: Side.BUY,
     time_in_force: "day",
     type: "limit",
