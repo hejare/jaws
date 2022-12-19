@@ -195,14 +195,21 @@ const updateTrade = async (trade: ExtendedTradesDataType) => {
 
 const handleTakeProfitOrder = async (trade: ExtendedTradesDataType) => {
   try {
+    if (!(trade.quantity > 1)) {
+      void updateTrade({
+        ...trade,
+        status: TRADE_STATUS.CLOSED,
+        sold: Date.now(),
+      });
+      void alpacaService.stopLossSellOrder(trade.ticker);
+      return;
+    }
     const result = await alpacaService.takeProfitSellOrder(
       trade.ticker,
       trade.quantity,
     );
-    const originalTradeEntity = depopulateTrade(trade);
-
     await putTrade({
-      ...originalTradeEntity,
+      ...depopulateTrade(trade),
       quantity: trade.quantity - result.qty,
       status: TRADE_STATUS.TAKE_PROFIT,
     });
