@@ -1,9 +1,4 @@
 import Table from "rc-table";
-import {
-  BreakoutDataType,
-  ExistingBreakoutDataType,
-} from "../../db/breakoutsEntity";
-import { BreakoutStoreType } from "../../store/breakoutsStore";
 
 interface BreakoutData {
   image: string;
@@ -64,16 +59,13 @@ const TickerBreakoutList = ({ data }: Props) => {
   };
 
   return (
-    <div>
-      TickerBreakoutList
-      <Table
-        columns={columns}
-        data={data}
-        rowKey={({ id }: { id: string }) => id}
-        title={renderTitle}
-        footer={renderFooter}
-      />
-    </div>
+    <Table
+      columns={columns}
+      data={data}
+      rowKey={({ id }: { id: string }) => id}
+      title={renderTitle}
+      footer={renderFooter}
+    />
   );
 };
 

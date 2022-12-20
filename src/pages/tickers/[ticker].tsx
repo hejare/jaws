@@ -2,10 +2,12 @@ import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import fetch from "node-fetch";
 import { useEffect, useState } from "react";
+import styled from "styled-components";
 import Button from "../../components/atoms/buttons/Button";
 import NavButton from "../../components/atoms/buttons/NavButton";
 import PageContainer from "../../components/atoms/PageContainer";
 import TextDisplay from "../../components/atoms/TextDisplay";
+import InfoBar from "../../components/molecules/InfoBar";
 import TickerBreakoutList from "../../components/organisms/TickerBreakoutList";
 import { handleSellOrderByTickerId } from "../../lib/brokerHandler";
 import { getServerSidePropsAllPages } from "../../lib/getServerSidePropsAllPages";
@@ -31,6 +33,17 @@ enum STATUS {
   LOADING,
   READY,
 }
+
+const TickerPageContainer = styled.div`
+  width: 100%;
+  height: 80vh;
+  display: grid;
+  grid-template-columns: 25% 25% 25% 25%;
+  grid-template-rows: auto;
+  grid-template-areas:
+    "table table table sidebar"
+    ". . . sidebar";
+`;
 
 const TickerPage: NextPage = () => {
   const [asset, setAsset] = useState<Asset>();
@@ -68,55 +81,51 @@ const TickerPage: NextPage = () => {
 
   return (
     <PageContainer>
-      <TickerBreakoutList data={breakouts} />
       <NavButton goBack href="">
         Go back
       </NavButton>
+
       <h1>{`${ticker.toUpperCase()}`}</h1>
-      <TextDisplay>
-        <h2>Orders</h2>
-        {orders ? (
-          orders.map((order: PartialOrderDataType, i) => (
-            <div key={i}>
-              <div>Created at: {order.created_at}</div>
-              <div>Filled at: {order.filled_at}</div>
-              <div>Quantity: {order.notional}</div>
-            </div>
-          ))
-        ) : (
-          <div>No orders for this ticker</div>
-        )}
-      </TextDisplay>
-      <TextDisplay>
-        <h2>Breakouts</h2>
-        {breakouts && breakouts.length > 0 ? (
-          breakouts.map((breakout: BreakoutStoreType, i) => (
-            <div key={i}>
-              <h4>Breakout</h4>
-              <div>Breakout value:{breakout.breakoutValue}</div>
-              <div>Relative strength: {breakout.relativeStrength}</div>
-            </div>
-          ))
-        ) : (
-          <div>No breakouts for this ticker</div>
-        )}
-      </TextDisplay>
-      <TextDisplay>
-        <h2>Asset</h2>
-        {asset ? (
-          <>
-            <div>
-              <div>Entry price: {asset.avg_entry_price}</div>
-            </div>
-            {/* TODO percentage should be possible to set from UI */}
-            <Button onClick={() => handleSellOrderByTickerId(ticker, 100)}>
-              Sell 100%
-            </Button>
-          </>
-        ) : (
-          <div>No asset for this ticker</div>
-        )}
-      </TextDisplay>
+      <TickerPageContainer>
+        <div style={{ gridArea: "table" }}>
+          <TickerBreakoutList data={breakouts} />
+        </div>
+
+        <div style={{ gridArea: "sidebar" }}>
+          <InfoBar>
+            <TextDisplay>
+              <h2>Orders</h2>
+              {orders ? (
+                orders.map((order: PartialOrderDataType, i) => (
+                  <div key={i}>
+                    <div>Created at: {order.created_at}</div>
+                    <div>Filled at: {order.filled_at}</div>
+                    <div>Quantity: {order.notional}</div>
+                  </div>
+                ))
+              ) : (
+                <div>No orders for this ticker</div>
+              )}
+              <h2>Asset</h2>
+              {asset ? (
+                <>
+                  <div>
+                    <div>Entry price: {asset.avg_entry_price}</div>
+                    <div>Current price: {asset.market_value}</div>
+                  </div>
+                  <Button
+                    onClick={() => handleSellOrderByTickerId(ticker, 100)}
+                  >
+                    Sell 100%
+                  </Button>
+                </>
+              ) : (
+                <div>No asset for this ticker</div>
+              )}
+            </TextDisplay>
+          </InfoBar>
+        </div>
+      </TickerPageContainer>
     </PageContainer>
   );
 };
