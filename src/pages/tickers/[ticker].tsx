@@ -6,6 +6,7 @@ import Button from "../../components/atoms/buttons/Button";
 import NavButton from "../../components/atoms/buttons/NavButton";
 import PageContainer from "../../components/atoms/PageContainer";
 import TextDisplay from "../../components/atoms/TextDisplay";
+import TickerBreakoutList from "../../components/organisms/TickerBreakoutList";
 import { handleSellOrderByTickerId } from "../../lib/brokerHandler";
 import { getServerSidePropsAllPages } from "../../lib/getServerSidePropsAllPages";
 import { BreakoutStoreType } from "../../store/breakoutsStore";
@@ -67,6 +68,7 @@ const TickerPage: NextPage = () => {
 
   return (
     <PageContainer>
+      <TickerBreakoutList data={breakouts} />
       <NavButton goBack href="">
         Go back
       </NavButton>
