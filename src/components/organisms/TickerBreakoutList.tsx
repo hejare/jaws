@@ -1,6 +1,6 @@
 import Table from "rc-table";
 
-interface BreakoutData {
+export interface BreakoutData {
   image: string;
   tickerRef: string;
   relativeStrength: number;
@@ -13,9 +13,10 @@ interface BreakoutData {
 
 interface Props {
   data: BreakoutData[];
+  titleText: string;
 }
 
-const TickerBreakoutList = ({ data }: Props) => {
+const TickerBreakoutList = ({ data, titleText }: Props) => {
   const columns = [
     {
       title: "Date",
@@ -27,7 +28,7 @@ const TickerBreakoutList = ({ data }: Props) => {
       },
     },
     {
-      title: "Breakout Value",
+      title: "Value",
       dataIndex: "breakoutValue",
       key: "breakoutValue",
       width: 200,
@@ -51,7 +52,7 @@ const TickerBreakoutList = ({ data }: Props) => {
   ];
 
   const renderTitle = () => {
-    return <h2>Breakouts</h2>;
+    return <h2>{titleText ? titleText : "Breakouts"}</h2>;
   };
 
   const renderFooter = () => {

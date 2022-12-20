@@ -8,8 +8,9 @@ type Props = {
 const InfoBarContainer = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  padding: 20px;
+  padding-top: 50px;
   width: 100%;
   height: 100%;
   background-color: lightblue;
