@@ -15,7 +15,7 @@ import { getServerSidePropsAllPages } from "../../lib/getServerSidePropsAllPages
 import { handleResult } from "../../util";
 import { PartialOrderDataType } from "../tickers/[ticker]";
 import getNextJSConfig from "next/config";
-import Graph from "../../components/molecules/Graph";
+import JawsTradeViewGraph from "../../components/molecules/JawsTradeViewGraph";
 import { TradeViewWidget } from "../../components/atoms/TradeViewWidget";
 
 const { publicRuntimeConfig } = getNextJSConfig();
@@ -60,7 +60,11 @@ const TickerPage: NextPage = () => {
       <h1>{`${ticker.toUpperCase()}`}</h1>
       <TickerPageContainer>
         <div style={{ gridArea: "graph" }}>
-          {breakouts[0] ? <Graph {...breakouts[0]} /> : <div>no data...</div>}
+          {breakouts[0] ? (
+            <JawsTradeViewGraph {...breakouts[0]} />
+          ) : (
+            <div>no data...</div>
+          )}
         </div>
         <div style={{ gridArea: "sidebar" }}>
           <InfoBar>

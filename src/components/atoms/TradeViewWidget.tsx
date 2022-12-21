@@ -4,6 +4,7 @@ import styled from "styled-components";
 const WidgetContainer = styled.div`
   height: -webkit-fill-available;
   width: -webkit-fill-available;
+  height: 100%;
 `;
 const Widget = styled.div`
   height: -webkit-fill-available;
