@@ -24,9 +24,10 @@ import { handleCalculateQuantity } from "../../util/handleQuantity";
 import { useInterval } from "usehooks-ts";
 import { getDateTime, ONE_MINUTE_IN_MS } from "../../lib/helpers";
 import { INDICATOR } from "../../lib/priceHandler";
+import Rating from "../../components/molecules/Rating";
 
 // TODO: testa SUMMED_ORDER_STATUS - de olika alternativen för att se att det blir rätt
-// TODO kolla rating!!
+// TODO fix rating!!
 
 type MinimalOrderType = {
   qty: string;
@@ -50,6 +51,14 @@ const TickerPageContainer = styled.div`
   gap: 10px;
 `;
 
+const RatingContainer = styled.div`
+  margin-top: 16px;
+  height: 60px;
+  position: absolute;
+  bottom: 4px;
+  right: 20px;
+`;
+
 const OrderDetails = styled.div`
   padding: 0 4px;
   border-radius: 5px;
@@ -70,6 +79,7 @@ const TickerPage: NextPage = () => {
   const [shares, setShares] = useState<number>(0);
   const [entryPrice, setEntryPrice] = useState<number>(0);
   const [latestBreakoutValue, setLatestBreakoutValue] = useState<number>();
+  const [latestBreakoutRef, setLatestBreakoutRef] = useState<string>();
   const [interval, setInterval] = useState(0);
 
   const [orderDetails, setOrderDetails] = useState<
@@ -97,6 +107,7 @@ const TickerPage: NextPage = () => {
       .then((result) => {
         setBreakouts(result.breakouts);
         setLatestBreakoutValue(result.breakouts[0].breakoutValue);
+        setLatestBreakoutRef(result.breakouts[0]._ref);
       })
       .catch(console.error);
     void setValues();
@@ -209,6 +220,9 @@ const TickerPage: NextPage = () => {
                 </div>
               )}
             </div>
+            <RatingContainer>
+              <Rating breakoutRef={latestBreakoutRef as string} />
+            </RatingContainer>
           </InfoBar>
         </div>
         <div style={{ gridArea: "table" }}>

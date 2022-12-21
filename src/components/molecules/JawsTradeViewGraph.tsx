@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import getNextJSConfig from "next/config";
 import styled from "styled-components";
 import { TradeViewWidget } from "../atoms/TradeViewWidget";
 import ToggleButton from "../atoms/buttons/ToggleButton";
-
-// TODO rename to JawsTradeViewGraph or smh
+import { useModal } from "use-modal-hook";
+import ImageModal from "./ImageModal";
 
 const StyledContainer = styled.div`
   width: 100%;
@@ -45,6 +45,11 @@ type Props = {
   image: string;
 };
 
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
 const { publicRuntimeConfig } = getNextJSConfig();
 const { IMAGE_SERVICE_BASE_URL = "[NOT_DEFINED_IN_ENV]" } = publicRuntimeConfig;
 
@@ -56,6 +61,24 @@ const JawsTradeViewGraph = ({
 }: Props) => {
   const imageUrl = `${IMAGE_SERVICE_BASE_URL as string}/${image}`;
   const [showTradeView, setShowTradeView] = useState(false);
+  const [enableOnClickOutside, setEnableOnClickOutside] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const TheImageModal = memo(
+    ({ isOpen: imageModalIsOpen, onClose: imageModalOnClose }: ModalProps) => (
+      <ImageModal
+        isOpen={imageModalIsOpen}
+        onClose={() => {
+          setEnableOnClickOutside(true);
+          imageModalOnClose();
+        }}
+        image={imageUrl}
+        enableOnClickOutside
+        breakoutRef={_ref}
+      />
+    ),
+  );
+  const [showModal] = useModal(TheImageModal, {});
 
   return (
     <ContentContainer>
@@ -68,16 +91,25 @@ const JawsTradeViewGraph = ({
         />
         {!showTradeView ? (
           <ImageContainer>
-            <StyledImage src={imageUrl} />
+            <StyledImage
+              onClick={() => {
+                setEnableOnClickOutside(false);
+                showModal({});
+              }}
+              onError={() => {
+                setErrorMessage(
+                  "Graph not accessible - will not be able to view Sharkster generated image",
+                );
+                setShowTradeView(true);
+              }}
+              src={imageUrl}
+            />
           </ImageContainer>
         ) : (
           <IframeContainer>
             <TradeViewWidget ticker={tickerRef} />
           </IframeContainer>
         )}
-        <p>breakoutRef: {_ref}</p>
-        <p>symbol: {tickerRef}</p>
-        <p>breakoutValue: {breakoutValue}</p>
       </StyledContainer>
     </ContentContainer>
   );
