@@ -14,6 +14,7 @@ const enabledHejareUsers = [
   "damien",
   "johan.jansson",
   "ella",
+  "jesper",
 ];
 const enabledExternalEmails = ["albin@theodoratech.se", "roosleo@gmail.com"];
 
