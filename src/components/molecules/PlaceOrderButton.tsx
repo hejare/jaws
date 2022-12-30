@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import Button from "../atoms/buttons/Button";
+import { ButtonsContainer } from "../atoms/ButtonsContainer";
 import { handleBuyOrder } from "../../lib/brokerHandler";
 import { useEffect, useState } from "react";
 import * as backendService from "../../services/backendService";
@@ -7,6 +8,7 @@ import { useInterval } from "usehooks-ts";
 import { ONE_MINUTE_IN_MS } from "../../lib/helpers";
 import { useTradesStore } from "../../store/tradesStore";
 import { TRADE_STATUS, TRADE_SIDE } from "../../db/tradesMeta";
+import Input from "../atoms/Input";
 
 const StyledButton = styled(Button)`
   text-align: center;
@@ -31,6 +33,7 @@ const PlaceOrderButton = ({
 }: Props) => {
   const [interval, setInterval] = useState(0);
   const [disabled, setDisabled] = useState(forceDisabled);
+  const [buyPrice, setBuyPrice] = useState(entryPrice);
 
   const [trade, upsertTrade] = useTradesStore((state) => [
     state.trades.find((t) => t.ticker === ticker),
@@ -60,9 +63,16 @@ const PlaceOrderButton = ({
     }
   }, [trade]);
 
-  const size = (quantity * entryPrice).toFixed(2);
+  const size = (quantity * buyPrice).toFixed(2)
 
   return (
+    <ButtonsContainer>
+    <Input
+      value={buyPrice.toString()}
+      type="number"
+      step="0.01"
+      onChange={(e) => setBuyPrice(e.target.value)}
+      title="Price" />
     <StyledButton
       disabled={disabled}
       onClick={() => {
@@ -73,7 +83,7 @@ const PlaceOrderButton = ({
           status: TRADE_STATUS.READY,
           side: TRADE_SIDE.BUY,
         });
-        void handleBuyOrder(ticker, entryPrice, quantity, breakoutRef);
+        void handleBuyOrder(ticker, buyPrice, quantity, breakoutRef);
         typeof onClick === "function" && onClick();
       }}
     >
@@ -86,6 +96,7 @@ const PlaceOrderButton = ({
       </div>
       <div>${size}</div>
     </StyledButton>
+    </ButtonsContainer>
   );
 };
 
