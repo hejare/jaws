@@ -67,35 +67,35 @@ const PlaceOrderButton = ({
 
   return (
     <ButtonsContainer>
-    <Input
-      value={buyPrice.toString()}
-      type="number"
-      step="0.01"
-      onChange={(e) => setBuyPrice(e.target.value)}
-      title="Price" />
-    <StyledButton
-      disabled={disabled}
-      onClick={() => {
-        setDisabled(true);
-        upsertTrade(ticker, {
-          ticker,
-          breakoutRef,
-          status: TRADE_STATUS.READY,
-          side: TRADE_SIDE.BUY,
-        });
-        void handleBuyOrder(ticker, buyPrice, quantity, breakoutRef);
-        typeof onClick === "function" && onClick();
-      }}
-    >
-      <div>
-        {!trade
-          ? "PLACE ORDER"
-          : trade.status === TRADE_STATUS.READY
-          ? "ON ITS WAY TO THE MARKET"
-          : trade.status}
-      </div>
-      <div>${size}</div>
-    </StyledButton>
+      <Input
+        value={buyPrice.toString()}
+        type="number"
+        step="0.01"
+        onChange={(e) => setBuyPrice(e.target.value)}
+        title="Price" />
+      <StyledButton
+        disabled={disabled}
+        onClick={() => {
+          setDisabled(true);
+          upsertTrade(ticker, {
+            ticker,
+            breakoutRef,
+            status: TRADE_STATUS.READY,
+            side: TRADE_SIDE.BUY,
+          });
+          void handleBuyOrder(ticker, buyPrice, quantity, breakoutRef);
+          typeof onClick === "function" && onClick();
+        }}
+      >
+        <div>
+          {!trade
+            ? "PLACE ORDER"
+            : trade.status === TRADE_STATUS.READY
+            ? "ON ITS WAY TO THE MARKET"
+            : trade.status}
+        </div>
+        <div>${size}</div>
+      </StyledButton>
     </ButtonsContainer>
   );
 };
