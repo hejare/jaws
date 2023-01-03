@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { getDateTime } from "../../lib/helpers";
 import { INDICATOR } from "../../lib/priceHandler";
-import { MinimalOrderType } from "../../pages/new-test/[ticker]";
+import { MinimalOrderType } from "../../pages/prepare-order/[ticker]";
 import {
   AlpacaOrderType,
   SUMMED_ORDER_STATUS,
@@ -19,8 +19,8 @@ const OrderDetails = styled.div`
 `;
 
 type Props = {
-  orderDetails: MinimalOrderType | AlpacaOrderType;
-  orderStatus: SUMMED_ORDER_STATUS;
+  orderDetails: MinimalOrderType | AlpacaOrderType | undefined;
+  orderStatus: SUMMED_ORDER_STATUS | undefined;
 };
 
 const OrderDetailsWrapper = ({ orderDetails, orderStatus }: Props) => {

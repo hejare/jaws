@@ -13,9 +13,9 @@ const InfoBarContainer = styled.div`
   padding-top: 50px;
   width: 100%;
   height: 100%;
-  background-color: lightblue;
+
   border-radius: 20px;
-  color: black;
+  border: 1px solid white;
 `;
 
 const InfoBar = ({ children }: Props) => {
