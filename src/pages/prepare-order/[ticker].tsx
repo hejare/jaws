@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import NavButton from "../../components/atoms/buttons/NavButton";
 import PageContainer from "../../components/atoms/PageContainer";
-import TextDisplay from "../../components/atoms/TextDisplay";
 import InfoBar from "../../components/molecules/InfoBar";
 import * as backendService from "../../services/backendService";
 import TickerBreakoutList, {
@@ -22,14 +21,15 @@ import BuyTickerButtonWrapper from "../../components/molecules/BuyTickerButtonWr
 import { handleLimitPrice } from "../../util/handleLimitPrice";
 import { handleCalculateQuantity } from "../../util/handleQuantity";
 import { useInterval } from "usehooks-ts";
-import { getDateTime, ONE_MINUTE_IN_MS } from "../../lib/helpers";
+import { ONE_MINUTE_IN_MS } from "../../lib/helpers";
 import { INDICATOR } from "../../lib/priceHandler";
 import Rating from "../../components/molecules/Rating";
+import OrderDetailsWrapper from "../../components/molecules/OrderDetailsWrapper";
+import { useBreakoutsStore } from "../../store/breakoutsStore";
 
-// TODO: testa SUMMED_ORDER_STATUS - de olika alternativen för att se att det blir rätt
-// TODO fix rating!!
+// TODO ta bort rating i storbild??
 
-type MinimalOrderType = {
+export type MinimalOrderType = {
   qty: string;
   limit_price: string;
   created_at: string;
@@ -52,53 +52,27 @@ const TickerPageContainer = styled.div`
 `;
 
 const RatingContainer = styled.div`
-  margin-top: 16px;
   height: 60px;
-  position: absolute;
-  bottom: 4px;
-  right: 20px;
-`;
-
-const OrderDetails = styled.div`
-  padding: 0 4px;
-  border-radius: 5px;
-  background-color: ${({ theme, indicator }) =>
-    theme.palette.indicator[indicator.toLowerCase()]}}
-  color: ${({ theme, indicator }: { theme: any; indicator: INDICATOR }) =>
-    indicator === INDICATOR.NEUTRAL ? theme.palette.text.secondary : "inherit"}}
-
+  width: 200px;
 `;
 
 const TickerPage: NextPage = () => {
   const router = useRouter();
   const { ticker } = router.query;
+  const [currentBreakout] = useBreakoutsStore((state) => [
+    state.breakouts.find((b) => b.tickerRef === ticker),
+  ]);
+  const [cashBalance, setCashBalance] = useState<number>();
+  const [interval, setInterval] = useState(0);
   const [breakouts, setBreakouts] = useState<BreakoutData[]>([]);
   const [orderStatus, setOrderStatus] = useState<
     SUMMED_ORDER_STATUS | undefined
   >();
-  const [shares, setShares] = useState<number>(0);
-  const [entryPrice, setEntryPrice] = useState<number>(0);
-  const [latestBreakoutValue, setLatestBreakoutValue] = useState<number>();
-  const [latestBreakoutRef, setLatestBreakoutRef] = useState<string>();
-  const [interval, setInterval] = useState(0);
-
   const [orderDetails, setOrderDetails] = useState<
     AlpacaOrderType | MinimalOrderType
   >();
 
-  useInterval(() => {
-    setInterval(ONE_MINUTE_IN_MS);
-    void backendService
-      .getAccountOrderStatusByTicker(ticker as string)
-      .then((data) => {
-        console.log("data 🎈", data);
-        setOrderStatus(data.orderStatus);
-        setOrderDetails(data.orderDetails);
-      });
-  }, interval);
-
   useEffect(() => {
-    // TODO use store do not fetch from here
     if (!ticker || Array.isArray(ticker)) {
       return;
     }
@@ -106,36 +80,60 @@ const TickerPage: NextPage = () => {
       .then(handleResult)
       .then((result) => {
         setBreakouts(result.breakouts);
-        setLatestBreakoutValue(result.breakouts[0].breakoutValue);
-        setLatestBreakoutRef(result.breakouts[0]._ref);
       })
       .catch(console.error);
-    void setValues();
   }, [ticker]);
 
-  const setValues = async () => {
-    if (latestBreakoutValue) {
-      const brokerLimitPrice = handleLimitPrice(latestBreakoutValue);
-      setEntryPrice(brokerLimitPrice);
+  useEffect(() => {
+    const fetchData = async () => {
+      const balance = await backendService.getAccountCashBalance();
+      setCashBalance(balance);
+    };
+    void fetchData();
+  }, []);
 
-      const cashBalance = await backendService.getAccountCashBalance();
-      const calculatedShares = handleCalculateQuantity(
-        brokerLimitPrice,
-        cashBalance,
-      );
-      setShares(calculatedShares);
-    }
+  const handleGetShares = (brokerLimitPrice: number) => {
+    if (cashBalance)
+      return handleCalculateQuantity(brokerLimitPrice, cashBalance);
+    else return 0;
   };
 
-  const size = (shares * entryPrice).toFixed(2);
+  const handleGetSize = (breakoutValue: number) => {
+    if (cashBalance) {
+      const shares = handleCalculateQuantity(breakoutValue, cashBalance);
+      return (shares * breakoutValue).toFixed(2);
+    } else return 0;
+  };
+
+  useInterval(() => {
+    setInterval(ONE_MINUTE_IN_MS);
+    void backendService
+      .getAccountOrderStatusByTicker(ticker as string)
+      .then((data) => {
+        console.log("interval data :) ", data);
+        setOrderStatus(data.orderStatus);
+        setOrderDetails(data.orderDetails);
+      });
+  }, interval);
+
+  useEffect(() => {
+    console.log({ orderDetails });
+    console.log({ orderStatus });
+  }, [orderDetails, orderStatus]);
+
   return (
     <PageContainer>
       <NavButton goBack href="">
         Go back
       </NavButton>
-      <h1>{`${ticker.toUpperCase()}`}</h1>
+      <h1>{`${(ticker as string).toUpperCase()}`}</h1>
       <TickerPageContainer>
         <div style={{ gridArea: "graph" }}>
+          {currentBreakout && (
+            <RatingContainer>
+              <Rating breakoutRef={currentBreakout?.breakoutRef} />
+            </RatingContainer>
+          )}
           {breakouts[0] ? (
             <JawsTradeViewGraph {...breakouts[0]} />
           ) : (
@@ -144,97 +142,64 @@ const TickerPage: NextPage = () => {
         </div>
         <div style={{ gridArea: "sidebar" }}>
           <InfoBar>
-            <div>
-              <p>
-                Symbol: <b>{ticker}</b>
-              </p>
-              <p>Entry Price (breakout. val): {entryPrice}</p>
-              <p>Shares (Qty): {shares}</p>
-              <p>Size: ${size}</p>
-              {orderDetails &&
-                orderStatus === SUMMED_ORDER_STATUS.IN_PROGRESS && (
-                  <OrderDetails indicator={INDICATOR.NEUTRAL}>
-                    <p>An order for this ticker is in progress:</p>
-                    {orderDetails.created_at && (
-                      <p>Placed at: {getDateTime(orderDetails.created_at)}</p>
-                    )}
-                    <p>Shares (Qty): {orderDetails.qty}</p>
-                    <p>Entry Price: {orderDetails.limit_price}</p>
-                    <p>
-                      Size: $
-                      {(
-                        parseInt(orderDetails.qty) *
-                        parseFloat(orderDetails.limit_price)
-                      ).toFixed(2)}
-                    </p>
-                  </OrderDetails>
-                )}
-              {orderDetails && orderStatus === SUMMED_ORDER_STATUS.FILLED && (
-                <OrderDetails indicator={INDICATOR.POSITIVE}>
-                  <p>An order for this ticker has already completed:</p>
-                  <p>Completed at: {getDateTime(orderDetails.filled_at)}</p>
-                  <p>Shares (Qty): {orderDetails.qty}</p>
-                  <p>Entry Price: {orderDetails.limit_price}</p>
-                  <p>
-                    Size: $
-                    {(
-                      parseInt(orderDetails.qty) *
-                      parseFloat(orderDetails.limit_price)
-                    ).toFixed(2)}
-                  </p>
-                </OrderDetails>
-              )}
-              {orderDetails &&
-                orderStatus === SUMMED_ORDER_STATUS.OPEN_FOR_PLACEMENT && (
-                  <OrderDetails indicator={INDICATOR.NEGATIVE}>
-                    <p>A previous order for this ticker did not complete:</p>
-                    <p>
-                      Canceled/Expired at:{" "}
-                      {getDateTime(
-                        orderDetails.canceled_at
-                          ? orderDetails.canceled_at
-                          : orderDetails.expired_at,
-                      )}
-                    </p>
-                    <p>Shares (Qty): {orderDetails.qty}</p>
-                    <p>Entry Price: {orderDetails.limit_price}</p>
-                    <p>
-                      Size: $
-                      {(
-                        parseInt(orderDetails.qty) *
-                        parseFloat(orderDetails.limit_price)
-                      ).toFixed(2)}
-                    </p>
-                  </OrderDetails>
-                )}
-              <div>EDIT!</div>
-            </div>
-            <div>
-              {orderStatus === SUMMED_ORDER_STATUS.OPEN_FOR_PLACEMENT && (
+            <h2>{ticker}</h2>
+            {currentBreakout && (
+              <>
                 <div>
-                  <BuyTickerButtonWrapper
-                    shares={shares}
-                    entryPrice={entryPrice}
-                    {...breakouts[0]}
-                  />
+                  Breakout value/entry price:{" "}
+                  {handleLimitPrice(currentBreakout.breakoutValue)}
                 </div>
-              )}
+                {cashBalance && (
+                  <>
+                    <div>
+                      Shares/quantity :
+                      {handleGetShares(
+                        handleLimitPrice(currentBreakout.breakoutValue),
+                      )}
+                    </div>
+                    <div>
+                      Size: ${handleGetSize(currentBreakout.breakoutValue)}
+                    </div>
+                  </>
+                )}
+              </>
+            )}
+
+            <div style={{ border: "2px solid red" }}>
+              <p>Kolla på ACLX kring statusen när den väl är fylld</p>
+              <OrderDetailsWrapper
+                orderDetails={orderDetails}
+                orderStatus={orderStatus}
+              />
             </div>
-            <RatingContainer>
-              <Rating breakoutRef={latestBreakoutRef as string} />
-            </RatingContainer>
+
+            <div>
+              {orderStatus === SUMMED_ORDER_STATUS.OPEN_FOR_PLACEMENT &&
+                currentBreakout && (
+                  <div>
+                    <BuyTickerButtonWrapper
+                      shares={handleGetShares(
+                        handleLimitPrice(currentBreakout.breakoutValue),
+                      )}
+                      entryPrice={handleLimitPrice(
+                        currentBreakout.breakoutValue,
+                      )}
+                      {...breakouts[0]}
+                    />
+                  </div>
+                )}
+            </div>
           </InfoBar>
         </div>
         <div style={{ gridArea: "table" }}>
           <TickerBreakoutList
             data={breakouts}
-            titleText={`Breakouts for ${ticker.toUpperCase()}`}
+            titleText={`Breakouts for ${(ticker as string).toUpperCase()}`}
           />
         </div>
       </TickerPageContainer>
     </PageContainer>
   );
 };
-
 export const getServerSideProps = getServerSidePropsAllPages;
 export default TickerPage;
