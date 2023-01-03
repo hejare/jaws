@@ -4,10 +4,7 @@ import { useEffect, useState } from "react";
 import InfoBar from "../../components/molecules/InfoBar";
 import Rating from "../../components/molecules/Rating";
 import { getServerSidePropsAllPages } from "../../lib/getServerSidePropsAllPages";
-import {
-  BreakoutStoreType,
-  useBreakoutsStore,
-} from "../../store/breakoutsStore";
+import { useBreakoutsStore } from "../../store/breakoutsStore";
 import { handleLimitPrice } from "../../util/handleLimitPrice";
 import { handleCalculateQuantity } from "../../util/handleQuantity";
 import * as backendService from "../../services/backendService";
@@ -15,12 +12,11 @@ import {
   AlpacaOrderType,
   SUMMED_ORDER_STATUS,
 } from "../../services/alpacaMeta";
-import BuyTickerButtonWrapper from "../../components/molecules/BuyTickerButtonWrapper";
 import { useInterval } from "usehooks-ts";
 import { ONE_MINUTE_IN_MS } from "../../lib/helpers";
-import { BreakoutData } from "../../components/organisms/TickerBreakoutList";
-import { handleResult } from "../../util";
 import OrderDetailsWrapper from "../../components/molecules/OrderDetailsWrapper";
+import BuyTickerButtonWrapper from "../../components/molecules/BuyTickerButtonWrapper";
+import { handleResult } from "../../util";
 
 export type MinimalOrderType = {
   qty: string;
@@ -39,12 +35,26 @@ const TickerPage: NextPage = () => {
   ]);
   const [cashBalance, setCashBalance] = useState<number>();
   const [interval, setInterval] = useState(0);
+  const [breakouts, setBreakouts] = useState(0);
   const [orderStatus, setOrderStatus] = useState<
     SUMMED_ORDER_STATUS | undefined
   >();
   const [orderDetails, setOrderDetails] = useState<
     AlpacaOrderType | MinimalOrderType
   >();
+
+  useEffect(() => {
+    // TODO use store do not fetch from here
+    if (!ticker || Array.isArray(ticker)) {
+      return;
+    }
+    fetch(`/api/data/tickers/breakouts/${ticker}`)
+      .then(handleResult)
+      .then((result) => {
+        setBreakouts(result.breakouts);
+      })
+      .catch(console.error);
+  }, [ticker]);
 
   // TODO fetch data for historical data = more than latest breakout for ticker
 
@@ -134,18 +144,18 @@ const TickerPage: NextPage = () => {
         )}
         <div>
           {orderStatus === SUMMED_ORDER_STATUS.OPEN_FOR_PLACEMENT &&
-            shares &&
-            entryPrice && (
+            currentBreakout && (
               <div>
                 <BuyTickerButtonWrapper
-                  shares={shares}
-                  entryPrice={entryPrice}
+                  shares={handleGetShares(
+                    handleLimitPrice(currentBreakout.breakoutValue),
+                  )}
+                  entryPrice={handleLimitPrice(currentBreakout.breakoutValue)}
                   {...breakouts[0]}
                 />
               </div>
             )}
         </div>
-
         <p>TODO: BUY button</p>
         <p>TODO: edit price input field</p>
       </InfoBar>
