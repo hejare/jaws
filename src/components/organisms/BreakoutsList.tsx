@@ -134,18 +134,9 @@ const BreakoutsList = ({ data, disableBuy }: Props) => {
         <Operations>
           {!disableBuy && (
             <>
-              <Button
-                onClick={() => {
-                  void showBreakoutModal({
-                    image: `${IMAGE_SERVICE_BASE_URL as string}/${item.image}`,
-                    breakoutRef: item.breakoutRef,
-                    symbol: item.tickerRef,
-                    breakoutValue: item.breakoutValue,
-                  });
-                }}
-              >
-                Prepare Order
-              </Button>
+              <NavButton href={`/prepare-order/${item.tickerRef}`}>
+                Prepare order
+              </NavButton>
               <CancelOrderButton ticker={item.tickerRef} />
             </>
           )}

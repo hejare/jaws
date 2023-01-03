@@ -27,8 +27,6 @@ import Rating from "../../components/molecules/Rating";
 import OrderDetailsWrapper from "../../components/molecules/OrderDetailsWrapper";
 import { useBreakoutsStore } from "../../store/breakoutsStore";
 
-// TODO ta bort rating i storbild??
-
 export type MinimalOrderType = {
   qty: string;
   limit_price: string;
@@ -134,8 +132,12 @@ const TickerPage: NextPage = () => {
               <Rating breakoutRef={currentBreakout?.breakoutRef} />
             </RatingContainer>
           )}
-          {breakouts[0] ? (
-            <JawsTradeViewGraph {...breakouts[0]} />
+          {currentBreakout ? (
+            <JawsTradeViewGraph
+              image={currentBreakout.image}
+              breakoutRef={currentBreakout.breakoutRef}
+              tickerRef={currentBreakout.tickerRef}
+            />
           ) : (
             <div>no data...</div>
           )}
@@ -164,15 +166,10 @@ const TickerPage: NextPage = () => {
                 )}
               </>
             )}
-
-            <div style={{ border: "2px solid red" }}>
-              <p>Kolla på ACLX kring statusen när den väl är fylld</p>
-              <OrderDetailsWrapper
-                orderDetails={orderDetails}
-                orderStatus={orderStatus}
-              />
-            </div>
-
+            <OrderDetailsWrapper
+              orderDetails={orderDetails}
+              orderStatus={orderStatus}
+            />
             <div>
               {orderStatus === SUMMED_ORDER_STATUS.OPEN_FOR_PLACEMENT &&
                 currentBreakout && (

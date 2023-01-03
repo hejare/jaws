@@ -25,23 +25,21 @@ const StyledImage = styled.img`
 `;
 
 const ImageContainer = styled.div`
-  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   width: 100%;
-  height: 70%;
+  height: 90%;
 `;
 const IframeContainer = styled.div`
   width: -webkit-fill-available;
-  height: 70%;
+  height: 90%;
 `;
 
 type Props = {
-  _ref: string;
+  breakoutRef: string;
   tickerRef: string;
-  breakoutValue: number;
   image: string;
 };
 
@@ -53,28 +51,20 @@ interface ModalProps {
 const { publicRuntimeConfig } = getNextJSConfig();
 const { IMAGE_SERVICE_BASE_URL = "[NOT_DEFINED_IN_ENV]" } = publicRuntimeConfig;
 
-const JawsTradeViewGraph = ({
-  image,
-  _ref,
-  tickerRef,
-  breakoutValue,
-}: Props) => {
+const JawsTradeViewGraph = ({ image, breakoutRef, tickerRef }: Props) => {
   const imageUrl = `${IMAGE_SERVICE_BASE_URL as string}/${image}`;
   const [showTradeView, setShowTradeView] = useState(false);
-  const [enableOnClickOutside, setEnableOnClickOutside] = useState(true);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const TheImageModal = memo(
     ({ isOpen: imageModalIsOpen, onClose: imageModalOnClose }: ModalProps) => (
       <ImageModal
         isOpen={imageModalIsOpen}
         onClose={() => {
-          setEnableOnClickOutside(true);
           imageModalOnClose();
         }}
         image={imageUrl}
         enableOnClickOutside
-        breakoutRef={_ref}
+        breakoutRef={breakoutRef}
       />
     ),
   );
@@ -93,13 +83,9 @@ const JawsTradeViewGraph = ({
           <ImageContainer>
             <StyledImage
               onClick={() => {
-                setEnableOnClickOutside(false);
                 showModal({});
               }}
               onError={() => {
-                setErrorMessage(
-                  "Graph not accessible - will not be able to view Sharkster generated image",
-                );
                 setShowTradeView(true);
               }}
               src={imageUrl}
