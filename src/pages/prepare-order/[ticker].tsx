@@ -108,16 +108,10 @@ const TickerPage: NextPage = () => {
     void backendService
       .getAccountOrderStatusByTicker(ticker as string)
       .then((data) => {
-        console.log("interval data :) ", data);
         setOrderStatus(data.orderStatus);
         setOrderDetails(data.orderDetails);
       });
   }, interval);
-
-  useEffect(() => {
-    console.log({ orderDetails });
-    console.log({ orderStatus });
-  }, [orderDetails, orderStatus]);
 
   return (
     <PageContainer>

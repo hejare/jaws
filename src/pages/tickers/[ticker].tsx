@@ -97,7 +97,6 @@ const TickerPage: NextPage = () => {
       const entryPrice = asset.avg_entry_price;
       const currentValue = asset.market_value;
       const quantity = asset.qty;
-      console.log({ asset });
       if (entryPrice && currentValue && quantity) {
         setAssetDiff(
           parseFloat(currentValue) -
@@ -115,9 +114,6 @@ const TickerPage: NextPage = () => {
   if (dataFetchStatus !== STATUS.READY || !ticker || Array.isArray(ticker)) {
     return <></>;
   }
-
-  console.log({ orders });
-  console.log({ asset });
 
   return (
     <PageContainer>
