@@ -2,7 +2,6 @@ import React from "react";
 import PlaceOrderButton from "./PlaceOrderButton";
 
 type Props = {
-  //image: string;
   tickerRef: string;
   relativeStrength: number;
   breakoutValue: number;
