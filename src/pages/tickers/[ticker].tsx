@@ -11,7 +11,6 @@ import InfoBar from "../../components/molecules/InfoBar";
 import TickerBreakoutList from "../../components/organisms/TickerBreakoutList";
 import { handleSellOrderByTickerId } from "../../lib/brokerHandler";
 import { getServerSidePropsAllPages } from "../../lib/getServerSidePropsAllPages";
-import { BreakoutStoreType } from "../../store/breakoutsStore";
 import { handleResult } from "../../util";
 
 // TODO add smart sell button
@@ -19,6 +18,7 @@ interface Asset {
   avg_entry_price?: string;
   change_today?: string;
   market_value?: string;
+  qty?: string;
 }
 
 export type PartialOrderDataType = {
@@ -26,6 +26,7 @@ export type PartialOrderDataType = {
   filled_at?: string;
   notional?: string;
   symbol?: string;
+  qty?: number;
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -50,6 +51,8 @@ const TickerPage: NextPage = () => {
   const [orders, setOrders] = useState([]);
   const [breakouts, setBreakouts] = useState([]);
   const [dataFetchStatus, setDataFetchStatus] = useState(STATUS.LOADING);
+  const [assetDiff, setAssetDiff] = useState<number>();
+  const [percentageDiff, setPercentageDiff] = useState<number>();
 
   const router = useRouter();
   const { ticker } = router.query;
@@ -75,9 +78,32 @@ const TickerPage: NextPage = () => {
       .catch(console.error);
   }, [ticker]);
 
+  useEffect(() => {
+    if (asset) {
+      const entryPrice = asset.avg_entry_price;
+      const currentValue = asset.market_value;
+      const quantity = asset.qty;
+      console.log({ asset });
+      if (entryPrice && currentValue && quantity) {
+        setAssetDiff(
+          parseFloat(currentValue) -
+            parseFloat(entryPrice) * parseFloat(quantity),
+        );
+        setPercentageDiff(
+          ((parseFloat(currentValue) - parseFloat(entryPrice)) /
+            parseFloat(entryPrice)) *
+            100,
+        );
+      }
+    }
+  }, [asset]);
+
   if (dataFetchStatus !== STATUS.READY || !ticker || Array.isArray(ticker)) {
     return <></>;
   }
+
+  console.log({ orders });
+  console.log({ asset });
 
   return (
     <PageContainer>
@@ -100,7 +126,9 @@ const TickerPage: NextPage = () => {
                   <div key={i}>
                     <div>Created at: {order.created_at}</div>
                     <div>Filled at: {order.filled_at}</div>
-                    <div>Quantity: {order.notional}</div>
+                    <div>
+                      Quantity: {order.notional ? order.notional : order.qty}
+                    </div>
                   </div>
                 ))
               ) : (
@@ -112,7 +140,17 @@ const TickerPage: NextPage = () => {
                   <div>
                     <div>Entry price: {asset.avg_entry_price}</div>
                     <div>Current price: {asset.market_value}</div>
+
+                    {assetDiff && assetDiff > 0 && (
+                      <div>
+                        Value increase: ${Math.abs(assetDiff).toFixed(2)}
+                      </div>
+                    )}
+                    {assetDiff && assetDiff < 0 && (
+                      <div>Value loss: -${Math.abs(assetDiff).toFixed(2)}</div>
+                    )}
                   </div>
+                  <div>Change {percentageDiff?.toFixed(2)}%</div>
                   <Button
                     onClick={() => handleSellOrderByTickerId(ticker, 100)}
                   >
