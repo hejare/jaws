@@ -1,3 +1,4 @@
+import getNextJSConfig from "next/config";
 import { memo, useEffect, useState } from "react";
 import styled from "styled-components";
 import ImageModal from "./ImageModal";
@@ -18,6 +19,10 @@ import { INDICATOR } from "../../lib/priceHandler";
 import Button from "../atoms/buttons/Button";
 import { TradeViewWidget } from "../atoms/TradeViewWidget";
 import ErrorMessage from "../atoms/ErrorMessage";
+import { BreakoutStoreType } from "../../store/breakoutsStore";
+
+const { publicRuntimeConfig } = getNextJSConfig();
+const { IMAGE_SERVICE_BASE_URL = "[NOT_DEFINED_IN_ENV]" } = publicRuntimeConfig;
 
 const InfoContainer = styled.div`
   height: 100%;
@@ -56,9 +61,17 @@ const RatingContainer = styled.div`
   margin-top: 16px;
   height: 60px;
   position: absolute;
-  bottom: 4px;
+  bottom: 94px;
   right: 20px;
 `;
+
+const NextBreakOutContainer = styled.div`
+  margin-top: 16px;
+  height: 60px;
+  position: absolute;
+  bottom: 34px;
+  right: 20px;
+`
 
 const Info = styled.div``;
 
@@ -79,6 +92,9 @@ interface Props {
   enableOnClickOutside?: boolean;
   breakoutValue: number;
   symbol: string;
+  breakoutIndex: number;
+  allBreakouts: BreakoutStoreType[];
+  showBreakoutModal: (props: Props) => void;
 }
 
 type MinimalOrderType = {
@@ -100,6 +116,9 @@ export default function BreakoutModal({
   breakoutRef,
   breakoutValue,
   symbol,
+  breakoutIndex,
+  allBreakouts,
+  showBreakoutModal,
 }: Props) {
   const [interval, setInterval] = useState(0);
   const [orderStatus, setOrderStatus] = useState<
@@ -152,6 +171,23 @@ export default function BreakoutModal({
       setOrderDetails(data.orderDetails);
     });
   }, interval);
+
+  const showBreakout = (breakout: BreakoutStoreType, nextIndex: number) => {
+    if (breakout) showBreakoutModal({
+      isOpen,
+      onClose,
+      image: `${IMAGE_SERVICE_BASE_URL as string}/${breakout.image}`,
+      breakoutRef: breakout.breakoutRef,
+      symbol: breakout.tickerRef,
+      breakoutValue: breakout.breakoutValue,
+      allBreakouts: allBreakouts,
+      breakoutIndex: nextIndex,
+      showBreakoutModal,
+    });
+  }
+
+  const nextBreakout = allBreakouts[breakoutIndex + 1];
+  const previousBreakout = allBreakouts[breakoutIndex - 1];
 
   const size = (shares * entryPrice).toFixed(2);
   return (
@@ -266,6 +302,22 @@ export default function BreakoutModal({
       <RatingContainer>
         <Rating breakoutRef={breakoutRef} />
       </RatingContainer>
+      <NextBreakOutContainer>
+        <ButtonsContainer>
+          <StyledButton
+            disabled={!previousBreakout} 
+            onClick={() => showBreakout(previousBreakout, breakoutIndex - 1)}>
+              Previous
+          </StyledButton>
+        </ButtonsContainer>
+        <ButtonsContainer>
+          <StyledButton
+            disabled={!nextBreakout}
+            onClick={() => showBreakout(nextBreakout, breakoutIndex + 1)}>
+              Next
+          </StyledButton>
+        </ButtonsContainer>
+      </NextBreakOutContainer>
     </Modal>
   );
 }

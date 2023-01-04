@@ -35,6 +35,9 @@ interface ModalProps {
   image: string;
   breakoutValue: number;
   symbol: string;
+  breakoutIndex: number;
+  allBreakouts: BreakoutStoreType[];
+  showBreakoutModal: (props: ModalProps) => void;
 }
 
 const BreakoutsList = ({ data, disableBuy }: Props) => {
@@ -46,6 +49,9 @@ const BreakoutsList = ({ data, disableBuy }: Props) => {
       breakoutRef,
       breakoutValue,
       symbol,
+      breakoutIndex,
+      allBreakouts,
+      showBreakoutModal,
     }: ModalProps) => (
       <BreakoutModal
         isOpen={isOpen}
@@ -54,6 +60,9 @@ const BreakoutsList = ({ data, disableBuy }: Props) => {
         breakoutRef={breakoutRef}
         breakoutValue={breakoutValue}
         symbol={symbol}
+        breakoutIndex={breakoutIndex}
+        allBreakouts={allBreakouts}
+        showBreakoutModal={showBreakoutModal}
       />
     ),
   );
@@ -130,7 +139,7 @@ const BreakoutsList = ({ data, disableBuy }: Props) => {
       dataIndex: "",
       key: "operations",
       className: "operations",
-      render: (item: BreakoutStoreType) => (
+      render: (item: BreakoutStoreType, row, index: number) => (
         <Operations>
           {!disableBuy && (
             <>
@@ -141,6 +150,9 @@ const BreakoutsList = ({ data, disableBuy }: Props) => {
                     breakoutRef: item.breakoutRef,
                     symbol: item.tickerRef,
                     breakoutValue: item.breakoutValue,
+                    allBreakouts: data,
+                    breakoutIndex: index,
+                    showBreakoutModal,
                   });
                 }}
               >
