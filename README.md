@@ -42,3 +42,7 @@ http://3.84.38.201:8888/api/sessions
 Read about this in the projects common document on the drive:
 https://docs.google.com/document/d/1TH65nCqeNXUf9YC2UzaN9GPmo0goyH4fQQZpBcwnTdo/edit#heading=h.1mxg2mhnkz13
 
+### Jaws [Miro](https://miro.com/app/board/uXjVP643fvA=/)
+- View this as "klotterplank"
+
+
