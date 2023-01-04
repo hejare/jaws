@@ -63,7 +63,7 @@ const PlaceOrderButton = ({
     }
   }, [trade]);
 
-  const size = (quantity * buyPrice).toFixed(2)
+  const size = (quantity * buyPrice).toFixed(2);
 
   return (
     <ButtonsContainer>
@@ -72,7 +72,8 @@ const PlaceOrderButton = ({
         type="number"
         step="0.01"
         onChange={(e) => setBuyPrice(e.target.value)}
-        title="Price" />
+        title="Price"
+      />
       <StyledButton
         disabled={disabled}
         onClick={() => {
@@ -83,6 +84,7 @@ const PlaceOrderButton = ({
             status: TRADE_STATUS.READY,
             side: TRADE_SIDE.BUY,
           });
+          /* Note: rn this will not place an actual order. See /api/broker/orders */
           void handleBuyOrder(ticker, buyPrice, quantity, breakoutRef);
           typeof onClick === "function" && onClick();
         }}
