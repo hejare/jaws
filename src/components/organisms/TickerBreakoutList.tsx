@@ -13,7 +13,7 @@ export interface BreakoutData {
 
 interface Props {
   data: BreakoutData[];
-  titleText: string;
+  titleText?: string;
 }
 
 const TickerBreakoutList = ({ data, titleText }: Props) => {

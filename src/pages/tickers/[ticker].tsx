@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import fetch from "node-fetch";
 import { useEffect, useState } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import Button from "../../components/atoms/buttons/Button";
 import NavButton from "../../components/atoms/buttons/NavButton";
 import PageContainer from "../../components/atoms/PageContainer";
@@ -11,9 +11,23 @@ import InfoBar from "../../components/molecules/InfoBar";
 import TickerBreakoutList from "../../components/organisms/TickerBreakoutList";
 import { handleSellOrderByTickerId } from "../../lib/brokerHandler";
 import { getServerSidePropsAllPages } from "../../lib/getServerSidePropsAllPages";
+import { INDICATOR } from "../../lib/priceHandler";
 import { handleResult } from "../../util";
 
-// TODO add smart sell button
+const StyledText = styled.div`
+  ${({
+    theme,
+    indicator = INDICATOR.NEUTRAL,
+  }: {
+    theme: any;
+    indicator?: INDICATOR;
+  }) => {
+    return css`
+      color: ${theme.palette.indicator[indicator.toLowerCase()]};
+    `;
+  }}
+`;
+
 interface Asset {
   avg_entry_price?: string;
   change_today?: string;
@@ -142,15 +156,27 @@ const TickerPage: NextPage = () => {
                     <div>Current price: {asset.market_value}</div>
 
                     {assetDiff && assetDiff > 0 && (
-                      <div>
+                      <StyledText indicator={INDICATOR.POSITIVE}>
                         Value increase: ${Math.abs(assetDiff).toFixed(2)}
-                      </div>
+                      </StyledText>
                     )}
                     {assetDiff && assetDiff < 0 && (
-                      <div>Value loss: -${Math.abs(assetDiff).toFixed(2)}</div>
+                      <StyledText indicator={INDICATOR.NEGATIVE}>
+                        Value loss: -${Math.abs(assetDiff).toFixed(2)}
+                      </StyledText>
                     )}
                   </div>
-                  <div>Change {percentageDiff?.toFixed(2)}%</div>
+
+                  {percentageDiff && percentageDiff > 0 ? (
+                    <StyledText indicator={INDICATOR.POSITIVE}>
+                      Change {percentageDiff?.toFixed(2)}%
+                    </StyledText>
+                  ) : (
+                    <StyledText indicator={INDICATOR.NEGATIVE}>
+                      Change {percentageDiff?.toFixed(2)}%
+                    </StyledText>
+                  )}
+
                   <Button
                     onClick={() => handleSellOrderByTickerId(ticker, 100)}
                   >
