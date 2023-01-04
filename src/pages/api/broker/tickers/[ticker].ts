@@ -7,9 +7,6 @@ interface ExtendedResponseDataType extends ResponseDataType {
   orders?: [];
 }
 
-// TODO get all assets for ticker
-// TODO get all breakouts for this ticker from api/data/tickers/[ticker]
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
