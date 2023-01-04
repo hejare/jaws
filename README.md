@@ -1,4 +1,4 @@
-# Welcome to your TypeScript project
+# Jaws🦈
 
 This is a blank project for Jaws with TypeScript.
 
