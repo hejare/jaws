@@ -63,7 +63,7 @@ const TickerBreakoutList = ({ data, titleText }: Props) => {
     <Table
       columns={columns}
       data={data}
-      rowKey={({ id }: { id: string }) => id}
+      rowKey={({ _ref }: { _ref: string }) => _ref}
       title={renderTitle}
       footer={renderFooter}
     />
