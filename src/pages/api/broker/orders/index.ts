@@ -3,6 +3,7 @@ import { ResponseDataType } from "../../../../db/ResponseDataMeta";
 import { postTrade } from "../../../../db/tradesEntity";
 import { TRADE_STATUS, TRADE_SIDE } from "../../../../db/tradesMeta";
 import * as alpacaService from "../../../../services/alpacaService";
+import { auth } from "../../../../auth/firebaseAdmin";
 
 interface ExtendedResponseDataType extends ResponseDataType {
   orders?: Record<string, any>;
@@ -15,6 +16,7 @@ export default async function handler(
   const { method } = req;
 
   try {
+    const { email } = await auth.verifyIdToken(req.cookies.idToken as string);
     const responseData: ExtendedResponseDataType = { status: "INIT" };
     switch (method) {
       case "GET":
@@ -56,7 +58,7 @@ export default async function handler(
           quantity,
           created: Date.now(),
           breakoutRef,
-          userRef: "ludde@hejare.se", // TODO: Extract from auth cookie/token
+          userRef: email,
         }).catch((e) => {
           console.log(e);
           responseData.status = "NOK";
