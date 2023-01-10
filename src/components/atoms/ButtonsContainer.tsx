@@ -5,4 +5,5 @@ export const ButtonsContainer = styled.div`
   display: flex;
   flex-direction: row;
   gap: 5px;
+  flex-wrap: wrap;
 `;

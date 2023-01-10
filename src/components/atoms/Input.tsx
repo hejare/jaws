@@ -14,6 +14,7 @@ const EnabledDiv = styled.div`
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
   transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
   background-color: ${({ theme }) => theme.palette.background.primary};
+  width: 100px;
 `;
 
 interface Props {
@@ -27,7 +28,7 @@ interface Props {
 const Input = ({ onChange, value, title, type = "text", step = "1" }: Props) => {
   return <EnabledDiv>
     <label>{title}</label>
-    <input onChange={onChange} value={value} type={type} step={step} />
+    <input style={{ width: '100px' }} onChange={onChange} value={value} type={type} step={step} />
   </EnabledDiv>;
 };
 export default Input;
