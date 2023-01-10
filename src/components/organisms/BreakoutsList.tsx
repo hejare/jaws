@@ -27,6 +27,8 @@ const StyledImage = styled.img`
 interface Props {
   data: BreakoutStoreType[];
   disableBuy?: boolean;
+  date: string;
+  time: string;
 }
 interface ModalProps {
   breakoutRef: string;
@@ -37,7 +39,7 @@ interface ModalProps {
   symbol: string;
 }
 
-const BreakoutsList = ({ data, disableBuy }: Props) => {
+const BreakoutsList = ({ data, disableBuy, date, time }: Props) => {
   const TheBreakoutModal = memo(
     ({
       isOpen,
@@ -134,7 +136,7 @@ const BreakoutsList = ({ data, disableBuy }: Props) => {
         <Operations>
           {!disableBuy && (
             <>
-              <NavButton href={`/prepare-order/${item.tickerRef}`}>
+              <NavButton href={`/daily-runs/${date}/${time}/prepare-order/${item.tickerRef}`}>
                 Prepare order
               </NavButton>
               <CancelOrderButton ticker={item.tickerRef} />

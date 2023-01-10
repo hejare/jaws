@@ -3,29 +3,30 @@ import { useRouter } from "next/router";
 import fetch from "node-fetch";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import NavButton from "../../components/atoms/buttons/NavButton";
-import PageContainer from "../../components/atoms/PageContainer";
-import InfoBar from "../../components/molecules/InfoBar";
-import * as backendService from "../../services/backendService";
+import NavButton from "../../../../../components/atoms/buttons/NavButton";
+import PageContainer from "../../../../../components/atoms/PageContainer";
+import InfoBar from "../../../../../components/molecules/InfoBar";
+import * as backendService from "../../../../../services/backendService";
 import TickerBreakoutList, {
   BreakoutData,
-} from "../../components/organisms/TickerBreakoutList";
-import { getServerSidePropsAllPages } from "../../lib/getServerSidePropsAllPages";
-import { handleResult } from "../../util";
-import JawsTradeViewGraph from "../../components/molecules/JawsTradeViewGraph";
+} from "../../../../../components/organisms/TickerBreakoutList";
+import { getServerSidePropsAllPages } from "../../../../../lib/getServerSidePropsAllPages";
+import { handleResult } from "../../../../../util";
+import JawsTradeViewGraph from "../../../../../components/molecules/JawsTradeViewGraph";
 import {
   AlpacaOrderType,
   SUMMED_ORDER_STATUS,
-} from "../../services/alpacaMeta";
-import BuyTickerButtonWrapper from "../../components/molecules/BuyTickerButtonWrapper";
-import { handleLimitPrice } from "../../util/handleLimitPrice";
-import { handleCalculateQuantity } from "../../util/handleQuantity";
+} from "../../../../../services/alpacaMeta";
+import BuyTickerButtonWrapper from "../../../../../components/molecules/BuyTickerButtonWrapper";
+import { handleLimitPrice } from "../../../../../util/handleLimitPrice";
+import { handleCalculateQuantity } from "../../../../../util/handleQuantity";
 import { useInterval } from "usehooks-ts";
-import { ONE_MINUTE_IN_MS } from "../../lib/helpers";
-import { INDICATOR } from "../../lib/priceHandler";
-import Rating from "../../components/molecules/Rating";
-import OrderDetailsWrapper from "../../components/molecules/OrderDetailsWrapper";
-import { useBreakoutsStore } from "../../store/breakoutsStore";
+import { ONE_MINUTE_IN_MS } from "../../../../../lib/helpers";
+import { INDICATOR } from "../../../../../lib/priceHandler";
+import Rating from "../../../../../components/molecules/Rating";
+import OrderDetailsWrapper from "../../../../../components/molecules/OrderDetailsWrapper";
+import { useBreakoutsStore } from "../../../../../store/breakoutsStore";
+import Button from "../../../../../components/atoms/buttons/Button";
 
 export type MinimalOrderType = {
   qty: string;
@@ -54,11 +55,29 @@ const RatingContainer = styled.div`
   width: 200px;
 `;
 
+const NextBreakOutContainer = styled.div`
+  margin-top: 16px;
+  height: 60px;
+  position: absolute;
+  bottom: 34px;
+  right: 20px;
+`
+
+const ButtonsContainer = styled.div`
+  width: 100px;
+`;
+
+const StyledButton = styled(Button)`
+  margin-bottom: 8px;
+`;
+
 const TickerPage: NextPage = () => {
   const router = useRouter();
-  const { ticker } = router.query;
-  const [currentBreakout] = useBreakoutsStore((state) => [
+  const { ticker, date, time } = router.query;
+  const [currentBreakout, allBreakouts, setAllBreakouts] = useBreakoutsStore((state) => [
     state.breakouts.find((b) => b.tickerRef === ticker),
+    state.breakouts,
+    state.setBreakouts,
   ]);
   const [cashBalance, setCashBalance] = useState<number>();
   const [interval, setInterval] = useState(0);
@@ -69,6 +88,14 @@ const TickerPage: NextPage = () => {
   const [orderDetails, setOrderDetails] = useState<
     AlpacaOrderType | MinimalOrderType
   >();
+
+  useEffect(() => {
+    fetch(`/api/data/daily-runs/${date as string}/${time as string}`)
+      .then(handleResult)
+      .then((result) => {
+        setAllBreakouts(result.breakouts);
+      });
+  }, []);
 
   useEffect(() => {
     if (!ticker || Array.isArray(ticker)) {
@@ -113,12 +140,23 @@ const TickerPage: NextPage = () => {
       });
   }, interval);
 
+  if (!currentBreakout) return null;
+  const indexCurrentBreakout = allBreakouts.findIndex((breakout) => breakout.tickerRef === ticker);
+  const nextTicker = allBreakouts[indexCurrentBreakout + 1]?.tickerRef;
+  const previousTicker = allBreakouts[indexCurrentBreakout - 1]?.tickerRef;
+
   return (
     <PageContainer>
-      <NavButton goBack href="">
-        Go back
+      <NavButton href={`/daily-runs/${date}/${time}`}>
+        Back to daily run
       </NavButton>
       <h1>{`${(ticker as string).toUpperCase()}`}</h1>
+      <NavButton disabled={!previousTicker} href={`/daily-runs/${date}/${time}/prepare-order/${previousTicker}`}>
+        Previous
+      </NavButton>
+      <NavButton disabled={!nextTicker} href={`/daily-runs/${date}/${time}/prepare-order/${nextTicker}`}>
+        Next
+      </NavButton>
       <TickerPageContainer>
         <div style={{ gridArea: "graph" }}>
           {currentBreakout && (

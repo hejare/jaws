@@ -40,6 +40,10 @@ const PlaceOrderButton = ({
     state.upsertTrade,
   ]);
 
+  useEffect(() => {
+    setBuyPrice(entryPrice);
+  }, [entryPrice]);
+
   useInterval(() => {
     setInterval(ONE_MINUTE_IN_MS);
     void backendService.getTradesDataByTicker(ticker).then((data) => {
