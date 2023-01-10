@@ -44,7 +44,8 @@ module.exports = {
       },
       "rules": {
         "react/prop-types": 0,
-        "no-unused-vars": "warn",
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": ["warn"],
         "no-case-declarations": 0,
         "react/require-default-props": "off",
         "prefer-destructuring": "off",
