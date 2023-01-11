@@ -1,7 +1,8 @@
 import fetch from "node-fetch";
 import { getToday } from "../lib/helpers";
+import { BrokerAccountAssetsResponse } from "../pages/api/broker/account/assets";
 import { BrokerAccountBalanceResponse } from "../pages/api/broker/account/balance";
-import { convertResult } from "../util";
+import { convertResult, handleResult } from "../util";
 
 const baseHeaders = { "Content-Type": "application/json" };
 
@@ -47,4 +48,12 @@ export const getTradesDataByTicker = async (ticker: string) => {
     headers: baseHeaders,
   });
   return convertResult(resp);
+};
+
+export const getAccountAssets = async () => {
+  const resp = await fetch("/api/broker/account/assets", {
+    headers: baseHeaders,
+  });
+
+  return handleResult<BrokerAccountAssetsResponse>(resp);
 };
