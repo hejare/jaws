@@ -138,7 +138,7 @@ export default function BreakoutModal({
       const cashBalance = await backendService.getAccountCashBalance();
       const calculatedShares = handleCalculateQuantity(
         brokerLimitPrice,
-        cashBalance,
+        parseFloat(cashBalance),
       );
       setShares(calculatedShares);
     };
