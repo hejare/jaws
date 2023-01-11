@@ -61,7 +61,7 @@ const NextBreakOutContainer = styled.div`
   position: absolute;
   bottom: 34px;
   right: 20px;
-`
+`;
 
 const ButtonsContainer = styled.div`
   width: 100px;
@@ -74,11 +74,13 @@ const StyledButton = styled(Button)`
 const TickerPage: NextPage = () => {
   const router = useRouter();
   const { ticker, date, time } = router.query;
-  const [currentBreakout, allBreakouts, setAllBreakouts] = useBreakoutsStore((state) => [
-    state.breakouts.find((b) => b.tickerRef === ticker),
-    state.breakouts,
-    state.setBreakouts,
-  ]);
+  const [currentBreakout, allBreakouts, setAllBreakouts] = useBreakoutsStore(
+    (state) => [
+      state.breakouts.find((b) => b.tickerRef === ticker),
+      state.breakouts,
+      state.setBreakouts,
+    ],
+  );
   const [cashBalance, setCashBalance] = useState<number>();
   const [interval, setInterval] = useState(0);
   const [breakouts, setBreakouts] = useState<BreakoutData[]>([]);
@@ -112,7 +114,7 @@ const TickerPage: NextPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       const balance = await backendService.getAccountCashBalance();
-      setCashBalance(balance);
+      setCashBalance(parseFloat(balance));
     };
     void fetchData();
   }, []);
@@ -141,7 +143,9 @@ const TickerPage: NextPage = () => {
   }, interval);
 
   if (!currentBreakout) return null;
-  const indexCurrentBreakout = allBreakouts.findIndex((breakout) => breakout.tickerRef === ticker);
+  const indexCurrentBreakout = allBreakouts.findIndex(
+    (breakout) => breakout.tickerRef === ticker,
+  );
   const nextTicker = allBreakouts[indexCurrentBreakout + 1]?.tickerRef;
   const previousTicker = allBreakouts[indexCurrentBreakout - 1]?.tickerRef;
 
@@ -151,10 +155,16 @@ const TickerPage: NextPage = () => {
         Back to daily run
       </NavButton>
       <h1>{`${(ticker as string).toUpperCase()}`}</h1>
-      <NavButton disabled={!previousTicker} href={`/daily-runs/${date}/${time}/prepare-order/${previousTicker}`}>
+      <NavButton
+        disabled={!previousTicker}
+        href={`/daily-runs/${date}/${time}/prepare-order/${previousTicker}`}
+      >
         Previous
       </NavButton>
-      <NavButton disabled={!nextTicker} href={`/daily-runs/${date}/${time}/prepare-order/${nextTicker}`}>
+      <NavButton
+        disabled={!nextTicker}
+        href={`/daily-runs/${date}/${time}/prepare-order/${nextTicker}`}
+      >
         Next
       </NavButton>
       <TickerPageContainer>

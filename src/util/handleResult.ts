@@ -1,17 +1,17 @@
 import { Response } from "node-fetch";
 
-export const convertResult = async (result: Response) => {
+export const convertResult = async <T = any>(result: Response): Promise<T> => {
   const text = await result.text();
   try {
     return JSON.parse(text);
   } catch {
-    return text;
+    return text as any;
   }
 };
 
-export const handleResult = async (result: Response) => {
+export const handleResult = async <T = any>(result: Response) => {
   try {
-    const data = await convertResult(result);
+    const data = await convertResult<T>(result);
     const reason = { error: data };
     return result.ok
       ? await Promise.resolve(data)

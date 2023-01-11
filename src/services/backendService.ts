@@ -1,5 +1,6 @@
 import fetch from "node-fetch";
 import { getToday } from "../lib/helpers";
+import { BrokerAccountBalanceResponse } from "../pages/api/broker/account/balance";
 import { convertResult } from "../util";
 
 const baseHeaders = { "Content-Type": "application/json" };
@@ -29,7 +30,7 @@ export const getAccountCashBalance = async () => {
   const resp = await fetch("/api/broker/account/balance", {
     headers: baseHeaders,
   });
-  const { balance } = await convertResult(resp);
+  const { balance } = await convertResult<BrokerAccountBalanceResponse>(resp);
   return balance;
 };
 

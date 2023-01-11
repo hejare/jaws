@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { ResponseDataType } from "../../../../db/ResponseDataMeta";
+import { ResponseDataType } from "../../ResponseDataMeta";
 import { postTrade } from "../../../../db/tradesEntity";
 import { TRADE_STATUS, TRADE_SIDE } from "../../../../db/tradesMeta";
 import * as alpacaService from "../../../../services/alpacaService";

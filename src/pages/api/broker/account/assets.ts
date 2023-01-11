@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { ResponseDataType } from "../../../../db/ResponseDataMeta";
+import { ResponseDataType } from "../../ResponseDataMeta";
 import { getAccountAssets } from "../../../../services/alpacaService";
 
 interface ExtendedResponseDataType extends ResponseDataType {

@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getBreakOutsForTicker } from "../../../../../db/breakoutsEntity";
-import { ResponseDataType } from "../../../../../db/ResponseDataMeta";
+import { ResponseDataType } from "../../../ResponseDataMeta";
 
 interface ExtendedResponseDataType extends ResponseDataType {
   breakouts?: object;
