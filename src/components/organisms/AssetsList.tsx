@@ -45,6 +45,12 @@ const AssetssList = ({ data }: Props) => {
       ),
     },
     {
+      title: "% of portfolio",
+      dataIndex: "percent_of_total_assets",
+      width: 200,
+      render: (value: any) => <PercentageDisplay value={value} />,
+    },
+    {
       title: "Value Diff",
       dataIndex: "",
       key: "valueDiff",
@@ -60,8 +66,8 @@ const AssetssList = ({ data }: Props) => {
               diff > 0
                 ? INDICATOR.POSITIVE
                 : diff === 0
-                  ? INDICATOR.NEUTRAL
-                  : INDICATOR.NEGATIVE
+                ? INDICATOR.NEUTRAL
+                : INDICATOR.NEGATIVE
             }
           />
         );
@@ -86,7 +92,7 @@ const AssetssList = ({ data }: Props) => {
       ),
     },
     {
-      title: "Price",
+      title: "Current price",
       dataIndex: "",
       key: "current_price",
       width: 200,
@@ -95,9 +101,8 @@ const AssetssList = ({ data }: Props) => {
       ),
     },
     {
-      title: "Change",
+      title: "Change today",
       dataIndex: "change_today",
-      key: "change_today",
       width: 200,
       render: (change_today: any) => (
         <PercentageDisplay
@@ -105,10 +110,27 @@ const AssetssList = ({ data }: Props) => {
             change_today > 0
               ? INDICATOR.POSITIVE
               : change_today === 0
-                ? INDICATOR.NEUTRAL
-                : INDICATOR.NEGATIVE
+              ? INDICATOR.NEUTRAL
+              : INDICATOR.NEGATIVE
           }
           value={parseFloat(change_today) * 100}
+        />
+      ),
+    },
+    {
+      title: "Change since entry",
+      dataIndex: "change_since_entry",
+      width: 200,
+      render: (change_since_entry: any) => (
+        <PercentageDisplay
+          indicator={
+            change_since_entry > 0
+              ? INDICATOR.POSITIVE
+              : change_since_entry === 0
+              ? INDICATOR.NEUTRAL
+              : INDICATOR.NEGATIVE
+          }
+          value={parseFloat(change_since_entry) * 100}
         />
       ),
     },

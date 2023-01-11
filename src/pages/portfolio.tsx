@@ -1,7 +1,5 @@
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
-import fetch from "node-fetch";
-import { handleResult } from "../util";
 import AssetsList from "../components/organisms/AssetsList";
 import PageContainer from "../components/atoms/PageContainer";
 import Widget from "../components/atoms/Widget";
@@ -11,6 +9,10 @@ import { INDICATOR } from "../lib/priceHandler";
 import { BoldText } from "../components/atoms/BoldText";
 import PriceDisplay from "../components/molecules/PriceDisplay";
 import { getServerSidePropsAllPages } from "../lib/getServerSidePropsAllPages";
+import {
+  getAccountAssets,
+  getAccountCashBalance,
+} from "../services/backendService";
 
 // eslint-disable-next-line no-unused-vars
 enum STATUS {
@@ -24,22 +26,38 @@ const PortfolioPage: NextPage = () => {
   const [values, setValues] = useState<number[]>([]);
 
   useEffect(() => {
-    fetch("/api/broker/account/assets")
-      .then(handleResult)
-      .then((result) => {
-        const assets = result.assets;
+    Promise.all([getAccountAssets(), getAccountCashBalance()])
+      .then(([assetsResult, balance]) => {
+        // TODO: breakout, test
+        const assets = assetsResult.assets;
+
         const investedValue = assets.reduce(
           (sum: number, { cost_basis }: { cost_basis: string }) =>
             sum + parseFloat(cost_basis),
           0,
         );
-        const marketValue = assets.reduce(
+        const marketValue: number = assets.reduce(
           (sum: number, { market_value }: { market_value: string }) =>
             sum + parseFloat(market_value),
           0,
         );
-        setValues([investedValue, marketValue]);
-        setData(assets);
+
+        const totalAssets: number = parseFloat(balance) + marketValue;
+
+        setValues([investedValue, marketValue, totalAssets]);
+
+        const extendedAssets = assets.map((a: any) => ({
+          ...a,
+          percent_of_total_assets:
+            ((parseFloat(a.avg_entry_price) * parseFloat(a.qty)) /
+              totalAssets) *
+            100,
+          change_since_entry:
+            (parseFloat(a.current_price) - parseFloat(a.avg_entry_price)) /
+            parseFloat(a.avg_entry_price),
+        }));
+
+        setData(extendedAssets);
         setDataFetchStatus(STATUS.READY);
       })
       .catch(console.error);
@@ -49,7 +67,7 @@ const PortfolioPage: NextPage = () => {
     return <></>;
   }
 
-  const [investedValue, marketValue] = values;
+  const [investedValue, marketValue, totalAssets] = values;
   const valueDiff = marketValue - investedValue;
   return (
     <PageContainer>
@@ -62,7 +80,7 @@ const PortfolioPage: NextPage = () => {
         </Widget>
         <Widget>
           <TextDisplay>
-            <BoldText>Portfolio</BoldText>
+            <BoldText>Market value</BoldText>
             <div>${marketValue.toFixed()}</div>
           </TextDisplay>
         </Widget>
@@ -76,8 +94,14 @@ const PortfolioPage: NextPage = () => {
           }
         >
           <TextDisplay>
-            <BoldText>{valueDiff > 0 ? "Earn:" : "Loss:"}</BoldText>
+            <BoldText>Profit/loss:</BoldText>
             <PriceDisplay value={valueDiff.toFixed()} />
+          </TextDisplay>
+        </Widget>
+        <Widget>
+          <TextDisplay>
+            <BoldText>Portfolio</BoldText>
+            <div>${totalAssets.toFixed()}</div>
           </TextDisplay>
         </Widget>
       </WidgetGrid>
