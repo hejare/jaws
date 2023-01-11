@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { ResponseDataType } from "../../../../../db/ResponseDataMeta";
+import { ResponseDataType } from "../../../ResponseDataMeta";
 import { isOnSameDate } from "../../../../../lib/helpers";
 import {
   AlpacaOrderType,

@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { ResponseDataType } from "../../../../../db/ResponseDataMeta";
+import { ResponseDataType } from "../../../ResponseDataMeta";
 import { deleteActiveOrder } from "../../../../../lib/tradesHandler";
 
 export default async function handler(
