@@ -1,3 +1,8 @@
+# ACTIVE
+
+**sharkster/trigger-daily-run**
+- runs every morning
+
 **api/triggers/trigger-buy-orders**
 - Runs every 5 minutes,
 - takes all “READY” trades and sends to Alpaca, then changes state to “ACTIVE”
@@ -11,7 +16,8 @@
 - Runs at 04:00,
 - takes all "READY" trades that are not today's date and discards them.
 
-**api/triggers/trigger-check-status-positions**
+#  DISABLED
+**~~api/triggers/trigger-check-status-positions~~**
 - Runs every 5 minutes,
 - Takes all "FILLED" trades, and on each trade, checks if it is stop-loss or take-profit. Then, performs stop-loss and/or take-profit actions accordingly. 
 - If stop-loss, field "sold" is created with timestamp. 
