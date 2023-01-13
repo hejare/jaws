@@ -81,6 +81,10 @@ const PlaceOrderButton = ({
       <StyledButton
         disabled={disabled}
         onClick={() => {
+          if (disabled) {
+            return;
+          }
+
           setDisabled(true);
           upsertTrade(ticker, {
             ticker,
