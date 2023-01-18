@@ -4,7 +4,7 @@ import {
   getTradesByStatus,
   putTrade,
 } from "../db/tradesEntity";
-import { TradesDataType, TRADE_STATUS } from "../db/tradesMeta";
+import { TradesDataType, TRADE_SIDE, TRADE_STATUS } from "../db/tradesMeta";
 import { AlpacaOrderStatusType } from "../services/alpacaMeta";
 import * as alpacaService from "../services/alpacaService";
 import {
@@ -133,9 +133,6 @@ export const triggerUpdateOpenBuyOrders = async () => {
 };
 
 export const triggerClearOldBuyOrders = async () => {
-  // TODO: Get cancelled orders from Alpaca instead and use that to
-  // update our stored orders?
-
   // Get all "READY" and "ACTIVE" orders:
   const readyTrades = await getTradesByStatus(TRADE_STATUS.READY);
   const activeTrades = await getTradesByStatus(TRADE_STATUS.ACTIVE);
@@ -143,12 +140,12 @@ export const triggerClearOldBuyOrders = async () => {
   // Delete all old ones:
   const promises: Promise<void>[] = [];
   readyTrades.forEach((trade) => {
-    if (!isToday(trade.created)) {
+    if (!isToday(trade.created) && trade.side === TRADE_SIDE.BUY) {
       promises.push(deleteTrade(trade.breakoutRef));
     }
   });
   activeTrades.forEach((trade) => {
-    if (!isToday(trade.created)) {
+    if (!isToday(trade.created) && trade.side === TRADE_SIDE.BUY) {
       promises.push(deleteTrade(trade.breakoutRef));
     }
   });
