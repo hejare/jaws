@@ -62,13 +62,7 @@ const getAssetByTicker = async (ticker: string) => {
 
 export const closeOpenPosition = async (symbol: string, percentage: string) => {
   try {
-    if (
-      !symbol ||
-      typeof symbol !== "string" ||
-      symbol.length < 2 ||
-      symbol.length > 5 ||
-      !percentage
-    ) {
+    if (!percentage || !isValidSymbol(symbol)) {
       throw Error;
     }
     const res = await fetch(
@@ -89,12 +83,7 @@ export const closeOpenPosition = async (symbol: string, percentage: string) => {
 
 /* Closes the position (sells 100%). */
 export const stopLossSellOrder = async (symbol: string) => {
-  if (
-    !symbol ||
-    typeof symbol !== "string" ||
-    symbol.length < 2 ||
-    symbol.length > 5
-  ) {
+  if (!isValidSymbol(symbol)) {
     throw Error;
   }
 
@@ -104,12 +93,7 @@ export const stopLossSellOrder = async (symbol: string) => {
 
 /* This is triggered when price has went up with 10% or more. */
 export const takeProfitSellOrder = (symbol: string, totalQuantity: number) => {
-  if (
-    !symbol ||
-    typeof symbol !== "string" ||
-    symbol.length < 2 ||
-    symbol.length > 5
-  ) {
+  if (!isValidSymbol(symbol)) {
     throw Error;
   }
 

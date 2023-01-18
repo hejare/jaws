@@ -71,3 +71,12 @@ export const getNewRunId = () => {
     nowHours,
   )}${addZero(nowMinutes)}${addZero(nowSeconds)}`;
 };
+
+export function isValidSymbol(symbol: string): boolean {
+  return Boolean(
+    symbol &&
+      typeof symbol === "string" &&
+      symbol.length >= 1 &&
+      symbol.length <= 5,
+  );
+}
