@@ -1,9 +1,8 @@
-import { RawOrder } from "@master-chief/alpaca/@types/entities";
+import { Order, RawOrder } from "@master-chief/alpaca/@types/entities";
 import { PlaceOrder } from "@master-chief/alpaca/@types/params";
 import fetch, { BodyInit } from "node-fetch";
 import { getISOStringForToday } from "../lib/helpers";
 import { convertResult, handleResult } from "../util";
-import { Side } from "./alpacaMeta";
 
 const {
   ALPACA_API_KEY_ID = "[NOT_DEFINED_IN_ENV]",
@@ -167,7 +166,7 @@ export const getOrders = async () => {
   }
 };
 
-export const getTodaysOrders = async () => {
+export const getTodaysOrders = async (): Promise<Order[]> => {
   try {
     const res = await fetch(
       `${brokerApiBaseUrl}/trading/accounts/${accountId}/orders?status=all&after=${getISOStringForToday()}`,

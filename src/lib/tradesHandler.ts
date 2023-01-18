@@ -2,16 +2,15 @@ import {
   deleteTrade,
   getTradeByOrderId,
   getTradesByStatus,
-  postTrade,
   putTrade,
 } from "../db/tradesEntity";
-import { TradesDataType, TRADE_STATUS, TRADE_SIDE } from "../db/tradesMeta";
+import { TradesDataType, TRADE_STATUS } from "../db/tradesMeta";
+import { AlpacaOrderStatusType } from "../services/alpacaMeta";
+import * as alpacaService from "../services/alpacaService";
 import {
   getLastTradePrice,
   getSimpleMovingAverage,
 } from "../services/polygonService";
-import * as alpacaService from "../services/alpacaService";
-import { AlpacaOrderStatusType } from "../services/alpacaMeta";
 import { isToday } from "./helpers";
 
 interface ExtendedTradesDataType extends TradesDataType {
@@ -66,7 +65,7 @@ export const deleteActiveOrder = async (orderId: string) => {
   }
 };
 
-export const triggerUpdateBuyOrders = async () => {
+export const triggerUpdateOpenBuyOrders = async () => {
   // Get all "ACTIVE" & "PARTIALLY_FILLED" orders:
   const activeTrades = await getTradesByStatus(TRADE_STATUS.ACTIVE);
   const partiallyFilledTrades = await getTradesByStatus(
@@ -74,51 +73,62 @@ export const triggerUpdateBuyOrders = async () => {
   );
 
   const orderIds = activeTrades.map(({ alpacaOrderId }) => alpacaOrderId);
+
+  // TODO: Why today? Why not all by status open?
   const orders = await alpacaService.getTodaysOrders();
 
-  const TradesPromises: Promise<void>[] = [];
+  const updateTradesPromises: Promise<void>[] = [];
+
   activeTrades.forEach((trade) => {
-    const existingTrades = orders.find(
-      ({ id }: { id: string }) => id === trade.alpacaOrderId,
-    );
-    if (existingTrades.status === AlpacaOrderStatusType.FILLED) {
-      TradesPromises.push(
-        putTrade({
-          ...trade,
-          status: TRADE_STATUS.FILLED,
-        }).catch((e) => {
-          console.log(e);
-        }),
+    const alpacaOrder = orders.find(({ id }) => id === trade.alpacaOrderId);
+
+    if (!alpacaOrder) {
+      console.error(
+        "Order " + trade.breakoutRef + " has no corresponding order in Alpaca",
       );
-    } else if (
-      existingTrades.status === AlpacaOrderStatusType.PARTIALLY_FILLED
-    ) {
-      TradesPromises.push(
-        putTrade({
-          ...trade,
-          status: TRADE_STATUS.PARTIALLY_FILLED,
-        }).catch((e) => {
-          console.log(e);
-        }),
-      );
+
+      return;
     }
+
+    let newStatus: TRADE_STATUS;
+
+    // TODO: what about canceled orders?
+    if (alpacaOrder.status === AlpacaOrderStatusType.FILLED) {
+      newStatus = TRADE_STATUS.FILLED;
+    } else if (alpacaOrder.status === AlpacaOrderStatusType.PARTIALLY_FILLED) {
+      newStatus = TRADE_STATUS.PARTIALLY_FILLED;
+    } else {
+      return;
+    }
+
+    updateTradesPromises.push(
+      putTrade({ ...trade, status: newStatus }).catch((e) => {
+        console.log(e);
+      }),
+    );
   });
+
   partiallyFilledTrades.forEach((trade) => {
-    const existingTrades = orders.find(
-      ({ id }: { id: string }) => id === trade.alpacaOrderId,
-    );
-    if (existingTrades.status === AlpacaOrderStatusType.FILLED) {
-      TradesPromises.push(
-        putTrade({
-          ...trade,
-          status: TRADE_STATUS.FILLED,
-        }).catch((e) => {
+    const alpacaOrder = orders.find(({ id }) => id === trade.alpacaOrderId);
+
+    if (!alpacaOrder) {
+      console.error(
+        "Order " + trade.breakoutRef + " has no corresponding order in Alpaca",
+      );
+
+      return;
+    }
+
+    if (alpacaOrder.status === AlpacaOrderStatusType.FILLED) {
+      updateTradesPromises.push(
+        putTrade({ ...trade, status: TRADE_STATUS.FILLED }).catch((e) => {
           console.log(e);
         }),
       );
     }
   });
-  await Promise.all(TradesPromises);
+
+  await Promise.all(updateTradesPromises);
   return { activeTrades, partiallyFilledTrades, orderIds, orders };
 };
 
