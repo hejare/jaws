@@ -20,53 +20,38 @@ interface ExtendedTradesDataType extends TradesDataType {
   sold?: number;
 }
 
-export const isPriceWithinBuyRange = (
-  currentPrice: number,
-  targetPrice: number,
-) => {
-  // Allow 1% range to trigger buy
-  return currentPrice > targetPrice * 1.0 && currentPrice < targetPrice * 1.01;
-};
-
 export const triggerBuyOrders = async () => {
   // Get all "READY" orders:
   const trades = await getTradesByStatus(TRADE_STATUS.READY);
 
-  const promises: Promise<number | null>[] = [];
-  trades.forEach((trade) => {
-    promises.push(getLastTradePrice(trade.ticker));
-  });
-  const marketPrices = await Promise.all(promises);
-
   const AlpacaTradePromises: Promise<void>[] = [];
-  trades.forEach((trade, i) => {
+
+  trades.forEach((trade) => {
     const { price, ticker, quantity } = trade;
-    const marketPrice = marketPrices[i];
-    if (marketPrice && isPriceWithinBuyRange(marketPrice, price)) {
-      // Send order to alpaca:
-      AlpacaTradePromises.push(
-        alpacaService
-          .postNewBuyOrder(ticker, price, quantity)
-          .then(async (result) => {
-            const placed = Date.parse(result.created_at); // result.created_at: '2022-12-05T11:02:02.058370387Z'
-            console.log("ALPACA ORDER DONE:", result);
-            await putTrade({
-              ...trade,
-              status: TRADE_STATUS.ACTIVE,
-              alpacaOrderId: result.id,
-              placed,
-            }).catch((e) => {
-              console.log(e);
-            });
-          })
-          .catch((e) => {
-            console.log(e);
-          }),
-      );
-    }
+
+    AlpacaTradePromises.push(
+      alpacaService
+        .postBuyLimitOrder({ ticker, price, quantity })
+        .then((result) => {
+          const placedTimestamp = Date.parse(result.created_at);
+          console.log("ALPACA ORDER DONE:", result);
+
+          return putTrade({
+            ...trade,
+            status: TRADE_STATUS.ACTIVE,
+            alpacaOrderId: result.id,
+            placed: placedTimestamp,
+          });
+        })
+        .catch((e) => {
+          console.log(e);
+        }),
+    );
   });
+
   await Promise.all(AlpacaTradePromises);
-  return trades.map((t, i) => ({ ...t, marketPrice: marketPrices[i] }));
+
+  return trades;
 };
 
 export const deleteActiveOrder = async (orderId: string) => {
@@ -138,6 +123,9 @@ export const triggerUpdateBuyOrders = async () => {
 };
 
 export const triggerClearOldBuyOrders = async () => {
+  // TODO: Get cancelled orders from Alpaca instead and use that to
+  // update our stored orders?
+
   // Get all "READY" and "ACTIVE" orders:
   const readyTrades = await getTradesByStatus(TRADE_STATUS.READY);
   const activeTrades = await getTradesByStatus(TRADE_STATUS.ACTIVE);
@@ -165,14 +153,22 @@ export const isStopLossOrder = (
   const lastTradePrice = trade.lastTradePrice;
   if (!lastTradePrice) return false;
   const movingAvg = trade.movingAvg10;
+
+  // Stop loss case (1)
   if (trade.price - lastTradePrice >= stopLossLimit) return true;
+
+  // Stop loss case (2)
   if (movingAvg && lastTradePrice <= movingAvg) return true; // ? <= or < ?
+
   return false;
 };
 
-/* After 10% increase in value, we take profit */
+/** After 10% increase in value, we take profit */
 const isTakeProfitOrder = (trade: ExtendedTradesDataType) => {
-  if (trade.status == TRADE_STATUS.TAKE_PROFIT) return false;
+  if (trade.status == TRADE_STATUS.TAKE_PROFIT) {
+    return false;
+  }
+
   const lastTradePrice = trade.lastTradePrice;
   return lastTradePrice && trade.price * 1.1 <= lastTradePrice;
 };
@@ -195,6 +191,7 @@ const updateTrade = async (trade: ExtendedTradesDataType) => {
 
 const handleTakeProfitOrder = async (trade: ExtendedTradesDataType) => {
   try {
+    // TODO: Needed? 50% of 1 => 1 should solve it
     if (!(trade.quantity > 1)) {
       void updateTrade({
         ...trade,

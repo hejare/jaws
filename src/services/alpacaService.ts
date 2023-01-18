@@ -1,3 +1,5 @@
+import { RawOrder } from "@master-chief/alpaca/@types/entities";
+import { PlaceOrder } from "@master-chief/alpaca/@types/params";
 import fetch, { BodyInit } from "node-fetch";
 import { getISOStringForToday } from "../lib/helpers";
 import { convertResult, handleResult } from "../util";
@@ -23,7 +25,7 @@ const getHoldingInTicker = async (ticker: string) => {
 };
 
 /* Used for all orders (both with side "buy" and "sell") */
-const postOrder = async (body: BodyInit) => {
+const postOrder = async (body: BodyInit): Promise<RawOrder> => {
   try {
     const res = await fetch(
       `${brokerApiBaseUrl}/trading/accounts/${accountId}/orders`,
@@ -128,21 +130,25 @@ export const takeProfitSellOrder = (symbol: string, totalQuantity: number) => {
   return postOrder(body);
 };
 
-export const postNewBuyOrder = async (
-  ticker: string,
-  price: number,
-  quantity: number,
-) => {
-  const body: BodyInit = JSON.stringify({
+export const postBuyLimitOrder = async ({
+  ticker,
+  price,
+  quantity,
+}: {
+  ticker: string;
+  price: number;
+  quantity: number;
+}) => {
+  const bodyObject: PlaceOrder = {
     symbol: ticker,
-    qty: quantity, // TODO: UNDO OVERRIDING OF QUANTITY: quantity,
-    side: Side.BUY,
-    time_in_force: "day",
     type: "limit",
     limit_price: price,
-  });
+    side: "buy",
+    time_in_force: "day",
+    qty: quantity,
+  };
 
-  return postOrder(body);
+  return postOrder(JSON.stringify(bodyObject));
 };
 
 export const getOrders = async () => {
