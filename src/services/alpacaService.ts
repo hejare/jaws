@@ -1,8 +1,9 @@
 import { Order, RawOrder } from "@master-chief/alpaca/@types/entities";
 import { PlaceOrder } from "@master-chief/alpaca/@types/params";
 import fetch, { BodyInit } from "node-fetch";
-import { getISOStringForToday } from "../lib/helpers";
+import { getISOStringForToday, isValidSymbol } from "../lib/helpers";
 import { convertResult, handleResult } from "../util";
+import { Side } from "./alpacaMeta";
 
 const {
   ALPACA_API_KEY_ID = "[NOT_DEFINED_IN_ENV]",
@@ -82,34 +83,47 @@ export const closeOpenPosition = async (symbol: string, percentage: string) => {
 };
 
 /* Closes the position (sells 100%). */
-export const stopLossSellOrder = async (symbol: string) => {
+export const stopLossSellOrder = async (symbol: string, quantity: number) => {
   if (!isValidSymbol(symbol)) {
     throw Error;
   }
 
   console.log(`Stop loss on ${symbol}`);
-  await deleteOrder(symbol);
+
+  await postSellOrder({ symbol, quantity });
 };
 
-/* This is triggered when price has went up with 10% or more. */
+/** Should sell 50% of position */
 export const takeProfitSellOrder = (symbol: string, totalQuantity: number) => {
   if (!isValidSymbol(symbol)) {
     throw Error;
   }
 
-  // sell ~50%, floored value to prevent fractional trades.
-  let quantity = 0;
-  quantity = Math.floor(totalQuantity * 0.5);
+  // sell ~50%, ceiled value to prevent fractional trades.
+  const quantity = Math.ceil(totalQuantity * 0.5);
 
-  const body: BodyInit = JSON.stringify({
-    side: "sell",
+  console.log(`Take profit on ${symbol}`);
+
+  return postSellOrder({ symbol, quantity });
+};
+
+const postSellOrder = ({
+  symbol,
+  quantity,
+}: {
+  symbol: string;
+  quantity: number;
+}) => {
+  const params: PlaceOrder = {
+    side: Side.SELL,
     symbol: symbol,
     time_in_force: "day",
     qty: quantity,
     type: "market",
-  });
+  };
 
-  console.log(`Take profit on ${symbol}`);
+  const body: BodyInit = JSON.stringify(params);
+
   return postOrder(body);
 };
 

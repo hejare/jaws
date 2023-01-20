@@ -171,7 +171,8 @@ export const isStopLossOrder = (
 };
 
 /** After 10% increase in value, we take profit */
-const isTakeProfitOrder = (trade: ExtendedTradesDataType) => {
+const isTakePartialProfit = (trade: ExtendedTradesDataType) => {
+  // TODO: Filter these out earlier
   if (trade.status == TRADE_STATUS.TAKE_PROFIT) {
     return false;
   }
@@ -198,23 +199,13 @@ const updateTrade = async (trade: ExtendedTradesDataType) => {
 
 const handleTakeProfitOrder = async (trade: ExtendedTradesDataType) => {
   try {
-    // TODO: Needed? 50% of 1 => 1 should solve it
-    if (!(trade.quantity > 1)) {
-      void updateTrade({
-        ...trade,
-        status: TRADE_STATUS.CLOSED,
-        sold: Date.now(),
-      });
-      void alpacaService.stopLossSellOrder(trade.ticker);
-      return;
-    }
     const result = await alpacaService.takeProfitSellOrder(
       trade.ticker,
       trade.quantity,
     );
     await putTrade({
       ...depopulateTrade(trade),
-      quantity: trade.quantity - result.qty,
+      quantity: trade.quantity - parseInt(result.qty),
       status: TRADE_STATUS.TAKE_PROFIT,
     });
   } catch (e) {
@@ -231,14 +222,15 @@ export const performActions = (
   trades.forEach((trade) => {
     const { ticker, breakoutRef } = trade;
     if (isStopLossOrder(trade, stopLossLimit)) {
-      void alpacaService.stopLossSellOrder(trade.ticker);
+      void alpacaService.stopLossSellOrder(trade.ticker, trade.quantity);
       messageArray.push(`Stop loss ${ticker}: breakoutRef: ${breakoutRef}`);
+
       void updateTrade({
         ...trade,
-        status: TRADE_STATUS.CLOSED,
+        status: TRADE_STATUS.CLOSED, // TODO: change to more specific
         sold: Date.now(),
       });
-    } else if (isTakeProfitOrder(trade)) {
+    } else if (isTakePartialProfit(trade)) {
       void handleTakeProfitOrder(trade);
       messageArray.push(`Take profit ${ticker}: breakoutRef: ${breakoutRef}`);
     }
@@ -269,7 +261,9 @@ export const triggerStopLossTakeProfit = async () => {
       populateTradesData(filledTrades),
       alpacaService.getPortfolioValue(),
     ]);
+
     const stopLossLimit = balance * 0.005; // 0.5% of total value
+
     return performActions(newFilledTrades, stopLossLimit);
   } catch (e) {
     console.log(e);
