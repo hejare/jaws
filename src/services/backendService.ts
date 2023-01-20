@@ -1,8 +1,8 @@
 import fetch from "node-fetch";
-import { getToday } from "../lib/helpers";
-import { BrokerAccountAssetsResponse } from "../pages/api/broker/account/assets";
-import { BrokerAccountBalanceResponse } from "../pages/api/broker/account/balance";
-import { convertResult, handleResult } from "../util";
+import { getToday } from "@jaws/lib/helpers";
+import { BrokerAccountAssetsResponse } from "@jaws/api/broker/account/assets";
+import { BrokerAccountBalanceResponse } from "@jaws/api/broker/account/balance";
+import { convertResult, handleResult } from "@jaws/util";
 
 const baseHeaders = { "Content-Type": "application/json" };
 

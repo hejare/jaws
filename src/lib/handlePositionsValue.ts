@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import { convertResult } from "../util";
+import { convertResult } from "@jaws/util";
 
 interface Position {
   current_price: string;

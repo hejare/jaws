@@ -1,8 +1,8 @@
 import { Order, RawOrder } from "@master-chief/alpaca/@types/entities";
 import { PlaceOrder } from "@master-chief/alpaca/@types/params";
 import fetch, { BodyInit } from "node-fetch";
-import { getISOStringForToday, isValidSymbol } from "../lib/helpers";
-import { convertResult, handleResult } from "../util";
+import { getISOStringForToday, isValidSymbol } from "@jaws/lib/helpers";
+import { convertResult, handleResult } from "@jaws/util";
 import { Side } from "./alpacaMeta";
 
 const {

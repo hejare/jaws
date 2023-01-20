@@ -1,18 +1,18 @@
+import Button from "@jaws/components/atoms/buttons/Button";
+import NavButton from "@jaws/components/atoms/buttons/NavButton";
+import PageContainer from "@jaws/components/atoms/PageContainer";
+import TextDisplay from "@jaws/components/atoms/TextDisplay";
+import InfoBar from "@jaws/components/molecules/InfoBar";
+import TickerBreakoutList from "@jaws/components/organisms/TickerBreakoutList";
+import { handleSellOrderByTickerId } from "@jaws/lib/brokerHandler";
+import { getServerSidePropsAllPages } from "@jaws/lib/getServerSidePropsAllPages";
+import { INDICATOR } from "@jaws/lib/priceHandler";
+import { handleResult } from "@jaws/util";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import fetch from "node-fetch";
 import { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
-import Button from "../../components/atoms/buttons/Button";
-import NavButton from "../../components/atoms/buttons/NavButton";
-import PageContainer from "../../components/atoms/PageContainer";
-import TextDisplay from "../../components/atoms/TextDisplay";
-import InfoBar from "../../components/molecules/InfoBar";
-import TickerBreakoutList from "../../components/organisms/TickerBreakoutList";
-import { handleSellOrderByTickerId } from "../../lib/brokerHandler";
-import { getServerSidePropsAllPages } from "../../lib/getServerSidePropsAllPages";
-import { INDICATOR } from "../../lib/priceHandler";
-import { handleResult } from "../../util";
 
 const StyledText = styled.div`
   ${({

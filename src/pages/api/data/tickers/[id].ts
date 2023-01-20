@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getTicker } from "../../../../db/tickersEntity";
+import { getTicker } from "@jaws/db/tickersEntity";
 
 // TODO get all breakouts for this ticker
 

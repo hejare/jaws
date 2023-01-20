@@ -1,6 +1,6 @@
-import { getRatingsForDailyRun } from "../db/ratingsEntity";
-import { RatingDataType } from "../db/ratingsMeta";
-import { BreakoutWithRatingDataType } from "../db/breakoutsEntity";
+import { getRatingsForDailyRun } from "@jaws/db/ratingsEntity";
+import { RatingDataType } from "@jaws/db/ratingsMeta";
+import { BreakoutWithRatingDataType } from "@jaws/db/breakoutsEntity";
 
 export const getRatingsForDailyRunAndUser = async (
   breakoutRef: string,

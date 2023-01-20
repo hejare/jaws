@@ -5,8 +5,8 @@ import {
   restClient,
 } from "@polygon.io/client-js";
 import fetch from "node-fetch";
-import { getTodayWithDashes } from "../lib/helpers";
-import { handleResult } from "../util";
+import { getTodayWithDashes } from "@jaws/lib/helpers";
+import { handleResult } from "@jaws/util";
 
 export enum MADays {
   TEN = 10,

@@ -1,13 +1,13 @@
 import { useState } from "react";
 import styled from "styled-components";
-import PageContainer from "../components/atoms/PageContainer";
-import Widget from "../components/atoms/Widget";
-import LatestOrders from "../components/molecules/LatestOrders";
-import SummedPositions from "../components/molecules/SummedPositions";
-import TriggerDailyRunButton from "../components/molecules/TriggerDailyRunButton";
-import WalletBalance from "../components/molecules/WalletBalance";
-import WidgetGrid from "../components/organisms/WidgetGrid";
-import { getServerSidePropsAllPages } from "../lib/getServerSidePropsAllPages";
+import PageContainer from "@jaws/components/atoms/PageContainer";
+import Widget from "@jaws/components/atoms/Widget";
+import LatestOrders from "@jaws/components/molecules/LatestOrders";
+import SummedPositions from "@jaws/components/molecules/SummedPositions";
+import TriggerDailyRunButton from "@jaws/components/molecules/TriggerDailyRunButton";
+import WalletBalance from "@jaws/components/molecules/WalletBalance";
+import WidgetGrid from "@jaws/components/organisms/WidgetGrid";
+import { getServerSidePropsAllPages } from "@jaws/lib/getServerSidePropsAllPages";
 
 const ContentContainer = styled.div`
   display: flex;

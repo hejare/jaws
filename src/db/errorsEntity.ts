@@ -1,4 +1,4 @@
-import { db } from "../services/firestoreService";
+import { db } from "@jaws/services/firestoreService";
 import { ErrorDataDBType, ErrorDataParsedType } from "./errorsMeta";
 
 export async function getErrors(refId: string) {

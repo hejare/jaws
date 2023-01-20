@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getLatestDailyRun } from "../../../../db/dailyRunsEntity";
-import { DailyRunDataType, DailyRunStatus } from "../../../../db/dailyRunsMeta";
-import { getErrors } from "../../../../db/errorsEntity";
+import { getLatestDailyRun } from "@jaws/db/dailyRunsEntity";
+import { DailyRunDataType, DailyRunStatus } from "@jaws/db/dailyRunsMeta";
+import { getErrors } from "@jaws/db/errorsEntity";
 
 export default async function handler(
   req: NextApiRequest,

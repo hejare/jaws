@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { ResponseDataType } from "../../../ResponseDataMeta";
-import { deleteActiveOrder } from "../../../../../lib/tradesHandler";
+import { deleteActiveOrder } from "@jaws/lib/tradesHandler";
 
 export default async function handler(
   req: NextApiRequest,

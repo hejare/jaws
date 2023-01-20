@@ -1,20 +1,20 @@
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import "../styles/globals.css";
-import "../styles/fonts.css";
-import themes from "../styles/themes";
+import "@jaws/styles/globals.css";
+import "@jaws/styles/fonts.css";
+import themes from "@jaws/styles/themes";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { ModalProvider } from "use-modal-hook";
-import Navbar from "../components/organisms/Navbar";
-import initializeFirebase from "../auth/initializeFirebase";
-import { createAccountStore, User } from "../store/accountStore";
-import PageContainer from "../components/atoms/PageContainer";
+import Navbar from "@jaws/components/organisms/Navbar";
+import initializeFirebase from "@jaws/auth/initializeFirebase";
+import { createAccountStore, User } from "@jaws/store/accountStore";
+import PageContainer from "@jaws/components/atoms/PageContainer";
 import { useRef, useState } from "react";
-import { AccountContext } from "../store/accountContext";
+import { AccountContext } from "@jaws/store/accountContext";
 import { useStore } from "zustand";
-import ErrorMessage from "../components/atoms/ErrorMessage";
+import ErrorMessage from "@jaws/components/atoms/ErrorMessage";
 import { useClickAnyWhere, useInterval } from "usehooks-ts";
-import { refresh } from "../auth/firestoreAuth";
+import { refresh } from "@jaws/auth/firestoreAuth";
 import { setCookies } from "cookies-next";
 import {
   ONE_HOUR_IN_MS,

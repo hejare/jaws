@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { ResponseDataType } from "../../ResponseDataMeta";
-import { getAccountAssets } from "../../../../services/alpacaService";
+import { getAccountAssets } from "@jaws/services/alpacaService";
 
 export interface BrokerAccountAssetsResponse extends ResponseDataType {
   assets: Record<string, any>;

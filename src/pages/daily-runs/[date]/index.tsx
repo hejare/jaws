@@ -2,20 +2,20 @@ import styled from "styled-components";
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
 import fetch from "node-fetch";
-import { handleResult } from "../../../util";
-import DailyRunsList from "../../../components/organisms/DailyRunsList";
-import { DailyRunDataType } from "../../../db/dailyRunsMeta";
+import { handleResult } from "@jaws/util";
+import DailyRunsList from "@jaws/components/organisms/DailyRunsList";
+import { DailyRunDataType } from "@jaws/db/dailyRunsMeta";
 import { useRouter } from "next/router";
-import { isToday } from "../../../lib/helpers";
-import TriggerDailyRunButton from "../../../components/molecules/TriggerDailyRunButton";
+import { isToday } from "@jaws/lib/helpers";
+import TriggerDailyRunButton from "@jaws/components/molecules/TriggerDailyRunButton";
 import {
   formatDateString,
   formatTimestampToUtc,
 } from "../../../util/handleFormatDateString";
-import PageContainer from "../../../components/atoms/PageContainer";
-import NavButton from "../../../components/atoms/buttons/NavButton";
-import { getServerSidePropsAllPages } from "../../../lib/getServerSidePropsAllPages";
-import { ButtonsContainer } from "../../../components/atoms/ButtonsContainer";
+import PageContainer from "@jaws/components/atoms/PageContainer";
+import NavButton from "@jaws/components/atoms/buttons/NavButton";
+import { getServerSidePropsAllPages } from "@jaws/lib/getServerSidePropsAllPages";
+import { ButtonsContainer } from "@jaws/components/atoms/ButtonsContainer";
 
 // eslint-disable-next-line no-unused-vars
 enum STATUS {

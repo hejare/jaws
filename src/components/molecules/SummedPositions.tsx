@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { sumPositions } from "../../lib/handlePositionsValue";
+import { sumPositions } from "@jaws/lib/handlePositionsValue";
 import { BoldText } from "../atoms/BoldText";
 import TextDisplay from "../atoms/TextDisplay";
 

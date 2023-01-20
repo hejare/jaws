@@ -4,9 +4,9 @@ import {
   getTradesByStatus,
   putTrade,
 } from "../db/tradesEntity";
-import { TradesDataType, TRADE_SIDE, TRADE_STATUS } from "../db/tradesMeta";
-import { AlpacaOrderStatusType } from "../services/alpacaMeta";
-import * as alpacaService from "../services/alpacaService";
+import { TradesDataType, TRADE_SIDE, TRADE_STATUS } from "@jaws/db/tradesMeta";
+import { AlpacaOrderStatusType } from "@jaws/services/alpacaMeta";
+import * as alpacaService from "@jaws/services/alpacaService";
 import {
   getLastTradePrice,
   getSimpleMovingAverage,

@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components";
-import { INDICATOR } from "../../lib/priceHandler";
-import { handleLimitPrice } from "../../util/handleLimitPrice";
+import { INDICATOR } from "@jaws/lib/priceHandler";
+import { handleLimitPrice } from "@jaws/util/handleLimitPrice";
 
 export enum PRICE_DISPLAY_VARIANTS {
   BOX = "BOX",

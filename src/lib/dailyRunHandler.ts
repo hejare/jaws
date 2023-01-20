@@ -1,11 +1,15 @@
-import { BreakoutDataType, upsertBreakout } from "../db/breakoutsEntity";
-import { getLatestConfig, postConfig } from "../db/configsEntity";
-import { getDailyRun, postDailyRun, putDailyRun } from "../db/dailyRunsEntity";
-import { DailyRunDataType, DailyRunStatus } from "../db/dailyRunsMeta";
-import { postError } from "../db/errorsEntity";
-import { upsertTicker } from "../db/tickersEntity";
-import { getSessions, triggerDailyRun } from "../services/sharksterService";
-import { postSlackMessage } from "../services/slackService";
+import { BreakoutDataType, upsertBreakout } from "@jaws/db/breakoutsEntity";
+import { getLatestConfig, postConfig } from "@jaws/db/configsEntity";
+import {
+  getDailyRun,
+  postDailyRun,
+  putDailyRun,
+} from "@jaws/db/dailyRunsEntity";
+import { DailyRunDataType, DailyRunStatus } from "@jaws/db/dailyRunsMeta";
+import { postError } from "@jaws/db/errorsEntity";
+import { upsertTicker } from "@jaws/db/tickersEntity";
+import { triggerDailyRun } from "@jaws/services/sharksterService";
+import { postSlackMessage } from "@jaws/services/slackService";
 import { getNewRunId } from "./helpers";
 
 interface BreakoutNoImage {

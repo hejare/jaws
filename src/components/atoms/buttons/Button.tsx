@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { SpinnerBar } from "../SpinnerBar";
-import { Theme } from "../../../styles/themes";
+import { Theme } from "@jaws/styles/themes";
 
 const EnabledDiv = styled.div`
   padding: 4px;

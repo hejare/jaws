@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import { convertResult } from "../util";
+import { convertResult } from "@jaws/util";
 
 const {
   SERVICE_SHARKSTER_NOTEBOOK_BASE_URL = "[NOT_DEFINED_IN_ENV]",

@@ -1,14 +1,14 @@
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
-import AssetsList from "../components/organisms/AssetsList";
-import PageContainer from "../components/atoms/PageContainer";
-import Widget from "../components/atoms/Widget";
-import TextDisplay from "../components/atoms/TextDisplay";
-import WidgetGrid from "../components/organisms/WidgetGrid";
-import { INDICATOR } from "../lib/priceHandler";
-import { BoldText } from "../components/atoms/BoldText";
-import PriceDisplay from "../components/molecules/PriceDisplay";
-import { getServerSidePropsAllPages } from "../lib/getServerSidePropsAllPages";
+import AssetsList from "@jaws/components/organisms/AssetsList";
+import PageContainer from "@jaws/components/atoms/PageContainer";
+import Widget from "@jaws/components/atoms/Widget";
+import TextDisplay from "@jaws/components/atoms/TextDisplay";
+import WidgetGrid from "@jaws/components/organisms/WidgetGrid";
+import { INDICATOR } from "@jaws/lib/priceHandler";
+import { BoldText } from "@jaws/components/atoms/BoldText";
+import PriceDisplay from "@jaws/components/molecules/PriceDisplay";
+import { getServerSidePropsAllPages } from "@jaws/lib/getServerSidePropsAllPages";
 import {
   getAccountAssets,
   getAccountCashBalance,

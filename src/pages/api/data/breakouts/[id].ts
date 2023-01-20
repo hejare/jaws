@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getBreakout } from "../../../../db/breakoutsEntity";
+import { getBreakout } from "@jaws/db/breakoutsEntity";
 
 export default async function handler(
   req: NextApiRequest,
