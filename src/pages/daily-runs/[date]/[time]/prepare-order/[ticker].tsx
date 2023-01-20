@@ -3,30 +3,29 @@ import { useRouter } from "next/router";
 import fetch from "node-fetch";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import { useInterval } from "usehooks-ts";
+import Button from "../../../../../components/atoms/buttons/Button";
 import NavButton from "../../../../../components/atoms/buttons/NavButton";
 import PageContainer from "../../../../../components/atoms/PageContainer";
+import BuyTickerButtonWrapper from "../../../../../components/molecules/BuyTickerButtonWrapper";
 import InfoBar from "../../../../../components/molecules/InfoBar";
-import * as backendService from "../../../../../services/backendService";
+import JawsTradeViewGraph from "../../../../../components/molecules/JawsTradeViewGraph";
+import OrderDetailsWrapper from "../../../../../components/molecules/OrderDetailsWrapper";
+import Rating from "../../../../../components/molecules/Rating";
 import TickerBreakoutList, {
   BreakoutData,
 } from "../../../../../components/organisms/TickerBreakoutList";
 import { getServerSidePropsAllPages } from "../../../../../lib/getServerSidePropsAllPages";
-import { handleResult } from "../../../../../util";
-import JawsTradeViewGraph from "../../../../../components/molecules/JawsTradeViewGraph";
+import { ONE_MINUTE_IN_MS } from "../../../../../lib/helpers";
 import {
   AlpacaOrderType,
   SUMMED_ORDER_STATUS,
 } from "../../../../../services/alpacaMeta";
-import BuyTickerButtonWrapper from "../../../../../components/molecules/BuyTickerButtonWrapper";
+import * as backendService from "../../../../../services/backendService";
+import { useBreakoutsStore } from "../../../../../store/breakoutsStore";
+import { handleResult } from "../../../../../util";
 import { handleLimitPrice } from "../../../../../util/handleLimitPrice";
 import { handleCalculateQuantity } from "../../../../../util/handleQuantity";
-import { useInterval } from "usehooks-ts";
-import { ONE_MINUTE_IN_MS } from "../../../../../lib/helpers";
-import { INDICATOR } from "../../../../../lib/priceHandler";
-import Rating from "../../../../../components/molecules/Rating";
-import OrderDetailsWrapper from "../../../../../components/molecules/OrderDetailsWrapper";
-import { useBreakoutsStore } from "../../../../../store/breakoutsStore";
-import Button from "../../../../../components/atoms/buttons/Button";
 
 export type MinimalOrderType = {
   qty: string;
@@ -73,7 +72,12 @@ const StyledButton = styled(Button)`
 
 const TickerPage: NextPage = () => {
   const router = useRouter();
-  const { ticker, date, time } = router.query;
+  const { ticker, date, time } = router.query as {
+    ticker: string;
+    date: string;
+    time: string;
+  };
+
   const [currentBreakout, allBreakouts, setAllBreakouts] = useBreakoutsStore(
     (state) => [
       state.breakouts.find((b) => b.tickerRef === ticker),
@@ -92,7 +96,7 @@ const TickerPage: NextPage = () => {
   >();
 
   useEffect(() => {
-    fetch(`/api/data/daily-runs/${date as string}/${time as string}`)
+    void fetch(`/api/data/daily-runs/${date}/${time}`)
       .then(handleResult)
       .then((result) => {
         setAllBreakouts(result.breakouts);
@@ -134,12 +138,10 @@ const TickerPage: NextPage = () => {
 
   useInterval(() => {
     setInterval(ONE_MINUTE_IN_MS);
-    void backendService
-      .getAccountOrderStatusByTicker(ticker as string)
-      .then((data) => {
-        setOrderStatus(data.orderStatus);
-        setOrderDetails(data.orderDetails);
-      });
+    void backendService.getAccountOrderStatusByTicker(ticker).then((data) => {
+      setOrderStatus(data.orderStatus);
+      setOrderDetails(data.orderDetails);
+    });
   }, interval);
 
   if (!currentBreakout) return null;
@@ -154,7 +156,7 @@ const TickerPage: NextPage = () => {
       <NavButton href={`/daily-runs/${date}/${time}`}>
         Back to daily run
       </NavButton>
-      <h1>{`${(ticker as string).toUpperCase()}`}</h1>
+      <h1>{`${ticker.toUpperCase()}`}</h1>
       <NavButton
         disabled={!previousTicker}
         href={`/daily-runs/${date}/${time}/prepare-order/${previousTicker}`}
@@ -233,7 +235,7 @@ const TickerPage: NextPage = () => {
         <div style={{ gridArea: "table" }}>
           <TickerBreakoutList
             data={breakouts}
-            titleText={`Breakouts for ${(ticker as string).toUpperCase()}`}
+            titleText={`Breakouts for ${ticker.toUpperCase()}`}
           />
         </div>
       </TickerPageContainer>
