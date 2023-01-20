@@ -161,12 +161,20 @@ export const isStopLossOrder = (
   if (!lastTradePrice) return false;
   const movingAvg = trade.movingAvg10;
 
+  // All of these should sell 100%
+
   // Stop loss case (1)
   if (trade.price - lastTradePrice >= stopLossLimit) return true;
 
-  // Stop loss case (2)
-  if (movingAvg && lastTradePrice <= movingAvg) return true; // ? <= or < ?
+  if (!isToday(trade.created)) {
+    // Stop loss case (2)
+    if (lastTradePrice <= trade.price) return true;
 
+    // Take profit (1)
+    if (movingAvg && lastTradePrice <= movingAvg) return true;
+  }
+
+  // TODO: return specific  stoploss type
   return false;
 };
 
