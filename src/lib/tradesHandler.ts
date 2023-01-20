@@ -172,8 +172,9 @@ export const isStopLossOrder = (
 
 /** After 10% increase in value, we take profit */
 const isTakePartialProfit = (trade: ExtendedTradesDataType) => {
-  // TODO: Filter these out earlier
-  if (trade.status == TRADE_STATUS.TAKE_PROFIT) {
+  if (trade.status === TRADE_STATUS.TAKE_PARTIAL_PROFIT) {
+    // We only want to do this once; next sell will be a stop-loss to
+    // sell 100%
     return false;
   }
 
@@ -197,16 +198,16 @@ const updateTrade = async (trade: ExtendedTradesDataType) => {
   }
 };
 
-const handleTakeProfitOrder = async (trade: ExtendedTradesDataType) => {
+const handleTakePartialProfitOrder = async (trade: ExtendedTradesDataType) => {
   try {
-    const result = await alpacaService.takeProfitSellOrder(
+    const result = await alpacaService.takePartialProfitSellOrder(
       trade.ticker,
       trade.quantity,
     );
     await putTrade({
       ...depopulateTrade(trade),
       quantity: trade.quantity - parseInt(result.qty),
-      status: TRADE_STATUS.TAKE_PROFIT,
+      status: TRADE_STATUS.TAKE_PARTIAL_PROFIT,
     });
   } catch (e) {
     console.log(e);
@@ -231,7 +232,7 @@ export const performActions = (
         sold: Date.now(),
       });
     } else if (isTakePartialProfit(trade)) {
-      void handleTakeProfitOrder(trade);
+      void handleTakePartialProfitOrder(trade);
       messageArray.push(`Take profit ${ticker}: breakoutRef: ${breakoutRef}`);
     }
   });
@@ -255,7 +256,10 @@ async function populateTradesData(trades: TradesDataType[]) {
 
 export const triggerStopLossTakeProfit = async () => {
   try {
-    const filledTrades = await getTradesByStatus(TRADE_STATUS.FILLED);
+    const filledTrades = await getTradesByStatus(
+      TRADE_STATUS.FILLED,
+      TRADE_STATUS.TAKE_PARTIAL_PROFIT,
+    );
 
     const [newFilledTrades, balance] = await Promise.all([
       populateTradesData(filledTrades),

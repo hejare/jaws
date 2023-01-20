@@ -10,17 +10,29 @@ export enum TRADE_SIDE {
 export enum TRADE_STATUS {
   /** not even sent to Alpaca yet */
   READY = "READY",
-  /** not filled yet */
+
+  /** not filled yet; can be cancelled or dead for some other reason in Alpaca */
   ACTIVE = "ACTIVE",
+
   /** not totally filled yet */
   PARTIALLY_FILLED = "PARTIALLY_FILLED",
+
   /** "buy" or "sell" type process, should now be concidered done */
   FILLED = "FILLED",
   OPEN = "OPEN",
   CLOSED = "CLOSED",
   CANCELLED = "CANCELLED",
+
   /** order is filled and later resulted in a take-profit order. */
   TAKE_PROFIT = "TAKE PROFIT",
+
+  // TODO: use these
+  /** order is filled and later resulted in a stop-loss (1) order. */
+  STOP_LOSS_1 = "STOP_LOSS_1",
+  /** order is filled and later resulted in a stop-loss (2) order. */
+  STOP_LOSS_2 = "STOP_LOSS_2",
+  /** order is filled and later resulted in a take partial profit order. */
+  TAKE_PARTIAL_PROFIT = "TAKE_PARTIAL_PROFIT",
 }
 
 export interface TradesDataType {

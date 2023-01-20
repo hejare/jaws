@@ -94,7 +94,10 @@ export const stopLossSellOrder = async (symbol: string, quantity: number) => {
 };
 
 /** Should sell 50% of position */
-export const takeProfitSellOrder = (symbol: string, totalQuantity: number) => {
+export const takePartialProfitSellOrder = (
+  symbol: string,
+  totalQuantity: number,
+) => {
   if (!isValidSymbol(symbol)) {
     throw Error;
   }
