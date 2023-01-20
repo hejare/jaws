@@ -29,7 +29,7 @@ const NavButton = ({ children, href, goBack, className, disabled }: Props) => {
       <span className={className}>
         <StyledButton disabled>{children}</StyledButton>
       </span>
-    )
+    );
   }
   return (
     <Link href={href}>

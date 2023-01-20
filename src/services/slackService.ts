@@ -32,10 +32,11 @@ export const postSlackMessage = async (
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `Breakouts: ${numberOfBreakouts} ${alteredConfigRef
+          text: `Breakouts: ${numberOfBreakouts} ${
+            alteredConfigRef
               ? ` (<https://jaws-sharkster.netlify.app/configs/${alteredConfigRef}|Config> is altered since last run)`
               : ""
-            }`,
+          }`,
         },
       },
     ],

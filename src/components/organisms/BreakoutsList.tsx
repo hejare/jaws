@@ -136,7 +136,9 @@ const BreakoutsList = ({ data, disableBuy, date, time }: Props) => {
         <Operations>
           {!disableBuy && (
             <>
-              <NavButton href={`/daily-runs/${date}/${time}/prepare-order/${item.tickerRef}`}>
+              <NavButton
+                href={`/daily-runs/${date}/${time}/prepare-order/${item.tickerRef}`}
+              >
                 Prepare order
               </NavButton>
               <CancelOrderButton ticker={item.tickerRef} />

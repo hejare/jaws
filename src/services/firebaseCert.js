@@ -1,6 +1,9 @@
 const { FIRESTORE_PRIVATE_KEY, FIRESTORE_PRIVATE_KEY_ID } = process.env;
 
-const FIRESTORE_PRIVATE_KEY_ADJUSTED = FIRESTORE_PRIVATE_KEY.replaceAll("\\n", "\n");
+const FIRESTORE_PRIVATE_KEY_ADJUSTED = FIRESTORE_PRIVATE_KEY.replaceAll(
+  "\\n",
+  "\n",
+);
 
 const FIRESTORE_PROJECT_ID = "jaws-sharkster";
 const FIRESTORE_CLIENT_EMAIL =

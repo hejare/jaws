@@ -1,4 +1,3 @@
-
 import styled from "styled-components";
 import { Theme } from "../../styles/themes";
 
@@ -24,10 +23,18 @@ interface Props {
   step?: string;
 }
 
-const Input = ({ onChange, value, title, type = "text", step = "1" }: Props) => {
-  return <EnabledDiv>
-    <label>{title}</label>
-    <input onChange={onChange} value={value} type={type} step={step} />
-  </EnabledDiv>;
+const Input = ({
+  onChange,
+  value,
+  title,
+  type = "text",
+  step = "1",
+}: Props) => {
+  return (
+    <EnabledDiv>
+      <label>{title}</label>
+      <input onChange={onChange} value={value} type={type} step={step} />
+    </EnabledDiv>
+  );
 };
 export default Input;
