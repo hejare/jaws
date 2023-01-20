@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { triggerStopLossTakeProfit } from "../../../lib/tradesHandler";
+import { triggerStopLossTakeProfit } from "@jaws/lib/tradesHandler";
 
 type ResponseDataType = {
   status: string;

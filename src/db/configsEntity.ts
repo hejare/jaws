@@ -1,4 +1,4 @@
-import { db } from "../services/firestoreService";
+import { db } from "@jaws/services/firestoreService";
 
 type ConfigDataType = Record<string, string | number>;
 

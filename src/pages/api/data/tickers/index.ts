@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getAllTickers } from "../../../../db/tickersEntity";
+import { getAllTickers } from "@jaws/db/tickersEntity";
 
 export default async function handler(
   req: NextApiRequest,

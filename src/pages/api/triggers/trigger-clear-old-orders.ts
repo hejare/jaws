@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { triggerClearOldBuyOrders } from "../../../lib/tradesHandler";
+import { triggerClearOldBuyOrders } from "@jaws/lib/tradesHandler";
 
 type ResponseDataType = {
   status: string;

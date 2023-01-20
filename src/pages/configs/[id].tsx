@@ -2,12 +2,12 @@ import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import fetch from "node-fetch";
 import { useEffect, useState } from "react";
-import { BoldText } from "../../components/atoms/BoldText";
-import NavButton from "../../components/atoms/buttons/NavButton";
-import PageContainer from "../../components/atoms/PageContainer";
-import TextDisplay from "../../components/atoms/TextDisplay";
-import { getServerSidePropsAllPages } from "../../lib/getServerSidePropsAllPages";
-import { handleResult } from "../../util";
+import { BoldText } from "@jaws/components/atoms/BoldText";
+import NavButton from "@jaws/components/atoms/buttons/NavButton";
+import PageContainer from "@jaws/components/atoms/PageContainer";
+import TextDisplay from "@jaws/components/atoms/TextDisplay";
+import { getServerSidePropsAllPages } from "@jaws/lib/getServerSidePropsAllPages";
+import { handleResult } from "@jaws/util";
 
 export type PartialOrderDataType = {
   created_at?: string;

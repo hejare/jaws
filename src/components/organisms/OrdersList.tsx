@@ -1,6 +1,6 @@
-import { handleDeleteOrder } from "../../lib/brokerHandler";
-import { getDateTime } from "../../lib/helpers";
-import { Side } from "../../services/alpacaMeta";
+import { handleDeleteOrder } from "@jaws/lib/brokerHandler";
+import { getDateTime } from "@jaws/lib/helpers";
+import { Side } from "@jaws/services/alpacaMeta";
 import Button from "../atoms/buttons/Button";
 import Table from "../atoms/Table";
 import PriceDisplay from "../molecules/PriceDisplay";

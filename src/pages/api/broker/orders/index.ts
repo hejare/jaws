@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { auth } from "../../../../auth/firebaseAdmin";
-import { postTrade } from "../../../../db/tradesEntity";
-import { TRADE_SIDE, TRADE_STATUS } from "../../../../db/tradesMeta";
-import * as alpacaService from "../../../../services/alpacaService";
+import { auth } from "@jaws/auth/firebaseAdmin";
+import { postTrade } from "@jaws/db/tradesEntity";
+import { TRADE_SIDE, TRADE_STATUS } from "@jaws/db/tradesMeta";
+import * as alpacaService from "@jaws/services/alpacaService";
 import { ResponseDataType } from "../../ResponseDataMeta";
 
 interface ExtendedResponseDataType extends ResponseDataType {

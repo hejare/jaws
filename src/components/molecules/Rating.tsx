@@ -4,8 +4,8 @@ import CircularButton, {
   CIRCULAR_BUTTON_SIZE,
 } from "../atoms/buttons/CircularButton";
 import RatingStar from "../atoms/RatingStar";
-import * as backendService from "../../services/backendService";
-import { useBreakoutsStore } from "../../store/breakoutsStore";
+import * as backendService from "@jaws/services/backendService";
+import { useBreakoutsStore } from "@jaws/store/breakoutsStore";
 
 interface Props {
   breakoutRef: string;

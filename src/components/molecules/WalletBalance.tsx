@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getAccountCashBalance } from "../../services/backendService";
+import { getAccountCashBalance } from "@jaws/services/backendService";
 import { BoldText } from "../atoms/BoldText";
 import TextDisplay from "../atoms/TextDisplay";
 

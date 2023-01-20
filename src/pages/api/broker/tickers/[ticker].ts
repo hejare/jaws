@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { ResponseDataType } from "../../ResponseDataMeta";
-import { getAssetAndOrdersByTicker } from "../../../../services/alpacaService";
+import { getAssetAndOrdersByTicker } from "@jaws/services/alpacaService";
 
 interface ExtendedResponseDataType extends ResponseDataType {
   asset?: object;

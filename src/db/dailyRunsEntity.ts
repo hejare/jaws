@@ -1,4 +1,4 @@
-import { db } from "../services/firestoreService";
+import { db } from "@jaws/services/firestoreService";
 import { DailyRunDataType, DailyRunStatus } from "./dailyRunsMeta";
 
 export async function getDailyRun(runId: string) {

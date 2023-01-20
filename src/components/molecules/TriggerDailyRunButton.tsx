@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useInterval } from "usehooks-ts";
-import { handleResult } from "../../util";
+import { handleResult } from "@jaws/util";
 import fetch from "node-fetch";
 import Button from "../atoms/buttons/Button";
 import styled from "styled-components";
-import { DailyRunStatus } from "../../db/dailyRunsMeta";
-import { ONE_MINUTE_IN_MS } from "../../lib/helpers";
+import { DailyRunStatus } from "@jaws/db/dailyRunsMeta";
+import { ONE_MINUTE_IN_MS } from "@jaws/lib/helpers";
 
 const TriggerButton = styled(Button)`
   text-align: center;

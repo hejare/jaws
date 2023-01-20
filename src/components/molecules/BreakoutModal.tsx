@@ -4,17 +4,17 @@ import ImageModal from "./ImageModal";
 import Modal from "./Modal";
 import { useModal } from "use-modal-hook";
 import Rating from "./Rating";
-import * as backendService from "../../services/backendService";
-import { handleCalculateQuantity } from "../../util/handleQuantity";
-import { handleLimitPrice } from "../../util/handleLimitPrice";
+import * as backendService from "@jaws/services/backendService";
+import { handleCalculateQuantity } from "@jaws/util/handleQuantity";
+import { handleLimitPrice } from "@jaws/util/handleLimitPrice";
 import PlaceOrderButton from "./PlaceOrderButton";
 import { useInterval } from "usehooks-ts";
 import {
   AlpacaOrderType,
   SUMMED_ORDER_STATUS,
 } from "../../services/alpacaMeta";
-import { getDateTime, ONE_MINUTE_IN_MS } from "../../lib/helpers";
-import { INDICATOR } from "../../lib/priceHandler";
+import { getDateTime, ONE_MINUTE_IN_MS } from "@jaws/lib/helpers";
+import { INDICATOR } from "@jaws/lib/priceHandler";
 import Button from "../atoms/buttons/Button";
 import { TradeViewWidget } from "../atoms/TradeViewWidget";
 import ErrorMessage from "../atoms/ErrorMessage";

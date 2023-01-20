@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "styled-components";
-import { getDateTime } from "../../lib/helpers";
-import { INDICATOR } from "../../lib/priceHandler";
-import { MinimalOrderType } from "../../pages/daily-runs/[date]/[time]/prepare-order/[ticker]";
+import { getDateTime } from "@jaws/lib/helpers";
+import { INDICATOR } from "@jaws/lib/priceHandler";
+import { MinimalOrderType } from "@jaws/pages/daily-runs/[date]/[time]/prepare-order/[ticker]";
 import {
   AlpacaOrderType,
   SUMMED_ORDER_STATUS,

@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { triggerBuyOrders } from "../../../lib/tradesHandler";
+import { triggerBuyOrders } from "@jaws/lib/tradesHandler";
 
 type ResponseDataType = {
   status: string;

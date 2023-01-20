@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { getLatestOrders } from "../../lib/handleLatestOrders";
+import { getLatestOrders } from "@jaws/lib/handleLatestOrders";
 import { BoldText } from "../atoms/BoldText";
 import TextDisplay from "../atoms/TextDisplay";
 

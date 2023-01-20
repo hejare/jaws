@@ -1,5 +1,5 @@
 import create from "zustand";
-import { TRADE_STATUS, TRADE_SIDE } from "../db/tradesMeta";
+import { TRADE_STATUS, TRADE_SIDE } from "@jaws/db/tradesMeta";
 
 export type TradesStoreType = {
   ticker: string;

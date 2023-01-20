@@ -4,28 +4,28 @@ import fetch from "node-fetch";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useInterval } from "usehooks-ts";
-import Button from "../../../../../components/atoms/buttons/Button";
-import NavButton from "../../../../../components/atoms/buttons/NavButton";
-import PageContainer from "../../../../../components/atoms/PageContainer";
-import BuyTickerButtonWrapper from "../../../../../components/molecules/BuyTickerButtonWrapper";
-import InfoBar from "../../../../../components/molecules/InfoBar";
-import JawsTradeViewGraph from "../../../../../components/molecules/JawsTradeViewGraph";
-import OrderDetailsWrapper from "../../../../../components/molecules/OrderDetailsWrapper";
-import Rating from "../../../../../components/molecules/Rating";
+import Button from "@jaws/components/atoms/buttons/Button";
+import NavButton from "@jaws/components/atoms/buttons/NavButton";
+import PageContainer from "@jaws/components/atoms/PageContainer";
+import BuyTickerButtonWrapper from "@jaws/components/molecules/BuyTickerButtonWrapper";
+import InfoBar from "@jaws/components/molecules/InfoBar";
+import JawsTradeViewGraph from "@jaws/components/molecules/JawsTradeViewGraph";
+import OrderDetailsWrapper from "@jaws/components/molecules/OrderDetailsWrapper";
+import Rating from "@jaws/components/molecules/Rating";
 import TickerBreakoutList, {
   BreakoutData,
 } from "../../../../../components/organisms/TickerBreakoutList";
-import { getServerSidePropsAllPages } from "../../../../../lib/getServerSidePropsAllPages";
-import { ONE_MINUTE_IN_MS } from "../../../../../lib/helpers";
+import { getServerSidePropsAllPages } from "@jaws/lib/getServerSidePropsAllPages";
+import { ONE_MINUTE_IN_MS } from "@jaws/lib/helpers";
 import {
   AlpacaOrderType,
   SUMMED_ORDER_STATUS,
 } from "../../../../../services/alpacaMeta";
-import * as backendService from "../../../../../services/backendService";
-import { useBreakoutsStore } from "../../../../../store/breakoutsStore";
-import { handleResult } from "../../../../../util";
-import { handleLimitPrice } from "../../../../../util/handleLimitPrice";
-import { handleCalculateQuantity } from "../../../../../util/handleQuantity";
+import * as backendService from "@jaws/services/backendService";
+import { useBreakoutsStore } from "@jaws/store/breakoutsStore";
+import { handleResult } from "@jaws/util";
+import { handleLimitPrice } from "@jaws/util/handleLimitPrice";
+import { handleCalculateQuantity } from "@jaws/util/handleQuantity";
 
 export type MinimalOrderType = {
   qty: string;

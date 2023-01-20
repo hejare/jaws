@@ -1,4 +1,4 @@
-import { INDICATOR } from "../../lib/priceHandler";
+import { INDICATOR } from "@jaws/lib/priceHandler";
 import Table, { Operations } from "../atoms/Table";
 import PriceDisplay from "../molecules/PriceDisplay";
 import PercentageDisplay from "../molecules/PercentageDisplay";

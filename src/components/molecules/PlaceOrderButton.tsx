@@ -1,13 +1,13 @@
 import styled from "styled-components";
 import Button from "../atoms/buttons/Button";
 import { ButtonsContainer } from "../atoms/ButtonsContainer";
-import { handleBuyOrder } from "../../lib/brokerHandler";
+import { handleBuyOrder } from "@jaws/lib/brokerHandler";
 import { useEffect, useState } from "react";
-import * as backendService from "../../services/backendService";
+import * as backendService from "@jaws/services/backendService";
 import { useInterval } from "usehooks-ts";
-import { ONE_MINUTE_IN_MS } from "../../lib/helpers";
-import { useTradesStore } from "../../store/tradesStore";
-import { TRADE_STATUS, TRADE_SIDE } from "../../db/tradesMeta";
+import { ONE_MINUTE_IN_MS } from "@jaws/lib/helpers";
+import { useTradesStore } from "@jaws/store/tradesStore";
+import { TRADE_STATUS, TRADE_SIDE } from "@jaws/db/tradesMeta";
 import Input from "../atoms/Input";
 
 const StyledButton = styled(Button)`

@@ -1,4 +1,4 @@
-import { convertResult } from "../util";
+import { convertResult } from "@jaws/util";
 import fetch from "node-fetch";
 
 /* TODO Once we have a state management system, 

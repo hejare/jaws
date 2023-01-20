@@ -1,12 +1,12 @@
 import styled from "styled-components";
 import Button from "../atoms/buttons/Button";
-import { handleCancelOrder } from "../../lib/brokerHandler";
+import { handleCancelOrder } from "@jaws/lib/brokerHandler";
 import { useEffect, useState } from "react";
-import * as backendService from "../../services/backendService";
+import * as backendService from "@jaws/services/backendService";
 import { useInterval } from "usehooks-ts";
-import { ONE_MINUTE_IN_MS } from "../../lib/helpers";
-import { useTradesStore } from "../../store/tradesStore";
-import { TRADE_STATUS } from "../../db/tradesMeta";
+import { ONE_MINUTE_IN_MS } from "@jaws/lib/helpers";
+import { useTradesStore } from "@jaws/store/tradesStore";
+import { TRADE_STATUS } from "@jaws/db/tradesMeta";
 
 const StyledButton = styled(Button)`
   text-align: center;

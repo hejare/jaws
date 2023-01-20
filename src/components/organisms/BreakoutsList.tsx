@@ -1,6 +1,6 @@
 import getNextJSConfig from "next/config";
 import Table, { Operations } from "../atoms/Table";
-import { DailyRunStatus } from "../../db/dailyRunsMeta";
+import { DailyRunStatus } from "@jaws/db/dailyRunsMeta";
 import { memo } from "react";
 import { useModal } from "use-modal-hook";
 import styled from "styled-components";
@@ -8,7 +8,7 @@ import BreakoutModal from "../molecules/BreakoutModal";
 import ImageModal from "../molecules/ImageModal";
 import Rating from "../molecules/Rating";
 import Button from "../atoms/buttons/Button";
-import { BreakoutStoreType } from "../../store/breakoutsStore";
+import { BreakoutStoreType } from "@jaws/store/breakoutsStore";
 import NavButton from "../atoms/buttons/NavButton";
 import CancelOrderButton from "../molecules/CancelOrderButton";
 

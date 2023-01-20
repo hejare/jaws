@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { storeDailyRunError } from "../../../lib/dailyRunHandler";
+import { storeDailyRunError } from "@jaws/lib/dailyRunHandler";
 
 export default async function handler(
   req: NextApiRequest,

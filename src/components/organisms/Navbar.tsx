@@ -1,15 +1,15 @@
 import Link from "next/link";
 import React, { useContext, useEffect, useState } from "react";
 import styled, { css } from "styled-components";
-import { getToday } from "../../lib/helpers";
-import { Theme } from "../../styles/themes";
+import { getToday } from "@jaws/lib/helpers";
+import { Theme } from "@jaws/styles/themes";
 import { useRouter } from "next/router";
-import { User } from "../../store/accountStore";
-import { signInWithGoogle } from "../../auth/firestoreAuth";
+import { User } from "@jaws/store/accountStore";
+import { signInWithGoogle } from "@jaws/auth/firestoreAuth";
 import Button from "../atoms/buttons/Button";
 import { setCookies } from "cookies-next";
 import { useStore } from "zustand";
-import { AccountContext } from "../../store/accountContext";
+import { AccountContext } from "@jaws/store/accountContext";
 
 const NavBarContainer = styled.div`
   display: flex;

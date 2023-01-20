@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { ResponseDataType } from "../../ResponseDataMeta";
-import { getAccountCashBalance } from "../../../../services/alpacaService";
+import { getAccountCashBalance } from "@jaws/services/alpacaService";
 
 export interface BrokerAccountBalanceResponse extends ResponseDataType {
   balance: string;

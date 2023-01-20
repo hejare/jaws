@@ -21,11 +21,8 @@
     "inlineSources": true,
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
-    "typeRoots": [
-      "./node_modules/@types",
-      "./src/types"
-    ],
-    "esModuleInterop": true, /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */
+    "typeRoots": ["./node_modules/@types", "./src/types"],
+    "esModuleInterop": true /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */,
     "resolveJsonModule": true,
     "allowJs": true,
     "skipLibCheck": true,
@@ -35,16 +32,11 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "paths": {
+      "@jaws/*": ["./src/*"],
+      "@jaws/api/*": ["./src/pages/api/*"]
+    }
   },
-  "exclude": [
-    "node_modules",
-    "cdk.out",
-    "babel.config.js",
-    "jest.config.js"
-  ],
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx"
-  ]
+  "exclude": ["node_modules", "cdk.out", "babel.config.js", "jest.config.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]
 }

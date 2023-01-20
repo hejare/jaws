@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { INDICATOR } from "../../lib/priceHandler";
+import { INDICATOR } from "@jaws/lib/priceHandler";
 
 type Props = {
   value: number;
