@@ -81,6 +81,10 @@ const PlaceOrderButton = ({
       <StyledButton
         disabled={disabled}
         onClick={() => {
+          if (disabled) {
+            return;
+          }
+
           setDisabled(true);
           upsertTrade(ticker, {
             ticker,
@@ -88,7 +92,7 @@ const PlaceOrderButton = ({
             status: TRADE_STATUS.READY,
             side: TRADE_SIDE.BUY,
           });
-          /* Note: rn this will not place an actual order. See /api/broker/orders */
+
           void handleBuyOrder(ticker, buyPrice, quantity, breakoutRef);
           typeof onClick === "function" && onClick();
         }}

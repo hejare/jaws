@@ -51,9 +51,9 @@ export async function deleteTrade(ref: string) {
   return;
 }
 
-export async function getTradesByStatus(status: TRADE_STATUS) {
+export async function getTradesByStatus(...status: TRADE_STATUS[]) {
   const query = db.collection("trades");
-  const results = await query.where("status", "==", status).get();
+  const results = await query.where("status", "in", status).get();
   if (results.size === 0) {
     return [];
   }

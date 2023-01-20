@@ -35,6 +35,7 @@
     "typescript": "4.8.4"
   },
   "dependencies": {
+    "@master-chief/alpaca": "^6.3.20",
     "@polygon.io/client-js": "^6.0.6",
     "@sentry/nextjs": "^7.20.0",
     "@types/node-fetch": "^2.6.2",

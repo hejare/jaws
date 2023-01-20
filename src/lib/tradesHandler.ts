@@ -2,16 +2,15 @@ import {
   deleteTrade,
   getTradeByOrderId,
   getTradesByStatus,
-  postTrade,
   putTrade,
 } from "../db/tradesEntity";
-import { TradesDataType, TRADE_STATUS, TRADE_SIDE } from "../db/tradesMeta";
+import { TradesDataType, TRADE_SIDE, TRADE_STATUS } from "../db/tradesMeta";
+import { AlpacaOrderStatusType } from "../services/alpacaMeta";
+import * as alpacaService from "../services/alpacaService";
 import {
   getLastTradePrice,
   getSimpleMovingAverage,
 } from "../services/polygonService";
-import * as alpacaService from "../services/alpacaService";
-import { AlpacaOrderStatusType } from "../services/alpacaMeta";
 import { isToday } from "./helpers";
 
 interface ExtendedTradesDataType extends TradesDataType {
@@ -20,53 +19,38 @@ interface ExtendedTradesDataType extends TradesDataType {
   sold?: number;
 }
 
-export const isPriceWithinBuyRange = (
-  currentPrice: number,
-  targetPrice: number,
-) => {
-  // Allow 1% range to trigger buy
-  return currentPrice > targetPrice * 1.0 && currentPrice < targetPrice * 1.01;
-};
-
 export const triggerBuyOrders = async () => {
   // Get all "READY" orders:
   const trades = await getTradesByStatus(TRADE_STATUS.READY);
 
-  const promises: Promise<number | null>[] = [];
-  trades.forEach((trade) => {
-    promises.push(getLastTradePrice(trade.ticker));
-  });
-  const marketPrices = await Promise.all(promises);
-
   const AlpacaTradePromises: Promise<void>[] = [];
-  trades.forEach((trade, i) => {
+
+  trades.forEach((trade) => {
     const { price, ticker, quantity } = trade;
-    const marketPrice = marketPrices[i];
-    if (marketPrice && isPriceWithinBuyRange(marketPrice, price)) {
-      // Send order to alpaca:
-      AlpacaTradePromises.push(
-        alpacaService
-          .postNewBuyOrder(ticker, price, quantity)
-          .then(async (result) => {
-            const placed = Date.parse(result.created_at); // result.created_at: '2022-12-05T11:02:02.058370387Z'
-            console.log("ALPACA ORDER DONE:", result);
-            await putTrade({
-              ...trade,
-              status: TRADE_STATUS.ACTIVE,
-              alpacaOrderId: result.id,
-              placed,
-            }).catch((e) => {
-              console.log(e);
-            });
-          })
-          .catch((e) => {
-            console.log(e);
-          }),
-      );
-    }
+
+    AlpacaTradePromises.push(
+      alpacaService
+        .postBuyBreakoutOrder({ ticker, price, quantity })
+        .then((result) => {
+          const placedTimestamp = Date.parse(result.created_at);
+          console.log("ALPACA ORDER DONE:", result);
+
+          return putTrade({
+            ...trade,
+            status: TRADE_STATUS.ACTIVE,
+            alpacaOrderId: result.id,
+            placed: placedTimestamp,
+          });
+        })
+        .catch((e) => {
+          console.log(e);
+        }),
+    );
   });
+
   await Promise.all(AlpacaTradePromises);
-  return trades.map((t, i) => ({ ...t, marketPrice: marketPrices[i] }));
+
+  return trades;
 };
 
 export const deleteActiveOrder = async (orderId: string) => {
@@ -81,7 +65,7 @@ export const deleteActiveOrder = async (orderId: string) => {
   }
 };
 
-export const triggerUpdateBuyOrders = async () => {
+export const triggerUpdateOpenBuyOrders = async () => {
   // Get all "ACTIVE" & "PARTIALLY_FILLED" orders:
   const activeTrades = await getTradesByStatus(TRADE_STATUS.ACTIVE);
   const partiallyFilledTrades = await getTradesByStatus(
@@ -89,51 +73,62 @@ export const triggerUpdateBuyOrders = async () => {
   );
 
   const orderIds = activeTrades.map(({ alpacaOrderId }) => alpacaOrderId);
+
+  // TODO: Why today? Why not all by status open?
   const orders = await alpacaService.getTodaysOrders();
 
-  const TradesPromises: Promise<void>[] = [];
+  const updateTradesPromises: Promise<void>[] = [];
+
   activeTrades.forEach((trade) => {
-    const existingTrades = orders.find(
-      ({ id }: { id: string }) => id === trade.alpacaOrderId,
-    );
-    if (existingTrades.status === AlpacaOrderStatusType.FILLED) {
-      TradesPromises.push(
-        putTrade({
-          ...trade,
-          status: TRADE_STATUS.FILLED,
-        }).catch((e) => {
-          console.log(e);
-        }),
+    const alpacaOrder = orders.find(({ id }) => id === trade.alpacaOrderId);
+
+    if (!alpacaOrder) {
+      console.error(
+        "Order " + trade.breakoutRef + " has no corresponding order in Alpaca",
       );
-    } else if (
-      existingTrades.status === AlpacaOrderStatusType.PARTIALLY_FILLED
-    ) {
-      TradesPromises.push(
-        putTrade({
-          ...trade,
-          status: TRADE_STATUS.PARTIALLY_FILLED,
-        }).catch((e) => {
-          console.log(e);
-        }),
-      );
+
+      return;
     }
+
+    let newStatus: TRADE_STATUS;
+
+    // TODO: what about canceled orders?
+    if (alpacaOrder.status === AlpacaOrderStatusType.FILLED) {
+      newStatus = TRADE_STATUS.FILLED;
+    } else if (alpacaOrder.status === AlpacaOrderStatusType.PARTIALLY_FILLED) {
+      newStatus = TRADE_STATUS.PARTIALLY_FILLED;
+    } else {
+      return;
+    }
+
+    updateTradesPromises.push(
+      putTrade({ ...trade, status: newStatus }).catch((e) => {
+        console.log(e);
+      }),
+    );
   });
+
   partiallyFilledTrades.forEach((trade) => {
-    const existingTrades = orders.find(
-      ({ id }: { id: string }) => id === trade.alpacaOrderId,
-    );
-    if (existingTrades.status === AlpacaOrderStatusType.FILLED) {
-      TradesPromises.push(
-        putTrade({
-          ...trade,
-          status: TRADE_STATUS.FILLED,
-        }).catch((e) => {
+    const alpacaOrder = orders.find(({ id }) => id === trade.alpacaOrderId);
+
+    if (!alpacaOrder) {
+      console.error(
+        "Order " + trade.breakoutRef + " has no corresponding order in Alpaca",
+      );
+
+      return;
+    }
+
+    if (alpacaOrder.status === AlpacaOrderStatusType.FILLED) {
+      updateTradesPromises.push(
+        putTrade({ ...trade, status: TRADE_STATUS.FILLED }).catch((e) => {
           console.log(e);
         }),
       );
     }
   });
-  await Promise.all(TradesPromises);
+
+  await Promise.all(updateTradesPromises);
   return { activeTrades, partiallyFilledTrades, orderIds, orders };
 };
 
@@ -145,12 +140,12 @@ export const triggerClearOldBuyOrders = async () => {
   // Delete all old ones:
   const promises: Promise<void>[] = [];
   readyTrades.forEach((trade) => {
-    if (!isToday(trade.created)) {
+    if (!isToday(trade.created) && trade.side === TRADE_SIDE.BUY) {
       promises.push(deleteTrade(trade.breakoutRef));
     }
   });
   activeTrades.forEach((trade) => {
-    if (!isToday(trade.created)) {
+    if (!isToday(trade.created) && trade.side === TRADE_SIDE.BUY) {
       promises.push(deleteTrade(trade.breakoutRef));
     }
   });
@@ -165,14 +160,32 @@ export const isStopLossOrder = (
   const lastTradePrice = trade.lastTradePrice;
   if (!lastTradePrice) return false;
   const movingAvg = trade.movingAvg10;
+
+  // All of these should sell 100%
+
+  // Stop loss case (1)
   if (trade.price - lastTradePrice >= stopLossLimit) return true;
-  if (movingAvg && lastTradePrice <= movingAvg) return true; // ? <= or < ?
+
+  if (!isToday(trade.created)) {
+    // Stop loss case (2)
+    if (lastTradePrice <= trade.price) return true;
+
+    // Take profit (1)
+    if (movingAvg && lastTradePrice <= movingAvg) return true;
+  }
+
+  // TODO: return specific  stoploss type
   return false;
 };
 
-/* After 10% increase in value, we take profit */
-const isTakeProfitOrder = (trade: ExtendedTradesDataType) => {
-  if (trade.status == TRADE_STATUS.TAKE_PROFIT) return false;
+/** After 10% increase in value, we take profit */
+const isTakePartialProfit = (trade: ExtendedTradesDataType) => {
+  if (trade.status === TRADE_STATUS.TAKE_PARTIAL_PROFIT) {
+    // We only want to do this once; next sell will be a stop-loss to
+    // sell 100%
+    return false;
+  }
+
   const lastTradePrice = trade.lastTradePrice;
   return lastTradePrice && trade.price * 1.1 <= lastTradePrice;
 };
@@ -193,25 +206,16 @@ const updateTrade = async (trade: ExtendedTradesDataType) => {
   }
 };
 
-const handleTakeProfitOrder = async (trade: ExtendedTradesDataType) => {
+const handleTakePartialProfitOrder = async (trade: ExtendedTradesDataType) => {
   try {
-    if (!(trade.quantity > 1)) {
-      void updateTrade({
-        ...trade,
-        status: TRADE_STATUS.CLOSED,
-        sold: Date.now(),
-      });
-      void alpacaService.stopLossSellOrder(trade.ticker);
-      return;
-    }
-    const result = await alpacaService.takeProfitSellOrder(
+    const result = await alpacaService.takePartialProfitSellOrder(
       trade.ticker,
       trade.quantity,
     );
     await putTrade({
       ...depopulateTrade(trade),
-      quantity: trade.quantity - result.qty,
-      status: TRADE_STATUS.TAKE_PROFIT,
+      quantity: trade.quantity - parseInt(result.qty),
+      status: TRADE_STATUS.TAKE_PARTIAL_PROFIT,
     });
   } catch (e) {
     console.log(e);
@@ -227,15 +231,16 @@ export const performActions = (
   trades.forEach((trade) => {
     const { ticker, breakoutRef } = trade;
     if (isStopLossOrder(trade, stopLossLimit)) {
-      void alpacaService.stopLossSellOrder(trade.ticker);
+      void alpacaService.stopLossSellOrder(trade.ticker, trade.quantity);
       messageArray.push(`Stop loss ${ticker}: breakoutRef: ${breakoutRef}`);
+
       void updateTrade({
         ...trade,
-        status: TRADE_STATUS.CLOSED,
+        status: TRADE_STATUS.CLOSED, // TODO: change to more specific
         sold: Date.now(),
       });
-    } else if (isTakeProfitOrder(trade)) {
-      void handleTakeProfitOrder(trade);
+    } else if (isTakePartialProfit(trade)) {
+      void handleTakePartialProfitOrder(trade);
       messageArray.push(`Take profit ${ticker}: breakoutRef: ${breakoutRef}`);
     }
   });
@@ -259,13 +264,18 @@ async function populateTradesData(trades: TradesDataType[]) {
 
 export const triggerStopLossTakeProfit = async () => {
   try {
-    const filledTrades = await getTradesByStatus(TRADE_STATUS.FILLED);
+    const filledTrades = await getTradesByStatus(
+      TRADE_STATUS.FILLED,
+      TRADE_STATUS.TAKE_PARTIAL_PROFIT,
+    );
 
     const [newFilledTrades, balance] = await Promise.all([
       populateTradesData(filledTrades),
       alpacaService.getPortfolioValue(),
     ]);
+
     const stopLossLimit = balance * 0.005; // 0.5% of total value
+
     return performActions(newFilledTrades, stopLossLimit);
   } catch (e) {
     console.log(e);

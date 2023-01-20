@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { triggerUpdateBuyOrders } from "../../../lib/tradesHandler";
+import { triggerUpdateOpenBuyOrders } from "../../../lib/tradesHandler";
 
 type ResponseDataType = {
   status: string;
@@ -16,7 +16,7 @@ export default async function handler(
     const responseData: ResponseDataType = { status: "INIT" };
     switch (method) {
       case "GET":
-        await triggerUpdateBuyOrders()
+        await triggerUpdateOpenBuyOrders()
           .then((results) => {
             responseData.status = "OK";
             responseData.meta = results;
