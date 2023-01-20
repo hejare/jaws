@@ -30,7 +30,7 @@ export const triggerBuyOrders = async () => {
 
     AlpacaTradePromises.push(
       alpacaService
-        .postBuyLimitOrder({ ticker, price, quantity })
+        .postBuyBreakoutOrder({ ticker, price, quantity })
         .then((result) => {
           const placedTimestamp = Date.parse(result.created_at);
           console.log("ALPACA ORDER DONE:", result);

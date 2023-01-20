@@ -127,7 +127,7 @@ const postSellOrder = ({
   return postOrder(body);
 };
 
-export const postBuyLimitOrder = async ({
+export const postBuyBreakoutOrder = async ({
   ticker,
   price,
   quantity,
@@ -138,8 +138,8 @@ export const postBuyLimitOrder = async ({
 }) => {
   const bodyObject: PlaceOrder = {
     symbol: ticker,
-    type: "limit",
-    limit_price: price,
+    type: "stop",
+    stop_price: price,
     side: "buy",
     time_in_force: "day",
     qty: quantity,
