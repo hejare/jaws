@@ -1,3 +1,4 @@
+import { TradesDataType, TRADE_STATUS } from "@jaws/db/tradesMeta";
 import { getBuySellHelpers } from "./buySellHelper";
 
 describe("buySellHelper", () => {
@@ -31,5 +32,50 @@ describe("buySellHelper", () => {
       STOP_LOSS_1_PORTFOLIO_PERCENTAGE: 0.23,
     });
     expect(helpers2.config.STOP_LOSS_1_PORTFOLIO_PERCENTAGE).toBe(0.23);
+  });
+
+  it("determines the sell trade status (if any) for a position", () => {
+    const helpers1 = getBuySellHelpers();
+
+    const stopLossLimit = helpers1.getStopLossLimit(25000);
+
+    console.log(stopLossLimit);
+
+    const tradeTakePartialProfit = helpers1.determineTradeStatus({
+      trade: { price: 20 } as TradesDataType,
+      lastTradePrice: 25, // up more than 10%
+      movingAvg: 23,
+      stopLossLimit,
+    });
+
+    expect(tradeTakePartialProfit).toBe(TRADE_STATUS.TAKE_PARTIAL_PROFIT);
+
+    const tradeStopLoss1 = helpers1.determineTradeStatus({
+      trade: { price: 20, quantity: 5 } as TradesDataType,
+      lastTradePrice: 18,
+      movingAvg: 23,
+      // TODO: USE STOPLOSS LIMIT CORRECTYYLLL!!
+      stopLossLimit,
+    });
+
+    expect(tradeStopLoss1).toBe(TRADE_STATUS.STOP_LOSS_1);
+
+    // const tradeStopLoss2 = helpers1.determineTradeStatus({
+    //   trade: { price: 20 } as TradesDataType,
+    //   lastTradePrice: 19.5,
+    //   movingAvg: 23,
+    //   stopLossLimit: 18,
+    // });
+
+    // expect(tradeStopLoss2).toBe(TRADE_STATUS.STOP_LOSS_2);
+
+    // const tradeStopLoss3 = helpers1.determineTradeStatus({
+    //   trade: { price: 20 } as TradesDataType,
+    //   lastTradePrice: 25,
+    //   movingAvg: 25,
+    //   stopLossLimit: 18,
+    // });
+
+    // expect(tradeStopLoss3).toBe(TRADE_STATUS.STOP_LOSS_3);
   });
 });

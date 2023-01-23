@@ -1,4 +1,6 @@
+import { TradesDataType, TRADE_STATUS } from "@jaws/db/tradesMeta";
 import { OrderTimeInForce } from "@master-chief/alpaca/@types/entities";
+import { isToday } from "./helpers";
 
 export interface BuySellConstants {
   STOP_LOSS_1_PORTFOLIO_PERCENTAGE: number;
@@ -22,11 +24,75 @@ export const getBuySellHelpers = (config?: Partial<BuySellConstants>) => {
   const _config = { ...DEFAULT_CONFIG, ...config };
 
   return {
-    getStopLossLimit: (totalAssets: number): number =>
-      totalAssets * _config.STOP_LOSS_1_PORTFOLIO_PERCENTAGE,
-
     get config() {
       return { ..._config } as const;
     },
+
+    getStopLossLimit: (totalAssets: number): number =>
+      totalAssets * _config.STOP_LOSS_1_PORTFOLIO_PERCENTAGE,
+
+    determineTradeStatus: (opts: {
+      trade: TradesDataType;
+      lastTradePrice: number;
+      movingAvg: number;
+      stopLossLimit: number;
+    }): TRADE_STATUS | undefined => {
+      const stopLossType = determineStopLossType(opts);
+
+      if (stopLossType) {
+        return stopLossType;
+      } else if (isTakePartialProfit(opts)) {
+        return TRADE_STATUS.TAKE_PARTIAL_PROFIT;
+      }
+
+      return;
+    },
   };
+
+  function determineStopLossType({
+    trade,
+    stopLossLimit,
+    lastTradePrice,
+    movingAvg,
+  }: {
+    trade: TradesDataType;
+    stopLossLimit: number;
+    lastTradePrice: number;
+    movingAvg: number;
+  }): TRADE_STATUS | undefined {
+    // Stop loss case (1)
+    if (trade.price - lastTradePrice >= stopLossLimit)
+      return TRADE_STATUS.STOP_LOSS_1;
+
+    if (!isToday(trade.created)) {
+      // Stop loss case (2)
+      if (lastTradePrice <= trade.price) return TRADE_STATUS.STOP_LOSS_2;
+
+      // Stop loss case (3) Take profit
+      if (movingAvg && lastTradePrice <= movingAvg)
+        return TRADE_STATUS.STOP_LOSS_3;
+    }
+
+    return;
+  }
+
+  /** After 10% increase in value, we take profit */
+  function isTakePartialProfit({
+    trade,
+    lastTradePrice,
+  }: {
+    trade: TradesDataType;
+    lastTradePrice: number;
+  }) {
+    if (trade.status === TRADE_STATUS.TAKE_PARTIAL_PROFIT) {
+      // We only want to do this once; Since it's already been done, the
+      // next sell should be a stop-loss to sell 100%
+      return false;
+    }
+
+    return (
+      trade.price * _config.TAKE_PARTIAL_PROFIT_INCREASE_FACTOR <=
+      lastTradePrice
+    );
+  }
 };
