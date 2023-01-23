@@ -1,8 +1,8 @@
+import { getISOStringForToday, isValidSymbol } from "@jaws/lib/helpers";
+import { convertResult, handleResult } from "@jaws/util";
 import { Order, RawOrder } from "@master-chief/alpaca/@types/entities";
 import { PlaceOrder } from "@master-chief/alpaca/@types/params";
 import fetch, { BodyInit } from "node-fetch";
-import { getISOStringForToday, isValidSymbol } from "@jaws/lib/helpers";
-import { convertResult, handleResult } from "@jaws/util";
 import { Side } from "./alpacaMeta";
 
 const {
@@ -96,14 +96,11 @@ export const stopLossSellOrder = async (symbol: string, quantity: number) => {
 /** Should sell 50% of position */
 export const takePartialProfitSellOrder = (
   symbol: string,
-  totalQuantity: number,
+  quantity: number,
 ) => {
   if (!isValidSymbol(symbol)) {
     throw Error;
   }
-
-  // sell ~50%, ceiled value to prevent fractional trades.
-  const quantity = Math.ceil(totalQuantity * 0.5);
 
   console.log(`Take profit on ${symbol}`);
 

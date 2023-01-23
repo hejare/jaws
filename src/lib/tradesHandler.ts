@@ -187,7 +187,12 @@ const isTakePartialProfit = (trade: ExtendedTradesDataType) => {
   }
 
   const lastTradePrice = trade.lastTradePrice;
-  return lastTradePrice && trade.price * 1.1 <= lastTradePrice;
+  return (
+    lastTradePrice &&
+    trade.price *
+      getBuySellHelpers().config.TAKE_PARTIAL_PROFIT_INCREASE_FACTOR <=
+      lastTradePrice
+  );
 };
 
 const determineTradeStatus = (
@@ -275,9 +280,15 @@ async function handleStopLossOrder(
 
 const handleTakePartialProfitOrder = async (trade: ExtendedTradesDataType) => {
   try {
+    // sell ~50%, ceiled value to prevent fractional trades.
+    const sellQuantity = Math.ceil(
+      trade.quantity *
+        getBuySellHelpers().config.TAKE_PARTIAL_PROFIT_SELL_PERCENTAGE,
+    );
+
     const result = await alpacaService.takePartialProfitSellOrder(
       trade.ticker,
-      trade.quantity,
+      sellQuantity,
     );
     await putTrade({
       ...depopulateTrade(trade),
