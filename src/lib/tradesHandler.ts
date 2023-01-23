@@ -11,6 +11,7 @@ import {
   getLastTradePrice,
   getSimpleMovingAverage,
 } from "../services/polygonService";
+import { getBuySellHelpers } from "./buySellHelper";
 import { isToday } from "./helpers";
 
 interface ExtendedTradesDataType extends TradesDataType {
@@ -313,7 +314,7 @@ export const triggerStopLossTakeProfit = async () => {
       alpacaService.getPortfolioValue(),
     ]);
 
-    const stopLossLimit = balance * 0.005; // 0.5% of total value
+    const stopLossLimit = getBuySellHelpers().getStopLossLimit(balance);
 
     return performActions(newFilledTrades, stopLossLimit);
   } catch (e) {
