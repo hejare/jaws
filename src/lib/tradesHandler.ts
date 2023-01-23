@@ -16,7 +16,7 @@ import { isToday } from "./helpers";
 
 interface ExtendedTradesDataType extends TradesDataType {
   lastTradePrice?: number | null;
-  movingAvg10?: number;
+  movingAvg?: number;
   sold?: number;
 }
 
@@ -160,7 +160,7 @@ const determineStopLossType = (
   const lastTradePrice = trade.lastTradePrice;
   if (!lastTradePrice) return;
 
-  const movingAvg = trade.movingAvg10;
+  const movingAvg = trade.movingAvg;
 
   // Stop loss case (1)
   if (trade.price - lastTradePrice >= stopLossLimit)
@@ -207,7 +207,7 @@ const determineTradeStatus = (
 
 const depopulateTrade = (trade: ExtendedTradesDataType): TradesDataType => {
   delete trade.lastTradePrice;
-  delete trade.movingAvg10;
+  delete trade.movingAvg;
   return trade;
 };
 
@@ -295,8 +295,11 @@ async function populateTradesData(trades: TradesDataType[]) {
   await Promise.all(
     trades.map(async (trade) => {
       const lastTradePrice = await getLastTradePrice(trade.ticker);
-      const movingAvg10 = await getSimpleMovingAverage(trade.ticker, 10);
-      populatedArray.push({ ...trade, lastTradePrice, movingAvg10 });
+      const movingAvg = await getSimpleMovingAverage(
+        trade.ticker,
+        getBuySellHelpers().config.MOVING_AVERAGE_DAY_RANGE,
+      );
+      populatedArray.push({ ...trade, lastTradePrice, movingAvg });
     }),
   );
   return populatedArray;
@@ -309,12 +312,14 @@ export const triggerStopLossTakeProfit = async () => {
       TRADE_STATUS.TAKE_PARTIAL_PROFIT,
     );
 
+    const buySellHelper = getBuySellHelpers();
+
     const [newFilledTrades, balance] = await Promise.all([
       populateTradesData(filledTrades),
       alpacaService.getPortfolioValue(),
     ]);
 
-    const stopLossLimit = getBuySellHelpers().getStopLossLimit(balance);
+    const stopLossLimit = buySellHelper.getStopLossLimit(balance);
 
     return performActions(newFilledTrades, stopLossLimit);
   } catch (e) {
