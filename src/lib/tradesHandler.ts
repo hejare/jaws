@@ -220,23 +220,6 @@ const updateTrade = async (trade: ExtendedTradesDataType) => {
   }
 };
 
-const handleTakePartialProfitOrder = async (trade: ExtendedTradesDataType) => {
-  try {
-    const result = await alpacaService.takePartialProfitSellOrder(
-      trade.ticker,
-      trade.quantity,
-    );
-    await putTrade({
-      ...depopulateTrade(trade),
-      quantity: trade.quantity - parseInt(result.qty),
-      status: TRADE_STATUS.TAKE_PARTIAL_PROFIT,
-    });
-  } catch (e) {
-    console.log(e);
-    throw Error(`Error when handling take-profit-order ${e as string}`);
-  }
-};
-
 export const performActions = (
   trades: ExtendedTradesDataType[],
   stopLossLimit: number,
@@ -258,7 +241,7 @@ export const performActions = (
         TRADE_STATUS.STOP_LOSS_3,
       ].includes(newTradeStatus)
     ) {
-      handleStopLossOrder(trade, newTradeStatus);
+      void handleStopLossOrder(trade, newTradeStatus);
       messageArray.push(`Stop loss ${ticker}: breakoutRef: ${breakoutRef}`);
     } else if (TRADE_STATUS.TAKE_PARTIAL_PROFIT === newTradeStatus) {
       void handleTakePartialProfitOrder(trade);
@@ -271,18 +254,40 @@ export const performActions = (
   return messageArray;
 };
 
-function handleStopLossOrder(
+async function handleStopLossOrder(
   trade: ExtendedTradesDataType,
   newTradeStatus: TRADE_STATUS,
 ) {
-  void alpacaService.stopLossSellOrder(trade.ticker, trade.quantity);
+  try {
+    await alpacaService.stopLossSellOrder(trade.ticker, trade.quantity);
 
-  void updateTrade({
-    ...trade,
-    status: newTradeStatus,
-    sold: Date.now(),
-  });
+    await updateTrade({
+      ...trade,
+      status: newTradeStatus,
+      sold: Date.now(),
+    });
+  } catch (e) {
+    console.log(e);
+    throw Error(`Error when handling stop-loss order ${e as string}`);
+  }
 }
+
+const handleTakePartialProfitOrder = async (trade: ExtendedTradesDataType) => {
+  try {
+    const result = await alpacaService.takePartialProfitSellOrder(
+      trade.ticker,
+      trade.quantity,
+    );
+    await putTrade({
+      ...depopulateTrade(trade),
+      quantity: trade.quantity - parseInt(result.qty),
+      status: TRADE_STATUS.TAKE_PARTIAL_PROFIT,
+    });
+  } catch (e) {
+    console.log(e);
+    throw Error(`Error when handling take-partial-profit order ${e as string}`);
+  }
+};
 
 async function populateTradesData(trades: TradesDataType[]) {
   const populatedArray: ExtendedTradesDataType[] = [];
