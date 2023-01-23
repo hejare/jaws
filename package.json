@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:no-sentry": "env NO_SENTRY=true next build",
     "lint": "next lint",
     "watch": "tsc -w",
     "test": "jest",

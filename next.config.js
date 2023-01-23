@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 
-const { withSentryConfig } = require('@sentry/nextjs');
+const { withSentryConfig } = require("@sentry/nextjs");
 
 const nextConfig = {
   reactStrictMode: false,
@@ -10,8 +10,8 @@ const nextConfig = {
   },
   publicRuntimeConfig: {
     IMAGE_SERVICE_BASE_URL: process.env.IMAGE_SERVICE_BASE_URL,
-  }
-}
+  },
+};
 
 const sentryWebpackPluginOptions = {
   // Additional config options for the Sentry Webpack plugin. Keep in mind that
@@ -25,7 +25,12 @@ const sentryWebpackPluginOptions = {
   // https://github.com/getsentry/sentry-webpack-plugin#options.
   sentry: {
     hideSourceMaps: false,
-  }
+  },
 };
 
-module.exports = withSentryConfig(nextConfig, sentryWebpackPluginOptions);
+if (Boolean(process.env.NO_SENTRY)) {
+  console.info("Building production bundle without Sentry ...");
+  module.exports = nextConfig;
+} else {
+  module.exports = withSentryConfig(nextConfig, sentryWebpackPluginOptions);
+}
