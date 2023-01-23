@@ -1,7 +1,7 @@
 name: Build + test
 on:
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build:
@@ -19,10 +19,10 @@ jobs:
         uses: borales/actions-yarn@v4
         with:
           cmd: install
-      - name: Build production bundle
+      - name: Build production bundle with Sentry disables
         uses: borales/actions-yarn@v4
         with:
-          cmd: build
+          cmd: build:no-sentry
       - name: Test the app
         uses: borales/actions-yarn@v4
         with:
