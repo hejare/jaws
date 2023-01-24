@@ -1,27 +1,9 @@
 import { TradesDataType, TRADE_STATUS } from "@jaws/db/tradesMeta";
-import { OrderTimeInForce } from "@master-chief/alpaca/@types/entities";
-import { isToday } from "./helpers";
-
-export interface BuySellConstants {
-  STOP_LOSS_1_PORTFOLIO_PERCENTAGE: number;
-  STOP_LOSS_2_ENABLED: boolean;
-  TAKE_PARTIAL_PROFIT_INCREASE_FACTOR: number;
-  TAKE_PARTIAL_PROFIT_SELL_PERCENTAGE: number;
-  BUY_ORDER_TIME_IN_FORCE: OrderTimeInForce;
-  MOVING_AVERAGE_DAY_RANGE: number;
-}
-
-const DEFAULT_CONFIG: BuySellConstants = {
-  STOP_LOSS_1_PORTFOLIO_PERCENTAGE: 0.005,
-  STOP_LOSS_2_ENABLED: true,
-  TAKE_PARTIAL_PROFIT_INCREASE_FACTOR: 1.1,
-  TAKE_PARTIAL_PROFIT_SELL_PERCENTAGE: 0.5,
-  BUY_ORDER_TIME_IN_FORCE: "day",
-  MOVING_AVERAGE_DAY_RANGE: 10,
-};
+import { isToday } from "@jaws/lib/helpers";
+import { BuySellConstants, DEFAULT_BUY_SELL_CONFIG } from "./buySellConstants";
 
 export const getBuySellHelpers = (config?: Partial<BuySellConstants>) => {
-  const _config = { ...DEFAULT_CONFIG, ...config };
+  const _config = { ...DEFAULT_BUY_SELL_CONFIG, ...config };
 
   return {
     get config() {

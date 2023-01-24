@@ -1,5 +1,5 @@
 import { TradesDataType, TRADE_SIDE, TRADE_STATUS } from "@jaws/db/tradesMeta";
-import { getBuySellHelpers } from "./buySellHelper";
+import { getBuySellHelpers } from "@jaws/lib/buySellHelper/buySellHelper";
 
 describe("buySellHelper", () => {
   it("calculates stop-loss limit", () => {

@@ -11,7 +11,7 @@ import {
   getLastTradePrice,
   getSimpleMovingAverage,
 } from "../services/polygonService";
-import { getBuySellHelpers } from "./buySellHelper";
+import { getBuySellHelpers } from "@jaws/lib/buySellHelper/buySellHelper";
 import { isToday } from "./helpers";
 
 interface ExtendedTradesDataType extends TradesDataType {
