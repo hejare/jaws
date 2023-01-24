@@ -66,6 +66,24 @@ describe("buySellHelper", () => {
       });
 
       expect(tradeStopLoss1).toBe(TRADE_STATUS.STOP_LOSS_1);
+
+      const tradeStopLoss2 = helpers1.determineTradeStatus({
+        trade: todayTrade,
+        lastTradePrice: 19.5, // dropped below entry, should be STOP_LOSS_2
+        movingAvg: 23,
+        stopLossMaxAmount: stopLossMaxAmount,
+      });
+
+      expect(tradeStopLoss2).toBe(undefined);
+
+      const tradeStopLoss3 = helpers1.determineTradeStatus({
+        trade: todayTrade,
+        lastTradePrice: 20.5, // dropped below movingAvg, should be STOP_LOSS_3
+        movingAvg: 20.7,
+        stopLossMaxAmount: stopLossMaxAmount,
+      });
+
+      expect(tradeStopLoss3).toBe(undefined);
     });
   });
 });
