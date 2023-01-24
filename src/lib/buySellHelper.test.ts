@@ -85,5 +85,50 @@ describe("buySellHelper", () => {
 
       expect(tradeStopLoss3).toBe(undefined);
     });
+
+    it("should check for all statuses on day >1", () => {
+      const yesterdayTrade: any = {
+        price: 20,
+        quantity: 15,
+        breakoutRef: "BREAKOUT_REF",
+        created: Date.now() - 60 * 60 * 24 * 1000,
+      };
+
+      const tradeTakePartialProfit = helpers1.determineTradeStatus({
+        trade: yesterdayTrade,
+        lastTradePrice: 25, // up more than 10%
+        movingAvg: 23,
+        stopLossMaxAmount: stopLossMaxAmount,
+      });
+
+      expect(tradeTakePartialProfit).toBe(TRADE_STATUS.TAKE_PARTIAL_PROFIT);
+
+      const tradeStopLoss1 = helpers1.determineTradeStatus({
+        trade: yesterdayTrade,
+        lastTradePrice: 15,
+        movingAvg: 23,
+        stopLossMaxAmount: stopLossMaxAmount,
+      });
+
+      expect(tradeStopLoss1).toBe(TRADE_STATUS.STOP_LOSS_1);
+
+      const tradeStopLoss2 = helpers1.determineTradeStatus({
+        trade: yesterdayTrade,
+        lastTradePrice: 19.5, // dropped below entry, should be STOP_LOSS_2
+        movingAvg: 23,
+        stopLossMaxAmount: stopLossMaxAmount,
+      });
+
+      expect(tradeStopLoss2).toBe(TRADE_STATUS.STOP_LOSS_2);
+
+      const tradeStopLoss3 = helpers1.determineTradeStatus({
+        trade: yesterdayTrade,
+        lastTradePrice: 20.5, // dropped below movingAvg, should be STOP_LOSS_3
+        movingAvg: 20.7,
+        stopLossMaxAmount: stopLossMaxAmount,
+      });
+
+      expect(tradeStopLoss3).toBe(TRADE_STATUS.STOP_LOSS_3);
+    });
   });
 });
