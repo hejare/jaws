@@ -15,8 +15,8 @@ import { getBuySellHelpers } from "./buySellHelper";
 import { isToday } from "./helpers";
 
 interface ExtendedTradesDataType extends TradesDataType {
-  lastTradePrice?: number | null;
-  movingAvg?: number;
+  lastTradePrice: number;
+  movingAvg: number;
   sold?: number;
 }
 
@@ -153,67 +153,11 @@ export const triggerClearOldBuyOrders = async () => {
   return { readyTrades };
 };
 
-const determineStopLossType = (
-  trade: ExtendedTradesDataType,
-  stopLossLimit: number,
-): TRADE_STATUS | undefined => {
-  const lastTradePrice = trade.lastTradePrice;
-  if (!lastTradePrice) return;
-
-  const movingAvg = trade.movingAvg;
-
-  // Stop loss case (1)
-  if (trade.price - lastTradePrice >= stopLossLimit)
-    return TRADE_STATUS.STOP_LOSS_1;
-
-  if (!isToday(trade.created)) {
-    // Stop loss case (2)
-    if (lastTradePrice <= trade.price) return TRADE_STATUS.STOP_LOSS_2;
-
-    // Stop loss case (3) Take profit
-    if (movingAvg && lastTradePrice <= movingAvg)
-      return TRADE_STATUS.STOP_LOSS_3;
-  }
-
-  return;
-};
-
-/** After 10% increase in value, we take profit */
-const isTakePartialProfit = (trade: ExtendedTradesDataType) => {
-  if (trade.status === TRADE_STATUS.TAKE_PARTIAL_PROFIT) {
-    // We only want to do this once; Since it's already been done, the
-    // next sell should be a stop-loss to sell 100%
-    return false;
-  }
-
-  const lastTradePrice = trade.lastTradePrice;
-  return (
-    lastTradePrice &&
-    trade.price *
-      getBuySellHelpers().config.TAKE_PARTIAL_PROFIT_INCREASE_FACTOR <=
-      lastTradePrice
-  );
-};
-
-const determineTradeStatus = (
-  trade: ExtendedTradesDataType,
-  stopLossLimit: number,
-): TRADE_STATUS | undefined => {
-  const stopLossType = determineStopLossType(trade, stopLossLimit);
-
-  if (stopLossType) {
-    return stopLossType;
-  } else if (isTakePartialProfit(trade)) {
-    return TRADE_STATUS.TAKE_PARTIAL_PROFIT;
-  }
-
-  return;
-};
-
 const depopulateTrade = (trade: ExtendedTradesDataType): TradesDataType => {
-  delete trade.lastTradePrice;
-  delete trade.movingAvg;
-  return trade;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { lastTradePrice, movingAvg, ...depopTrade } = trade;
+
+  return depopTrade;
 };
 
 const updateTrade = async (trade: ExtendedTradesDataType) => {
@@ -233,7 +177,13 @@ export const performActions = (
   const messageArray: string[] = [];
   trades.forEach((trade) => {
     const { ticker, breakoutRef } = trade;
-    const newTradeStatus = determineTradeStatus(trade, stopLossLimit);
+    const buySellHelpers = getBuySellHelpers();
+    const newTradeStatus = buySellHelpers.determineTradeStatus({
+      trade,
+      stopLossMaxAmount: stopLossLimit,
+      lastTradePrice: trade.lastTradePrice,
+      movingAvg: trade.movingAvg,
+    });
 
     if (!newTradeStatus) {
       // Stock hasn't triggered any of our stop-loss/take profit rules
