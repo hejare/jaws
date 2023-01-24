@@ -20,9 +20,7 @@ jobs:
         with:
           cmd: install
       - name: Build production bundle
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: build
+        run: yarn build
         env:
           FIRESTORE_PRIVATE_KEY: ${{ secrets.FIRESTORE_PRIVATE_KEY }}
           FIRESTORE_PRIVATE_KEY_ID: ${{ secrets.FIRESTORE_PRIVATE_KEY_ID }}
