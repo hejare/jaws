@@ -1,6 +1,10 @@
 import { getISOStringForToday, isValidSymbol } from "@jaws/lib/helpers";
 import { convertResult, handleResult } from "@jaws/util";
-import { Order, RawOrder } from "@master-chief/alpaca/@types/entities";
+import {
+  Order,
+  RawAccount,
+  RawOrder,
+} from "@master-chief/alpaca/@types/entities";
 import { PlaceOrder } from "@master-chief/alpaca/@types/params";
 import fetch, { BodyInit } from "node-fetch";
 import { Side } from "./alpacaMeta";
@@ -266,6 +270,6 @@ export const getPortfolioValue = async () => {
       },
     },
   );
-  const result = await convertResult(res);
-  return result.portfolio_value;
+  const result = await convertResult<RawAccount>(res);
+  return result.equity;
 };

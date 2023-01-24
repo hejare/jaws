@@ -1,4 +1,5 @@
 import { TradesDataType, TRADE_SIDE, TRADE_STATUS } from "@jaws/db/tradesMeta";
+import { getBuySellHelpers } from "@jaws/lib/buySellHelper/buySellHelper";
 import { AlpacaOrderStatusType } from "@jaws/services/alpacaMeta";
 import * as alpacaService from "@jaws/services/alpacaService";
 import {
@@ -11,7 +12,6 @@ import {
   getLastTradePrice,
   getSimpleMovingAverage,
 } from "../services/polygonService";
-import { getBuySellHelpers } from "@jaws/lib/buySellHelper/buySellHelper";
 import { isToday } from "./helpers";
 
 interface ExtendedTradesDataType extends TradesDataType {
@@ -280,7 +280,9 @@ export const triggerStopLossTakeProfit = async () => {
       alpacaService.getPortfolioValue(),
     ]);
 
-    const stopLossLimit = buySellHelper.getStopLossMaxAmount(balance);
+    const stopLossLimit = buySellHelper.getStopLossMaxAmount(
+      parseFloat(balance),
+    );
 
     return performActions(newFilledTrades, stopLossLimit);
   } catch (e) {
