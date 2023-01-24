@@ -184,4 +184,53 @@ describe("buySellHelper", () => {
 
     expect(tradeDroppedValue).toBe(TRADE_STATUS.STOP_LOSS_3);
   });
+
+  it("checks and determines the stop-loss type in the correct order", () => {
+    const helpers1 = getBuySellHelpers({
+      STOP_LOSS_1_PORTFOLIO_PERCENTAGE: 0.005,
+    });
+
+    const stopLossMaxAmount = helpers1.getStopLossMaxAmount(10000);
+
+    const yesterdayTrade: TradesDataType = {
+      price: 20,
+      quantity: 15,
+      breakoutRef: "BREAKOUT_REF",
+      created: Date.now() - 60 * 60 * 24 * 1000,
+      side: TRADE_SIDE.BUY,
+      status: TRADE_STATUS.FILLED,
+      ticker: "GOOG",
+      alpacaOrderId: "ALPACA_ORDER_ID",
+    };
+
+    // dropped below everything
+    const tradeStopLoss1 = helpers1.determineTradeStatus({
+      trade: yesterdayTrade,
+      lastTradePrice: 15,
+      movingAvg: 23,
+      stopLossMaxAmount,
+    });
+
+    expect(tradeStopLoss1).toBe(TRADE_STATUS.STOP_LOSS_1);
+
+    // dropped below moving avg AND entry price
+    const tradeStopLoss2 = helpers1.determineTradeStatus({
+      trade: yesterdayTrade,
+      lastTradePrice: 19.5, // dropped below entry, should be STOP_LOSS_2
+      movingAvg: 19.8,
+      stopLossMaxAmount,
+    });
+
+    expect(tradeStopLoss2).toBe(TRADE_STATUS.STOP_LOSS_2);
+
+    // only droppped below moving avg
+    const tradeStopLoss3 = helpers1.determineTradeStatus({
+      trade: yesterdayTrade,
+      lastTradePrice: 20.5, // dropped below movingAvg, should be STOP_LOSS_3
+      movingAvg: 20.7,
+      stopLossMaxAmount,
+    });
+
+    expect(tradeStopLoss3).toBe(TRADE_STATUS.STOP_LOSS_3);
+  });
 });
