@@ -23,6 +23,11 @@ jobs:
         uses: borales/actions-yarn@v4
         with:
           cmd: build
+        env:
+          FIRESTORE_PRIVATE_KEY: ${{ secrets.FIRESTORE_PRIVATE_KEY }}
+          FIRESTORE_PRIVATE_KEY_ID: ${{ secrets.FIRESTORE_PRIVATE_KEY_ID }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}            
       - name: Test the app
         uses: borales/actions-yarn@v4
         with:
