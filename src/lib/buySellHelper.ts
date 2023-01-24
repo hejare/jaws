@@ -28,14 +28,18 @@ export const getBuySellHelpers = (config?: Partial<BuySellConstants>) => {
       return { ..._config } as const;
     },
 
-    getStopLossLimit: (totalAssets: number): number =>
+    /**
+     * Returns the maximum amount of money (total value) the position is
+     * allowed to drop before triggering Stop loss (1)
+     */
+    getStopLossMaxAmount: (totalAssets: number): number =>
       totalAssets * _config.STOP_LOSS_1_PORTFOLIO_PERCENTAGE,
 
     determineTradeStatus: (opts: {
       trade: TradesDataType;
       lastTradePrice: number;
       movingAvg: number;
-      stopLossLimit: number;
+      stopLossMaxAmount: number;
     }): TRADE_STATUS | undefined => {
       const stopLossType = determineStopLossType(opts);
 
@@ -51,17 +55,17 @@ export const getBuySellHelpers = (config?: Partial<BuySellConstants>) => {
 
   function determineStopLossType({
     trade,
-    stopLossLimit,
+    stopLossMaxAmount,
     lastTradePrice,
     movingAvg,
   }: {
     trade: TradesDataType;
-    stopLossLimit: number;
+    stopLossMaxAmount: number;
     lastTradePrice: number;
     movingAvg: number;
   }): TRADE_STATUS | undefined {
     // Stop loss case (1)
-    if (trade.price - lastTradePrice >= stopLossLimit)
+    if ((trade.price - lastTradePrice) * trade.quantity >= stopLossMaxAmount)
       return TRADE_STATUS.STOP_LOSS_1;
 
     if (!isToday(trade.created)) {

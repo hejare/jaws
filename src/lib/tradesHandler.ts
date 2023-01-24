@@ -330,7 +330,7 @@ export const triggerStopLossTakeProfit = async () => {
       alpacaService.getPortfolioValue(),
     ]);
 
-    const stopLossLimit = buySellHelper.getStopLossLimit(balance);
+    const stopLossLimit = buySellHelper.getStopLossMaxAmount(balance);
 
     return performActions(newFilledTrades, stopLossLimit);
   } catch (e) {

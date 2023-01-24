@@ -1,16 +1,16 @@
-import { TradesDataType, TRADE_STATUS } from "@jaws/db/tradesMeta";
+import { TRADE_STATUS } from "@jaws/db/tradesMeta";
 import { getBuySellHelpers } from "./buySellHelper";
 
 describe("buySellHelper", () => {
   it("calculates stop-loss limit", () => {
     const helpers = getBuySellHelpers();
-    expect(helpers.getStopLossLimit(100)).toBe(0.5);
-    expect(helpers.getStopLossLimit(45873)).toBe(45873 * 0.005);
+    expect(helpers.getStopLossMaxAmount(100)).toBe(0.5);
+    expect(helpers.getStopLossMaxAmount(45873)).toBe(45873 * 0.005);
 
     expect(
       getBuySellHelpers({
         STOP_LOSS_1_PORTFOLIO_PERCENTAGE: 0.02,
-      }).getStopLossLimit(100),
+      }).getStopLossMaxAmount(100),
     ).toBe(2);
   });
 
@@ -34,48 +34,38 @@ describe("buySellHelper", () => {
     expect(helpers2.config.STOP_LOSS_1_PORTFOLIO_PERCENTAGE).toBe(0.23);
   });
 
-  it("determines the sell trade status (if any) for a position", () => {
-    const helpers1 = getBuySellHelpers();
-
-    const stopLossLimit = helpers1.getStopLossLimit(25000);
-
-    console.log(stopLossLimit);
-
-    const tradeTakePartialProfit = helpers1.determineTradeStatus({
-      trade: { price: 20 } as TradesDataType,
-      lastTradePrice: 25, // up more than 10%
-      movingAvg: 23,
-      stopLossLimit,
+  describe("determines the sell trade status (if any) for a position", () => {
+    const helpers1 = getBuySellHelpers({
+      STOP_LOSS_1_PORTFOLIO_PERCENTAGE: 0.005,
     });
 
-    expect(tradeTakePartialProfit).toBe(TRADE_STATUS.TAKE_PARTIAL_PROFIT);
+    const stopLossMaxAmount = helpers1.getStopLossMaxAmount(10000);
 
-    const tradeStopLoss1 = helpers1.determineTradeStatus({
-      trade: { price: 20, quantity: 5 } as TradesDataType,
-      lastTradePrice: 18,
-      movingAvg: 23,
-      // TODO: USE STOPLOSS LIMIT CORRECTYYLLL!!
-      stopLossLimit,
+    it("should only return some statuses on day 1", () => {
+      const todayTrade: any = {
+        price: 20,
+        quantity: 15,
+        breakoutRef: "BREAKOUT_REF",
+        created: Date.now(),
+      };
+
+      const tradeTakePartialProfit = helpers1.determineTradeStatus({
+        trade: todayTrade,
+        lastTradePrice: 25, // up more than 10%
+        movingAvg: 23,
+        stopLossMaxAmount: stopLossMaxAmount,
+      });
+
+      expect(tradeTakePartialProfit).toBe(TRADE_STATUS.TAKE_PARTIAL_PROFIT);
+
+      const tradeStopLoss1 = helpers1.determineTradeStatus({
+        trade: todayTrade,
+        lastTradePrice: 15,
+        movingAvg: 23,
+        stopLossMaxAmount: stopLossMaxAmount,
+      });
+
+      expect(tradeStopLoss1).toBe(TRADE_STATUS.STOP_LOSS_1);
     });
-
-    expect(tradeStopLoss1).toBe(TRADE_STATUS.STOP_LOSS_1);
-
-    // const tradeStopLoss2 = helpers1.determineTradeStatus({
-    //   trade: { price: 20 } as TradesDataType,
-    //   lastTradePrice: 19.5,
-    //   movingAvg: 23,
-    //   stopLossLimit: 18,
-    // });
-
-    // expect(tradeStopLoss2).toBe(TRADE_STATUS.STOP_LOSS_2);
-
-    // const tradeStopLoss3 = helpers1.determineTradeStatus({
-    //   trade: { price: 20 } as TradesDataType,
-    //   lastTradePrice: 25,
-    //   movingAvg: 25,
-    //   stopLossLimit: 18,
-    // });
-
-    // expect(tradeStopLoss3).toBe(TRADE_STATUS.STOP_LOSS_3);
   });
 });
