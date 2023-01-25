@@ -154,9 +154,7 @@ export const triggerClearOldBuyOrders = async () => {
 };
 
 const depopulateTrade = (trade: ExtendedTradesDataType): TradesDataType => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { lastTradePrice, movingAvg, ...depopTrade } = trade;
-
   return depopTrade;
 };
 
