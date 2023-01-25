@@ -230,7 +230,6 @@ async function handleStopLossOrder(
 
 const handleTakePartialProfitOrder = async (trade: ExtendedTradesDataType) => {
   try {
-    // sell ~50%, ceiled value to prevent fractional trades.
     const sellQuantity = Math.ceil(
       trade.quantity *
         getBuySellHelpers().config.TAKE_PARTIAL_PROFIT_SELL_PERCENTAGE,
