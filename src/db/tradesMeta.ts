@@ -35,7 +35,7 @@ export enum TRADE_STATUS {
   STOP_LOSS_3 = "STOP_LOSS_3",
 
   /** order is filled and later resulted in a take partial profit order. */
-  TAKE_PARTIAL_PROFIT = "TAKE_PARTIAL_PROFIT",
+  PARTIAL_PROFIT_TAKEN = "PARTIAL_PROFIT_TAKEN",
 }
 
 export interface TradesDataType {

@@ -199,7 +199,7 @@ export const performActions = (
     ) {
       void handleStopLossOrder(trade, newTradeStatus);
       messageArray.push(`Stop loss ${ticker}: breakoutRef: ${breakoutRef}`);
-    } else if (TRADE_STATUS.TAKE_PARTIAL_PROFIT === newTradeStatus) {
+    } else if (TRADE_STATUS.PARTIAL_PROFIT_TAKEN === newTradeStatus) {
       void handleTakePartialProfitOrder(trade);
       messageArray.push(`Take profit ${ticker}: breakoutRef: ${breakoutRef}`);
     }
@@ -243,7 +243,7 @@ const handleTakePartialProfitOrder = async (trade: ExtendedTradesDataType) => {
     await putTrade({
       ...depopulateTrade(trade),
       quantity: trade.quantity - parseInt(result.qty),
-      status: TRADE_STATUS.TAKE_PARTIAL_PROFIT,
+      status: TRADE_STATUS.PARTIAL_PROFIT_TAKEN,
     });
   } catch (e) {
     console.log(e);
@@ -270,7 +270,7 @@ export const triggerStopLossTakeProfit = async () => {
   try {
     const filledTrades = await getTradesByStatus(
       TRADE_STATUS.FILLED,
-      TRADE_STATUS.TAKE_PARTIAL_PROFIT,
+      TRADE_STATUS.PARTIAL_PROFIT_TAKEN,
     );
 
     const buySellHelper = getBuySellHelpers();

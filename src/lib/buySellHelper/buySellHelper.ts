@@ -28,7 +28,7 @@ export const getBuySellHelpers = (config?: Partial<BuySellConstants>) => {
       if (stopLossType) {
         return stopLossType;
       } else if (shouldTakePartialProfit(opts)) {
-        return TRADE_STATUS.TAKE_PARTIAL_PROFIT;
+        return TRADE_STATUS.PARTIAL_PROFIT_TAKEN;
       }
 
       return;
@@ -69,7 +69,7 @@ export const getBuySellHelpers = (config?: Partial<BuySellConstants>) => {
     trade: TradesDataType;
     lastTradePrice: number;
   }): boolean {
-    if (trade.status === TRADE_STATUS.TAKE_PARTIAL_PROFIT) {
+    if (trade.status === TRADE_STATUS.PARTIAL_PROFIT_TAKEN) {
       // We only want to do this once; Since it's already been done, the
       // next sell should be a stop-loss to sell 100%
       return false;

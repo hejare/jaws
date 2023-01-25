@@ -42,17 +42,11 @@ stateDiagram-v2
     FILLED --> Sell : (At some point in the future) stock meets the condition for a sell rule
 
     state Sell {
-        [*] --> TAKE_PARTIAL_PROFIT
-        [*] --> StopLoss
+        [*] --> PARTIAL_PROFIT_TAKEN : Sell part of position for profit (only once per position)
+        [*] --> StopLoss : Sell 100% of position
 
-        note left of TAKE_PARTIAL_PROFIT
-            Sell part of position for profit
-        end note
-        TAKE_PARTIAL_PROFIT --> StopLoss : Only take partial profit once per position
+        PARTIAL_PROFIT_TAKEN --> StopLoss :  Sell remaining 100% of position
 
-        note left of StopLoss
-            Sell 100% of position
-        end note
         StopLoss: Stop-loss cases
         state StopLoss {
             [*] --> STOP_LOSS_1
@@ -89,9 +83,9 @@ The rules can be tweaked by changing the constants in
 rules written below use the default values for the constants at the time
 of writing (i.e. the numbers, percentages, etc.).
 
-| `TRADE_STATUS`        | Active when           | Rule                                                                                                                                              | Sell % of position |
-| --------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
-| `STOP_LOSS_1`         | From time of purchase | The total value of the position (number of stocks \* current price) is down >= 0.5% of the total value of the portfolio (invested + cash balance) | 100%               |
-| `STOP_LOSS_2`         | From day 2            | Price of the stock is **lower** than entry price                                                                                                  | 100%               |
-| `STOP_LOSS_3`         | From day 2            | Price of the stock is **lower** than 10-day moving average                                                                                        | 100%               |
-| `TAKE_PARTIAL_PROFIT` | From time of purchase | Price of the stock is **higher** than 10% of entry price                                                                                          | 50% (rounded up)   |
+| `TRADE_STATUS`         | Active when           | Rule                                                                                                                                              | Sell % of position |
+| ---------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
+| `STOP_LOSS_1`          | From time of purchase | The total value of the position (number of stocks \* current price) is down >= 0.5% of the total value of the portfolio (invested + cash balance) | 100%               |
+| `STOP_LOSS_2`          | From day 2            | Price of the stock is **lower** than entry price                                                                                                  | 100%               |
+| `STOP_LOSS_3`          | From day 2            | Price of the stock is **lower** than 10-day moving average                                                                                        | 100%               |
+| `PARTIAL_PROFIT_TAKEN` | From time of purchase | Price of the stock is **higher** than 10% of entry price                                                                                          | 50% (rounded up)   |

@@ -60,7 +60,7 @@ describe("buySellHelper", () => {
         stopLossMaxAmount: stopLossMaxAmount,
       });
 
-      expect(tradeTakePartialProfit).toBe(TRADE_STATUS.TAKE_PARTIAL_PROFIT);
+      expect(tradeTakePartialProfit).toBe(TRADE_STATUS.PARTIAL_PROFIT_TAKEN);
 
       const tradeStopLoss1 = helpers1.determineTradeStatus({
         trade: todayTrade,
@@ -109,7 +109,7 @@ describe("buySellHelper", () => {
         stopLossMaxAmount,
       });
 
-      expect(tradeTakePartialProfit).toBe(TRADE_STATUS.TAKE_PARTIAL_PROFIT);
+      expect(tradeTakePartialProfit).toBe(TRADE_STATUS.PARTIAL_PROFIT_TAKEN);
 
       const tradeStopLoss1 = helpers1.determineTradeStatus({
         trade: yesterdayTrade,
@@ -164,10 +164,10 @@ describe("buySellHelper", () => {
       stopLossMaxAmount,
     });
 
-    expect(tradeTakePartialProfit).toBe(TRADE_STATUS.TAKE_PARTIAL_PROFIT);
+    expect(tradeTakePartialProfit).toBe(TRADE_STATUS.PARTIAL_PROFIT_TAKEN);
 
     const secondStatusCheck = helpers1.determineTradeStatus({
-      trade: { ...yesterdayTrade, status: TRADE_STATUS.TAKE_PARTIAL_PROFIT },
+      trade: { ...yesterdayTrade, status: TRADE_STATUS.PARTIAL_PROFIT_TAKEN },
       lastTradePrice: 25, // up more than 10%
       movingAvg: 23,
       stopLossMaxAmount,
@@ -176,7 +176,7 @@ describe("buySellHelper", () => {
     expect(secondStatusCheck).toBe(undefined);
 
     const tradeDroppedValue = helpers1.determineTradeStatus({
-      trade: { ...yesterdayTrade, status: TRADE_STATUS.TAKE_PARTIAL_PROFIT },
+      trade: { ...yesterdayTrade, status: TRADE_STATUS.PARTIAL_PROFIT_TAKEN },
       lastTradePrice: 21,
       movingAvg: 23,
       stopLossMaxAmount,
