@@ -1,6 +1,15 @@
 import { TradesDataType, TRADE_STATUS } from "@jaws/db/tradesMeta";
 import { isToday } from "@jaws/lib/helpers";
-import { BuySellConstants, DEFAULT_BUY_SELL_CONFIG } from "./buySellConstants";
+import { BuySellConstants } from "./buySellConstants";
+
+const DEFAULT_BUY_SELL_CONFIG: BuySellConstants = {
+  STOP_LOSS_1_PORTFOLIO_PERCENTAGE: 0.005,
+  STOP_LOSS_2_ENABLED: true,
+  TAKE_PARTIAL_PROFIT_INCREASE_FACTOR: 1.1,
+  TAKE_PARTIAL_PROFIT_SELL_PERCENTAGE: 0.5,
+  BUY_ORDER_TIME_IN_FORCE: "day",
+  MOVING_AVERAGE_DAY_RANGE: 10,
+};
 
 export const getBuySellHelpers = (config?: Partial<BuySellConstants>) => {
   const _config = { ...DEFAULT_BUY_SELL_CONFIG, ...config };
