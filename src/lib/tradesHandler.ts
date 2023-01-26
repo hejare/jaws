@@ -176,14 +176,14 @@ export const performActions = (
   trades.forEach((trade) => {
     const { ticker, breakoutRef } = trade;
     const buySellHelpers = getBuySellHelpers();
-    const newTradeStatus = buySellHelpers.determineTradeStatus({
+    const newTradeStatus = buySellHelpers.determineNewTradeStatus({
       trade,
       stopLossMaxAmount: stopLossLimit,
       lastTradePrice: trade.lastTradePrice,
       movingAvg: trade.movingAvg,
     });
 
-    if (!newTradeStatus) {
+    if (newTradeStatus === trade.status) {
       // Stock hasn't triggered any of our stop-loss/take profit rules
       return;
     }

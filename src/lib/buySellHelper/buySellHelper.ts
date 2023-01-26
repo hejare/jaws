@@ -26,21 +26,21 @@ export const getBuySellHelpers = (config?: Partial<BuySellConstants>) => {
     getStopLossMaxAmount: (totalAssets: number): number =>
       totalAssets * _config.STOP_LOSS_1_PORTFOLIO_PERCENTAGE,
 
-    determineTradeStatus: (opts: {
+    determineNewTradeStatus: (opts: {
       trade: TradesDataType;
       lastTradePrice: number;
       movingAvg: number;
       stopLossMaxAmount: number;
-    }): TRADE_STATUS | undefined => {
+    }): TRADE_STATUS => {
       const stopLossType = determineStopLossType(opts);
 
       if (stopLossType) {
         return stopLossType;
       } else if (shouldTakePartialProfit(opts)) {
         return TRADE_STATUS.PARTIAL_PROFIT_TAKEN;
+      } else {
+        return opts.trade.status;
       }
-
-      return;
     },
   };
 

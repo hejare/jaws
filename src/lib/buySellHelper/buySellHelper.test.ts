@@ -53,7 +53,7 @@ describe("buySellHelper", () => {
         alpacaOrderId: "ALPACA_ORDER_ID",
       };
 
-      const tradeTakePartialProfit = helpers1.determineTradeStatus({
+      const tradeTakePartialProfit = helpers1.determineNewTradeStatus({
         trade: todayTrade,
         lastTradePrice: 25, // up more than 10%
         movingAvg: 23,
@@ -62,7 +62,7 @@ describe("buySellHelper", () => {
 
       expect(tradeTakePartialProfit).toBe(TRADE_STATUS.PARTIAL_PROFIT_TAKEN);
 
-      const tradeStopLoss1 = helpers1.determineTradeStatus({
+      const tradeStopLoss1 = helpers1.determineNewTradeStatus({
         trade: todayTrade,
         lastTradePrice: 15,
         movingAvg: 23,
@@ -71,23 +71,26 @@ describe("buySellHelper", () => {
 
       expect(tradeStopLoss1).toBe(TRADE_STATUS.STOP_LOSS_1);
 
-      const tradeStopLoss2 = helpers1.determineTradeStatus({
+      const tradeStopLoss2 = helpers1.determineNewTradeStatus({
         trade: todayTrade,
-        lastTradePrice: 19.5, // dropped below entry, should be STOP_LOSS_2
+        // dropped below entry, should be STOP_LOSS_2 on any other day
+        lastTradePrice: 19.5,
         movingAvg: 23,
         stopLossMaxAmount: stopLossMaxAmount,
       });
 
-      expect(tradeStopLoss2).toBe(undefined);
+      expect(tradeStopLoss2).toBe(todayTrade.status);
 
-      const tradeStopLoss3 = helpers1.determineTradeStatus({
+      const tradeStopLoss3 = helpers1.determineNewTradeStatus({
         trade: todayTrade,
-        lastTradePrice: 20.5, // dropped below movingAvg, should be STOP_LOSS_3
+        // dropped below movingAvg, should be STOP_LOSS_3 on any other
+        // day
+        lastTradePrice: 20.5,
         movingAvg: 20.7,
         stopLossMaxAmount: stopLossMaxAmount,
       });
 
-      expect(tradeStopLoss3).toBe(undefined);
+      expect(tradeStopLoss3).toBe(todayTrade.status);
     });
 
     it("should check for all statuses on day >1", () => {
@@ -102,7 +105,7 @@ describe("buySellHelper", () => {
         alpacaOrderId: "ALPACA_ORDER_ID",
       };
 
-      const tradeTakePartialProfit = helpers1.determineTradeStatus({
+      const tradeTakePartialProfit = helpers1.determineNewTradeStatus({
         trade: yesterdayTrade,
         lastTradePrice: 25, // up more than 10%
         movingAvg: 23,
@@ -111,7 +114,7 @@ describe("buySellHelper", () => {
 
       expect(tradeTakePartialProfit).toBe(TRADE_STATUS.PARTIAL_PROFIT_TAKEN);
 
-      const tradeStopLoss1 = helpers1.determineTradeStatus({
+      const tradeStopLoss1 = helpers1.determineNewTradeStatus({
         trade: yesterdayTrade,
         lastTradePrice: 15,
         movingAvg: 23,
@@ -120,7 +123,7 @@ describe("buySellHelper", () => {
 
       expect(tradeStopLoss1).toBe(TRADE_STATUS.STOP_LOSS_1);
 
-      const tradeStopLoss2 = helpers1.determineTradeStatus({
+      const tradeStopLoss2 = helpers1.determineNewTradeStatus({
         trade: yesterdayTrade,
         lastTradePrice: 19.5, // dropped below entry, should be STOP_LOSS_2
         movingAvg: 23,
@@ -129,7 +132,7 @@ describe("buySellHelper", () => {
 
       expect(tradeStopLoss2).toBe(TRADE_STATUS.STOP_LOSS_2);
 
-      const tradeStopLoss3 = helpers1.determineTradeStatus({
+      const tradeStopLoss3 = helpers1.determineNewTradeStatus({
         trade: yesterdayTrade,
         lastTradePrice: 20.5, // dropped below movingAvg, should be STOP_LOSS_3
         movingAvg: 20.7,
@@ -157,7 +160,7 @@ describe("buySellHelper", () => {
       alpacaOrderId: "ALPACA_ORDER_ID",
     };
 
-    const tradeTakePartialProfit = helpers1.determineTradeStatus({
+    const tradeTakePartialProfit = helpers1.determineNewTradeStatus({
       trade: yesterdayTrade,
       lastTradePrice: 25, // up more than 10%
       movingAvg: 23,
@@ -166,16 +169,16 @@ describe("buySellHelper", () => {
 
     expect(tradeTakePartialProfit).toBe(TRADE_STATUS.PARTIAL_PROFIT_TAKEN);
 
-    const secondStatusCheck = helpers1.determineTradeStatus({
+    const secondStatusCheck = helpers1.determineNewTradeStatus({
       trade: { ...yesterdayTrade, status: TRADE_STATUS.PARTIAL_PROFIT_TAKEN },
       lastTradePrice: 25, // up more than 10%
       movingAvg: 23,
       stopLossMaxAmount,
     });
 
-    expect(secondStatusCheck).toBe(undefined);
+    expect(secondStatusCheck).toBe(TRADE_STATUS.PARTIAL_PROFIT_TAKEN);
 
-    const tradeDroppedValue = helpers1.determineTradeStatus({
+    const tradeDroppedValue = helpers1.determineNewTradeStatus({
       trade: { ...yesterdayTrade, status: TRADE_STATUS.PARTIAL_PROFIT_TAKEN },
       lastTradePrice: 21,
       movingAvg: 23,
@@ -204,7 +207,7 @@ describe("buySellHelper", () => {
     };
 
     // dropped below everything
-    const tradeStopLoss1 = helpers1.determineTradeStatus({
+    const tradeStopLoss1 = helpers1.determineNewTradeStatus({
       trade: yesterdayTrade,
       lastTradePrice: 15,
       movingAvg: 23,
@@ -214,7 +217,7 @@ describe("buySellHelper", () => {
     expect(tradeStopLoss1).toBe(TRADE_STATUS.STOP_LOSS_1);
 
     // dropped below moving avg AND entry price
-    const tradeStopLoss2 = helpers1.determineTradeStatus({
+    const tradeStopLoss2 = helpers1.determineNewTradeStatus({
       trade: yesterdayTrade,
       lastTradePrice: 19.5, // dropped below entry, should be STOP_LOSS_2
       movingAvg: 19.8,
@@ -224,7 +227,7 @@ describe("buySellHelper", () => {
     expect(tradeStopLoss2).toBe(TRADE_STATUS.STOP_LOSS_2);
 
     // only droppped below moving avg
-    const tradeStopLoss3 = helpers1.determineTradeStatus({
+    const tradeStopLoss3 = helpers1.determineNewTradeStatus({
       trade: yesterdayTrade,
       lastTradePrice: 20.5, // dropped below movingAvg, should be STOP_LOSS_3
       movingAvg: 20.7,
