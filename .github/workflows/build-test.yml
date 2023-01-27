@@ -1,11 +1,11 @@
 name: Build + test
 on:
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
-  build:
-    name: Test
+  build-and-test:
+    name: Build + test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -27,7 +27,7 @@ jobs:
           FIRESTORE_PRIVATE_KEY: ${{ secrets.FIRESTORE_PRIVATE_KEY }}
           FIRESTORE_PRIVATE_KEY_ID: ${{ secrets.FIRESTORE_PRIVATE_KEY_ID }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}            
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       - name: Test the app
         uses: borales/actions-yarn@v4
         with:

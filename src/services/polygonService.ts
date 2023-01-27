@@ -1,12 +1,7 @@
-import {
-  ILastTrade,
-  ITrades,
-  polygonClient,
-  restClient,
-} from "@polygon.io/client-js";
-import fetch from "node-fetch";
 import { getTodayWithDashes } from "@jaws/lib/helpers";
 import { handleResult } from "@jaws/util";
+import { ITrades, restClient } from "@polygon.io/client-js";
+import fetch from "node-fetch";
 
 export enum MADays {
   TEN = 10,
@@ -17,10 +12,14 @@ const { POLYGON_KEY = "[NOT_DEFINED_IN_ENV]" } = process.env;
 
 const polygonRestAPI = restClient(POLYGON_KEY);
 
-export const getLastTradePrice = async (symbol: string) => {
-  return polygonRestAPI.stocks
-    .lastTrade(symbol)
-    .then(({ results }: ILastTrade) => results?.p || null);
+export const getLastTradePrice = async (symbol: string): Promise<number> => {
+  return polygonRestAPI.stocks.lastTrade(symbol).then(({ results }) => {
+    if (!results?.p) {
+      throw new Error(`No trade price found for ticker ${symbol}`);
+    }
+
+    return results.p;
+  });
 };
 
 export const getLastTradesMedianPrice = async (symbol: string) => {

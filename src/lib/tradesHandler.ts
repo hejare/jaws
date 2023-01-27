@@ -1,4 +1,5 @@
 import { TradesDataType, TRADE_SIDE, TRADE_STATUS } from "@jaws/db/tradesMeta";
+import { getBuySellHelpers } from "@jaws/lib/buySellHelper/buySellHelper";
 import { AlpacaOrderStatusType } from "@jaws/services/alpacaMeta";
 import * as alpacaService from "@jaws/services/alpacaService";
 import {
@@ -14,8 +15,8 @@ import {
 import { isToday } from "./helpers";
 
 interface ExtendedTradesDataType extends TradesDataType {
-  lastTradePrice?: number | null;
-  movingAvg10?: number;
+  lastTradePrice: number;
+  movingAvg: number;
   sold?: number;
 }
 
@@ -152,62 +153,9 @@ export const triggerClearOldBuyOrders = async () => {
   return { readyTrades };
 };
 
-const determineStopLossType = (
-  trade: ExtendedTradesDataType,
-  stopLossLimit: number,
-): TRADE_STATUS | undefined => {
-  const lastTradePrice = trade.lastTradePrice;
-  if (!lastTradePrice) return;
-
-  const movingAvg = trade.movingAvg10;
-
-  // Stop loss case (1)
-  if (trade.price - lastTradePrice >= stopLossLimit)
-    return TRADE_STATUS.STOP_LOSS_1;
-
-  if (!isToday(trade.created)) {
-    // Stop loss case (2)
-    if (lastTradePrice <= trade.price) return TRADE_STATUS.STOP_LOSS_2;
-
-    // Stop loss case (3) Take profit
-    if (movingAvg && lastTradePrice <= movingAvg)
-      return TRADE_STATUS.STOP_LOSS_3;
-  }
-
-  return;
-};
-
-/** After 10% increase in value, we take profit */
-const isTakePartialProfit = (trade: ExtendedTradesDataType) => {
-  if (trade.status === TRADE_STATUS.TAKE_PARTIAL_PROFIT) {
-    // We only want to do this once; Since it's already been done, the
-    // next sell should be a stop-loss to sell 100%
-    return false;
-  }
-
-  const lastTradePrice = trade.lastTradePrice;
-  return lastTradePrice && trade.price * 1.1 <= lastTradePrice;
-};
-
-const determineTradeStatus = (
-  trade: ExtendedTradesDataType,
-  stopLossLimit: number,
-): TRADE_STATUS | undefined => {
-  const stopLossType = determineStopLossType(trade, stopLossLimit);
-
-  if (stopLossType) {
-    return stopLossType;
-  } else if (isTakePartialProfit(trade)) {
-    return TRADE_STATUS.TAKE_PARTIAL_PROFIT;
-  }
-
-  return;
-};
-
 const depopulateTrade = (trade: ExtendedTradesDataType): TradesDataType => {
-  delete trade.lastTradePrice;
-  delete trade.movingAvg10;
-  return trade;
+  const { lastTradePrice, movingAvg, ...depopTrade } = trade;
+  return depopTrade;
 };
 
 const updateTrade = async (trade: ExtendedTradesDataType) => {
@@ -227,9 +175,15 @@ export const performActions = (
   const messageArray: string[] = [];
   trades.forEach((trade) => {
     const { ticker, breakoutRef } = trade;
-    const newTradeStatus = determineTradeStatus(trade, stopLossLimit);
+    const buySellHelpers = getBuySellHelpers();
+    const newTradeStatus = buySellHelpers.determineNewTradeStatus({
+      trade,
+      stopLossMaxAmount: stopLossLimit,
+      lastTradePrice: trade.lastTradePrice,
+      movingAvg: trade.movingAvg,
+    });
 
-    if (!newTradeStatus) {
+    if (newTradeStatus === trade.status) {
       // Stock hasn't triggered any of our stop-loss/take profit rules
       return;
     }
@@ -243,7 +197,7 @@ export const performActions = (
     ) {
       void handleStopLossOrder(trade, newTradeStatus);
       messageArray.push(`Stop loss ${ticker}: breakoutRef: ${breakoutRef}`);
-    } else if (TRADE_STATUS.TAKE_PARTIAL_PROFIT === newTradeStatus) {
+    } else if (TRADE_STATUS.PARTIAL_PROFIT_TAKEN === newTradeStatus) {
       void handleTakePartialProfitOrder(trade);
       messageArray.push(`Take profit ${ticker}: breakoutRef: ${breakoutRef}`);
     }
@@ -274,14 +228,19 @@ async function handleStopLossOrder(
 
 const handleTakePartialProfitOrder = async (trade: ExtendedTradesDataType) => {
   try {
+    const sellQuantity = Math.ceil(
+      trade.quantity *
+        getBuySellHelpers().config.TAKE_PARTIAL_PROFIT_SELL_PERCENTAGE,
+    );
+
     const result = await alpacaService.takePartialProfitSellOrder(
       trade.ticker,
-      trade.quantity,
+      sellQuantity,
     );
     await putTrade({
       ...depopulateTrade(trade),
       quantity: trade.quantity - parseInt(result.qty),
-      status: TRADE_STATUS.TAKE_PARTIAL_PROFIT,
+      status: TRADE_STATUS.PARTIAL_PROFIT_TAKEN,
     });
   } catch (e) {
     console.log(e);
@@ -294,8 +253,11 @@ async function populateTradesData(trades: TradesDataType[]) {
   await Promise.all(
     trades.map(async (trade) => {
       const lastTradePrice = await getLastTradePrice(trade.ticker);
-      const movingAvg10 = await getSimpleMovingAverage(trade.ticker, 10);
-      populatedArray.push({ ...trade, lastTradePrice, movingAvg10 });
+      const movingAvg = await getSimpleMovingAverage(
+        trade.ticker,
+        getBuySellHelpers().config.MOVING_AVERAGE_DAY_RANGE,
+      );
+      populatedArray.push({ ...trade, lastTradePrice, movingAvg });
     }),
   );
   return populatedArray;
@@ -305,15 +267,19 @@ export const triggerStopLossTakeProfit = async () => {
   try {
     const filledTrades = await getTradesByStatus(
       TRADE_STATUS.FILLED,
-      TRADE_STATUS.TAKE_PARTIAL_PROFIT,
+      TRADE_STATUS.PARTIAL_PROFIT_TAKEN,
     );
+
+    const buySellHelper = getBuySellHelpers();
 
     const [newFilledTrades, balance] = await Promise.all([
       populateTradesData(filledTrades),
       alpacaService.getPortfolioValue(),
     ]);
 
-    const stopLossLimit = balance * 0.005; // 0.5% of total value
+    const stopLossLimit = buySellHelper.getStopLossMaxAmount(
+      parseFloat(balance),
+    );
 
     return performActions(newFilledTrades, stopLossLimit);
   } catch (e) {

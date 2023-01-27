@@ -17,25 +17,30 @@ export enum TRADE_STATUS {
   /** not totally filled yet */
   PARTIALLY_FILLED = "PARTIALLY_FILLED",
 
-  /** "buy" or "sell" type process, should now be concidered done */
+  /** For "buy" orders, should now be considered done */
   FILLED = "FILLED",
-
-  // OPEN = "OPEN",
-  // CLOSED = "CLOSED",
 
   CANCELLED = "CANCELLED",
 
-  /** order is filled and later resulted in a stop-loss (1) order. */
+  /**
+   * For more information, see [docs/trading-logic.md](../../docs/trading-logic.md)
+   */
   STOP_LOSS_1 = "STOP_LOSS_1",
 
-  /** order is filled and later resulted in a stop-loss (2) order. */
+  /**
+   * For more information, see [docs/trading-logic.md](../../docs/trading-logic.md)
+   */
   STOP_LOSS_2 = "STOP_LOSS_2",
 
-  /** order is filled and later resulted in a take-profit order. */
+  /**
+   * For more information, see [docs/trading-logic.md](../../docs/trading-logic.md)
+   */
   STOP_LOSS_3 = "STOP_LOSS_3",
 
-  /** order is filled and later resulted in a take partial profit order. */
-  TAKE_PARTIAL_PROFIT = "TAKE_PARTIAL_PROFIT",
+  /**
+   * For more information, see [docs/trading-logic.md](../../docs/trading-logic.md)
+   */
+  PARTIAL_PROFIT_TAKEN = "PARTIAL_PROFIT_TAKEN",
 }
 
 export interface TradesDataType {
