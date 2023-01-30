@@ -236,4 +236,68 @@ describe("buySellHelper", () => {
 
     expect(tradeStopLoss3).toBe(TRADE_STATUS.STOP_LOSS_3);
   });
+
+  it("calculates current stop-loss and take-profit values", () => {
+    const helpers = getBuySellHelpers();
+
+    const todayTrade: TradesDataType = {
+      price: 20,
+      quantity: 15,
+      breakoutRef: "BREAKOUT_REF",
+      created: Date.now(),
+      side: TRADE_SIDE.BUY,
+      status: TRADE_STATUS.FILLED,
+      ticker: "GOOG",
+      alpacaOrderId: "ALPACA_ORDER_ID",
+    };
+
+    const yesterdayTrade: TradesDataType = {
+      ...todayTrade,
+      created: Date.now() - 60 * 60 * 24 * 1000,
+    };
+
+    const levelsTodayTrade = helpers.getSellPriceLevels({
+      trade: todayTrade,
+      totalAssets: 3000,
+      lastTradePrice: 20.5,
+      movingAvg: 21,
+    });
+
+    expect(levelsTodayTrade).toEqual({
+      [TRADE_STATUS.STOP_LOSS_1]: 19,
+      [TRADE_STATUS.STOP_LOSS_2]: undefined,
+      [TRADE_STATUS.STOP_LOSS_3]: undefined,
+      [TRADE_STATUS.PARTIAL_PROFIT_TAKEN]: 22,
+    });
+
+    // MA10 below entry price
+    // const levelsYesterdayTrade = helpers.getSellPriceLevels({
+    //   trade: todayTrade,
+    //   totalAssets: 3000,
+    //   lastTradePrice: 20.5,
+    //   movingAvg: 18,
+    // });
+
+    // expect(levelsYesterdayTrade).toEqual({
+    //   [TRADE_STATUS.STOP_LOSS_1]: undefined,
+    //   [TRADE_STATUS.STOP_LOSS_2]: 20,
+    //   [TRADE_STATUS.STOP_LOSS_3]: undefined,
+    //   [TRADE_STATUS.PARTIAL_PROFIT_TAKEN]: 22,
+    // });
+
+    // // MA10 above entry price
+    // const levelsYesterdayTradeMA10Above = helpers.getSellPriceLevels({
+    //   trade: todayTrade,
+    //   totalAssets: 3000,
+    //   lastTradePrice: 22,
+    //   movingAvg: 21.5,
+    // });
+
+    // expect(levelsYesterdayTradeMA10Above).toEqual({
+    //   [TRADE_STATUS.STOP_LOSS_1]: undefined,
+    //   [TRADE_STATUS.STOP_LOSS_2]: undefined,
+    //   [TRADE_STATUS.STOP_LOSS_3]: 21.5,
+    //   [TRADE_STATUS.PARTIAL_PROFIT_TAKEN]: 22,
+    // });
+  });
 });

@@ -42,6 +42,21 @@ export const getBuySellHelpers = (config?: Partial<BuySellConstants>) => {
         return opts.trade.status;
       }
     },
+
+    getSellPriceLevels: function (opts: {
+      trade: TradesDataType;
+      lastTradePrice: number;
+      totalAssets: number;
+      movingAvg: number;
+    }) {
+      return {
+        [TRADE_STATUS.STOP_LOSS_1]:
+          opts.trade.price -
+          this.getStopLossMaxAmount(opts.totalAssets) / opts.trade.quantity,
+        [TRADE_STATUS.PARTIAL_PROFIT_TAKEN]:
+          opts.trade.price * _config.TAKE_PARTIAL_PROFIT_INCREASE_FACTOR,
+      };
+    },
   };
 
   function determineStopLossType({
