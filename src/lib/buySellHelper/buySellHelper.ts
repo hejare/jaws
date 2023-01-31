@@ -26,35 +26,55 @@ export const getBuySellHelpers = (config?: Partial<BuySellConstants>) => {
     getStopLossMaxAmount: (totalAssets: number): number =>
       totalAssets * _config.STOP_LOSS_1_PORTFOLIO_PERCENTAGE,
 
-    determineNewTradeStatus: (opts: {
+    determineNewTradeStatus: function (opts: {
       trade: TradesDataType;
       lastTradePrice: number;
       movingAvg: number;
       stopLossMaxAmount: number;
-    }): TRADE_STATUS => {
-      const stopLossType = determineStopLossType(opts);
+    }): TRADE_STATUS {
+      const sellPrices = this.getSellPriceLevels(opts);
 
-      if (stopLossType) {
-        return stopLossType;
-      } else if (shouldTakePartialProfit(opts)) {
-        return TRADE_STATUS.PARTIAL_PROFIT_TAKEN;
-      } else {
-        return opts.trade.status;
+      for (let tradeStatus of [
+        TRADE_STATUS.STOP_LOSS_1,
+        TRADE_STATUS.STOP_LOSS_2,
+        TRADE_STATUS.STOP_LOSS_3,
+      ]) {
+        if (opts.lastTradePrice <= Number(sellPrices[tradeStatus])) {
+          return tradeStatus;
+        }
       }
+
+      if (
+        opts.trade.status !== TRADE_STATUS.PARTIAL_PROFIT_TAKEN &&
+        opts.lastTradePrice >= Number(sellPrices.PARTIAL_PROFIT_TAKEN)
+      ) {
+        return TRADE_STATUS.PARTIAL_PROFIT_TAKEN;
+      }
+
+      return opts.trade.status;
     },
 
+    /**
+     * Returns an object with the price for the "currently active" sell
+     * levels, i.e. the possible TRADE_STATUSes that the trade can
+     * transition to.
+     */
     getSellPriceLevels: function (opts: {
       trade: TradesDataType;
       lastTradePrice: number;
-      totalAssets: number;
+      totalAssets?: number;
       movingAvg: number;
-    }) {
+      stopLossMaxAmount?: number;
+    }): { [k in TRADE_STATUS]?: number } {
       const isTradeFromToday = isToday(opts.trade.created);
+
+      const stopLossMaxAmount =
+        opts.stopLossMaxAmount ||
+        this.getStopLossMaxAmount(opts.totalAssets || 0);
 
       return {
         [TRADE_STATUS.STOP_LOSS_1]: isTradeFromToday
-          ? opts.trade.price -
-            this.getStopLossMaxAmount(opts.totalAssets) / opts.trade.quantity
+          ? opts.trade.price - stopLossMaxAmount / opts.trade.quantity
           : undefined,
         [TRADE_STATUS.STOP_LOSS_2]:
           !isTradeFromToday && opts.movingAvg < opts.trade.price
@@ -69,50 +89,4 @@ export const getBuySellHelpers = (config?: Partial<BuySellConstants>) => {
       };
     },
   };
-
-  function determineStopLossType({
-    trade,
-    stopLossMaxAmount,
-    lastTradePrice,
-    movingAvg,
-  }: {
-    trade: TradesDataType;
-    stopLossMaxAmount: number;
-    lastTradePrice: number;
-    movingAvg: number;
-  }): TRADE_STATUS | undefined {
-    // Stop loss case (1)
-    if ((trade.price - lastTradePrice) * trade.quantity >= stopLossMaxAmount)
-      return TRADE_STATUS.STOP_LOSS_1;
-
-    if (!isToday(trade.created)) {
-      // Stop loss case (2)
-      if (lastTradePrice <= trade.price) return TRADE_STATUS.STOP_LOSS_2;
-
-      // Stop loss case (3) Take profit
-      if (movingAvg && lastTradePrice <= movingAvg)
-        return TRADE_STATUS.STOP_LOSS_3;
-    }
-
-    return;
-  }
-
-  function shouldTakePartialProfit({
-    trade,
-    lastTradePrice,
-  }: {
-    trade: TradesDataType;
-    lastTradePrice: number;
-  }): boolean {
-    if (trade.status === TRADE_STATUS.PARTIAL_PROFIT_TAKEN) {
-      // We only want to do this once; Since it's already been done, the
-      // next sell should be a stop-loss to sell 100%
-      return false;
-    }
-
-    return (
-      trade.price * _config.TAKE_PARTIAL_PROFIT_INCREASE_FACTOR <=
-      lastTradePrice
-    );
-  }
 };

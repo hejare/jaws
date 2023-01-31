@@ -93,7 +93,7 @@ describe("buySellHelper", () => {
       expect(tradeStopLoss3).toBe(todayTrade.status);
     });
 
-    it("should check for all statuses on day >1", () => {
+    it("should only return some statuses on day >1", () => {
       const yesterdayTrade: TradesDataType = {
         price: 20,
         quantity: 15,
@@ -114,27 +114,29 @@ describe("buySellHelper", () => {
 
       expect(tradeTakePartialProfit).toBe(TRADE_STATUS.PARTIAL_PROFIT_TAKEN);
 
-      const tradeStopLoss1 = helpers1.determineNewTradeStatus({
+      // dropped below entry AND moving avg which is lower; should be
+      // STOP_LOSS_2
+      const tradeStopLoss2_1 = helpers1.determineNewTradeStatus({
         trade: yesterdayTrade,
         lastTradePrice: 15,
-        movingAvg: 23,
+        movingAvg: 19,
         stopLossMaxAmount,
       });
 
-      expect(tradeStopLoss1).toBe(TRADE_STATUS.STOP_LOSS_1);
+      expect(tradeStopLoss2_1).toBe(TRADE_STATUS.STOP_LOSS_2);
 
-      const tradeStopLoss2 = helpers1.determineNewTradeStatus({
+      const tradeStopLoss2_2 = helpers1.determineNewTradeStatus({
         trade: yesterdayTrade,
         lastTradePrice: 19.5, // dropped below entry, should be STOP_LOSS_2
-        movingAvg: 23,
+        movingAvg: 18,
         stopLossMaxAmount,
       });
 
-      expect(tradeStopLoss2).toBe(TRADE_STATUS.STOP_LOSS_2);
+      expect(tradeStopLoss2_2).toBe(TRADE_STATUS.STOP_LOSS_2);
 
       const tradeStopLoss3 = helpers1.determineNewTradeStatus({
         trade: yesterdayTrade,
-        lastTradePrice: 20.5, // dropped below movingAvg, should be STOP_LOSS_3
+        lastTradePrice: 20.5, // dropped below movingAvg which is above entry; should be STOP_LOSS_3
         movingAvg: 20.7,
         stopLossMaxAmount,
       });
@@ -206,9 +208,9 @@ describe("buySellHelper", () => {
       alpacaOrderId: "ALPACA_ORDER_ID",
     };
 
-    // dropped below everything
+    // dropped below everything on day 1
     const tradeStopLoss1 = helpers1.determineNewTradeStatus({
-      trade: yesterdayTrade,
+      trade: { ...yesterdayTrade, created: Date.now() },
       lastTradePrice: 15,
       movingAvg: 23,
       stopLossMaxAmount,
