@@ -30,7 +30,8 @@ export const getBuySellHelpers = (config?: Partial<BuySellConstants>) => {
       trade: TradesDataType;
       lastTradePrice: number;
       movingAvg: number;
-      stopLossMaxAmount: number;
+      /** Portfolio value, cash balance + value of investments */
+      totalAssets: number;
     }): TRADE_STATUS {
       const sellPrices = this.getSellPriceLevels(opts);
 
@@ -62,15 +63,11 @@ export const getBuySellHelpers = (config?: Partial<BuySellConstants>) => {
     getSellPriceLevels: function (opts: {
       trade: TradesDataType;
       lastTradePrice: number;
-      totalAssets?: number;
+      totalAssets: number;
       movingAvg: number;
-      stopLossMaxAmount?: number;
     }): { [k in TRADE_STATUS]?: number } {
       const isTradeFromToday = isToday(opts.trade.created);
-
-      const stopLossMaxAmount =
-        opts.stopLossMaxAmount ||
-        this.getStopLossMaxAmount(opts.totalAssets || 0);
+      const stopLossMaxAmount = this.getStopLossMaxAmount(opts.totalAssets);
 
       return {
         [TRADE_STATUS.STOP_LOSS_1]: isTradeFromToday

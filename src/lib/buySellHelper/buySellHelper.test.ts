@@ -39,8 +39,6 @@ describe("buySellHelper", () => {
       STOP_LOSS_1_PORTFOLIO_PERCENTAGE: 0.005,
     });
 
-    const stopLossMaxAmount = helpers1.getStopLossMaxAmount(10000);
-
     it("should only return some statuses on day 1", () => {
       const todayTrade: TradesDataType = {
         price: 20,
@@ -57,7 +55,7 @@ describe("buySellHelper", () => {
         trade: todayTrade,
         lastTradePrice: 25, // up more than 10%
         movingAvg: 23,
-        stopLossMaxAmount: stopLossMaxAmount,
+        totalAssets: 10000,
       });
 
       expect(tradeTakePartialProfit).toBe(TRADE_STATUS.PARTIAL_PROFIT_TAKEN);
@@ -66,7 +64,7 @@ describe("buySellHelper", () => {
         trade: todayTrade,
         lastTradePrice: 15,
         movingAvg: 23,
-        stopLossMaxAmount: stopLossMaxAmount,
+        totalAssets: 10000,
       });
 
       expect(tradeStopLoss1).toBe(TRADE_STATUS.STOP_LOSS_1);
@@ -76,7 +74,7 @@ describe("buySellHelper", () => {
         // dropped below entry, should be STOP_LOSS_2 on any other day
         lastTradePrice: 19.5,
         movingAvg: 23,
-        stopLossMaxAmount: stopLossMaxAmount,
+        totalAssets: 10000,
       });
 
       expect(tradeStopLoss2).toBe(todayTrade.status);
@@ -87,7 +85,7 @@ describe("buySellHelper", () => {
         // day
         lastTradePrice: 20.5,
         movingAvg: 20.7,
-        stopLossMaxAmount: stopLossMaxAmount,
+        totalAssets: 10000,
       });
 
       expect(tradeStopLoss3).toBe(todayTrade.status);
@@ -109,7 +107,7 @@ describe("buySellHelper", () => {
         trade: yesterdayTrade,
         lastTradePrice: 25, // up more than 10%
         movingAvg: 23,
-        stopLossMaxAmount,
+        totalAssets: 10000,
       });
 
       expect(tradeTakePartialProfit).toBe(TRADE_STATUS.PARTIAL_PROFIT_TAKEN);
@@ -120,7 +118,7 @@ describe("buySellHelper", () => {
         trade: yesterdayTrade,
         lastTradePrice: 15,
         movingAvg: 19,
-        stopLossMaxAmount,
+        totalAssets: 10000,
       });
 
       expect(tradeStopLoss2_1).toBe(TRADE_STATUS.STOP_LOSS_2);
@@ -129,7 +127,7 @@ describe("buySellHelper", () => {
         trade: yesterdayTrade,
         lastTradePrice: 19.5, // dropped below entry, should be STOP_LOSS_2
         movingAvg: 18,
-        stopLossMaxAmount,
+        totalAssets: 10000,
       });
 
       expect(tradeStopLoss2_2).toBe(TRADE_STATUS.STOP_LOSS_2);
@@ -138,7 +136,7 @@ describe("buySellHelper", () => {
         trade: yesterdayTrade,
         lastTradePrice: 20.5, // dropped below movingAvg which is above entry; should be STOP_LOSS_3
         movingAvg: 20.7,
-        stopLossMaxAmount,
+        totalAssets: 10000,
       });
 
       expect(tradeStopLoss3).toBe(TRADE_STATUS.STOP_LOSS_3);
@@ -148,8 +146,6 @@ describe("buySellHelper", () => {
     const helpers1 = getBuySellHelpers({
       STOP_LOSS_1_PORTFOLIO_PERCENTAGE: 0.005,
     });
-
-    const stopLossMaxAmount = helpers1.getStopLossMaxAmount(10000);
 
     const yesterdayTrade: TradesDataType = {
       price: 20,
@@ -166,7 +162,7 @@ describe("buySellHelper", () => {
       trade: yesterdayTrade,
       lastTradePrice: 25, // up more than 10%
       movingAvg: 23,
-      stopLossMaxAmount,
+      totalAssets: 10000,
     });
 
     expect(tradeTakePartialProfit).toBe(TRADE_STATUS.PARTIAL_PROFIT_TAKEN);
@@ -175,7 +171,7 @@ describe("buySellHelper", () => {
       trade: { ...yesterdayTrade, status: TRADE_STATUS.PARTIAL_PROFIT_TAKEN },
       lastTradePrice: 25, // up more than 10%
       movingAvg: 23,
-      stopLossMaxAmount,
+      totalAssets: 10000,
     });
 
     expect(secondStatusCheck).toBe(TRADE_STATUS.PARTIAL_PROFIT_TAKEN);
@@ -184,7 +180,7 @@ describe("buySellHelper", () => {
       trade: { ...yesterdayTrade, status: TRADE_STATUS.PARTIAL_PROFIT_TAKEN },
       lastTradePrice: 21,
       movingAvg: 23,
-      stopLossMaxAmount,
+      totalAssets: 10000,
     });
 
     expect(tradeDroppedValue).toBe(TRADE_STATUS.STOP_LOSS_3);
@@ -194,8 +190,6 @@ describe("buySellHelper", () => {
     const helpers1 = getBuySellHelpers({
       STOP_LOSS_1_PORTFOLIO_PERCENTAGE: 0.005,
     });
-
-    const stopLossMaxAmount = helpers1.getStopLossMaxAmount(10000);
 
     const yesterdayTrade: TradesDataType = {
       price: 20,
@@ -213,7 +207,7 @@ describe("buySellHelper", () => {
       trade: { ...yesterdayTrade, created: Date.now() },
       lastTradePrice: 15,
       movingAvg: 23,
-      stopLossMaxAmount,
+      totalAssets: 10000,
     });
 
     expect(tradeStopLoss1).toBe(TRADE_STATUS.STOP_LOSS_1);
@@ -223,7 +217,7 @@ describe("buySellHelper", () => {
       trade: yesterdayTrade,
       lastTradePrice: 19.5, // dropped below entry, should be STOP_LOSS_2
       movingAvg: 19.8,
-      stopLossMaxAmount,
+      totalAssets: 10000,
     });
 
     expect(tradeStopLoss2).toBe(TRADE_STATUS.STOP_LOSS_2);
@@ -233,7 +227,7 @@ describe("buySellHelper", () => {
       trade: yesterdayTrade,
       lastTradePrice: 20.5, // dropped below movingAvg, should be STOP_LOSS_3
       movingAvg: 20.7,
-      stopLossMaxAmount,
+      totalAssets: 10000,
     });
 
     expect(tradeStopLoss3).toBe(TRADE_STATUS.STOP_LOSS_3);
