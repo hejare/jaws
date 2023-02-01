@@ -6,9 +6,9 @@ import PriceDisplay from "@jaws/components/molecules/PriceDisplay";
 import AssetsList from "@jaws/components/organisms/AssetsList";
 import WidgetGrid from "@jaws/components/organisms/WidgetGrid";
 import { getServerSidePropsAllPages } from "@jaws/lib/getServerSidePropsAllPages";
+import { useGetTableData } from "@jaws/lib/hooks/useGetTableData";
 import { INDICATOR } from "@jaws/lib/priceHandler";
 import type { NextPage } from "next";
-import { useGetTableData } from "@jaws/lib/hooks/useGetTableData";
 
 const PortfolioPage: NextPage = () => {
   const {
@@ -24,6 +24,16 @@ const PortfolioPage: NextPage = () => {
   }
 
   const valueDiff = marketValue - investedValue;
+
+  console.log({
+    fetchStatus,
+    assets,
+    investedValue,
+    marketValue,
+    totalPortfolioValue,
+    valueDiff,
+  });
+
   return (
     <PageContainer>
       <WidgetGrid>
