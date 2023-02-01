@@ -1,8 +1,9 @@
-import fetch from "node-fetch";
-import { getToday } from "@jaws/lib/helpers";
 import { BrokerAccountAssetsResponse } from "@jaws/api/broker/account/assets";
 import { BrokerAccountBalanceResponse } from "@jaws/api/broker/account/balance";
+import { TradesDataType, TRADE_STATUS } from "@jaws/db/tradesMeta";
+import { getToday } from "@jaws/lib/helpers";
 import { convertResult, handleResult } from "@jaws/util";
+import fetch from "node-fetch";
 
 const baseHeaders = { "Content-Type": "application/json" };
 
@@ -56,4 +57,18 @@ export const getAccountAssets = async () => {
   });
 
   return handleResult<BrokerAccountAssetsResponse>(resp);
+};
+
+/**
+ * gets trades for current positions
+ */
+export const getJawsPortfolio = async () => {
+  const resp = await fetch(
+    `/api/data/trades?status=${TRADE_STATUS.FILLED}&status=${TRADE_STATUS.PARTIAL_PROFIT_TAKEN}`,
+    {
+      headers: baseHeaders,
+    },
+  );
+
+  return handleResult<TradesDataType[]>(resp);
 };
