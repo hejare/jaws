@@ -1,9 +1,10 @@
+import { getAccountAssets } from "@jaws/services/alpacaService";
+import { RawPosition } from "@master-chief/alpaca/@types/entities";
 import { NextApiRequest, NextApiResponse } from "next";
 import { ResponseDataType } from "../../ResponseDataMeta";
-import { getAccountAssets } from "@jaws/services/alpacaService";
 
 export interface BrokerAccountAssetsResponse extends ResponseDataType {
-  assets: Record<string, any>;
+  assets: RawPosition[];
 }
 
 export default async function handler(
