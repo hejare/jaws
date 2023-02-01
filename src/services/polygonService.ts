@@ -51,5 +51,5 @@ export const getSimpleMovingAverage = async (
   const url = `https://api.polygon.io/v1/indicators/sma/${symbol}?timespan=day&adjusted=true&window=${timeRange}&series_type=close&order=desc&limit=1&apiKey=${POLYGON_KEY}`;
   const response = await fetch(url);
   const data = await handleResult(response);
-  return data.results.values[0].value;
+  return data.results.values[0].value as number;
 };

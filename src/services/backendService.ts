@@ -72,3 +72,13 @@ export const getJawsPortfolio = async () => {
 
   return handleResult<TradesDataType[]>(resp);
 };
+
+export const getMovingAverages = async (symbols: string[]) => {
+  const symbolsParam = new URLSearchParams(symbols.map((s) => ["symbols", s]));
+
+  const resp = await fetch(`api/data/moving-avg?${symbolsParam}`, {
+    headers: baseHeaders,
+  });
+
+  return handleResult<{ ma: number; symbol: string }[]>(resp);
+};
