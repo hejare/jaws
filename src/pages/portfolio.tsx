@@ -25,15 +25,6 @@ const PortfolioPage: NextPage = () => {
 
   const valueDiff = marketValue - investedValue;
 
-  console.log({
-    fetchStatus,
-    assets,
-    investedValue,
-    marketValue,
-    totalPortfolioValue,
-    valueDiff,
-  });
-
   return (
     <PageContainer>
       <WidgetGrid>

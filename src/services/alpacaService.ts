@@ -239,7 +239,6 @@ export const getAccountCashBalance = async () => {
 };
 
 export const getAccountAssets = async () => {
-  // NOTE: "Assets" as we think of it, is actually "positions" in Alpacas terminology
   return sendAlpacaRequest<RawPosition[]>(
     `trading/accounts/${accountId}/positions`,
   );

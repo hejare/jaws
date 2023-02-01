@@ -1,17 +1,24 @@
-import { TRADE_STATUS } from "@jaws/db/tradesMeta";
+import { TradesDataType, TRADE_STATUS } from "@jaws/db/tradesMeta";
 import {
   getAccountAssets,
   getAccountCashBalance,
+  getJawsPortfolio,
+  getMovingAverages,
 } from "@jaws/services/backendService";
 import { RawPosition } from "@master-chief/alpaca/@types/entities";
 import { useEffect, useState } from "react";
+import { getBuySellHelpers } from "../buySellHelper/buySellHelper";
 
-export interface PortfolioTableAsset extends RawPosition {
-  percent_of_total_assets: number;
-  change_since_entry?: number;
-  stop_loss_type: TRADE_STATUS;
-  stop_loss_price: number;
-  take_partial_profit_price: number;
+export interface PortfolioTableAsset extends TradesDataType {
+  percentOfTotalAssets: number;
+  changeSinceEntry?: number;
+  stopLossType: TRADE_STATUS;
+  stopLossPrice: number;
+  takePartialProfitPrice: number;
+  avgEntryPrice: number;
+  value: number;
+  currentPrice: number;
+  changeToday: number;
 }
 
 export const useGetTableData = () => {
@@ -24,13 +31,33 @@ export const useGetTableData = () => {
   }>({} as any);
 
   useEffect(() => {
-    Promise.all([getAccountAssets(), getAccountCashBalance()])
-      .then(([assetsResult, balance]) => {
+    Promise.all([
+      getAccountAssets(),
+      getAccountCashBalance(),
+      getJawsPortfolio(),
+    ])
+      .then(async ([assetsResult, balance, trades]) => {
         const assets = assetsResult.assets;
+
+        const movingAverages = await getMovingAverages(
+          assets.map((a) => a.symbol),
+        );
+
+        const sortedData = trades.map((trade) => ({
+          trade,
+          movingAvg: movingAverages.find((ma) => ma.symbol === trade.ticker)
+            ?.ma,
+          alpacaAsset: assets.find((a) => a.symbol === trade.ticker),
+        })) as {
+          trade: TradesDataType;
+          movingAvg: number;
+          alpacaAsset: RawPosition;
+        }[];
 
         const tableData = convertToTableData({
           assets,
           balance: parseFloat(balance),
+          data: sortedData,
         });
 
         setData(tableData);
@@ -45,9 +72,15 @@ export const useGetTableData = () => {
 function convertToTableData({
   assets,
   balance,
+  data,
 }: {
   assets: RawPosition[];
   balance: number;
+  data: {
+    trade: TradesDataType;
+    movingAvg: number;
+    alpacaAsset: RawPosition;
+  }[];
 }): {
   marketValue: number;
   investedValue: number;
@@ -67,22 +100,35 @@ function convertToTableData({
 
   const totalPortfolioValue = balance + marketValue;
 
-  const extendedAssets: PortfolioTableAsset[] = assets.map((a) => {
-    // const buySellHelpers = getBuySellHelpers();
-    // const sellPriceLevels = buySellHelpers.getSellPriceLevels({});
+  const extendedAssets: PortfolioTableAsset[] = data.map(
+    ({ trade, alpacaAsset, movingAvg }) => {
+      const buySellHelpers = getBuySellHelpers();
+      const sellPriceLevels = buySellHelpers.getSellPriceLevels({
+        trade,
+        lastTradePrice: parseFloat(alpacaAsset.current_price || "NaN"),
+        movingAvg,
+        totalAssets: totalPortfolioValue,
+      });
 
-    return {
-      ...a,
-      percent_of_total_assets:
-        ((parseFloat(a.avg_entry_price) * parseFloat(a.qty)) /
-          totalPortfolioValue) *
-        100,
-      change_since_entry: a.current_price
-        ? (parseFloat(a.current_price) - parseFloat(a.avg_entry_price)) /
-          parseFloat(a.avg_entry_price)
-        : undefined,
-    };
-  }) as any;
+      if (!alpacaAsset.current_price) {
+        throw new Error("Missing data!");
+      }
+
+      const avgEntryPrice = parseFloat(alpacaAsset.avg_entry_price);
+      const currentPrice = parseFloat(alpacaAsset.current_price);
+
+      return {
+        ...trade,
+        percentOfTotalAssets:
+          ((avgEntryPrice * trade.quantity) / totalPortfolioValue) * 100,
+        changeSinceEntry: (currentPrice - avgEntryPrice) / avgEntryPrice,
+        value: trade.quantity * currentPrice,
+        currentPrice,
+        avgEntryPrice,
+        changeToday: alpacaAsset.change_today,
+      };
+    },
+  ) as any;
 
   return {
     investedValue,
@@ -91,9 +137,3 @@ function convertToTableData({
     totalPortfolioValue,
   };
 }
-
-// function positionToTrade(position: RawPosition): TradesDataType {
-//   return {
-//     breakoutRef: "FAKE",
-//   };
-// }
