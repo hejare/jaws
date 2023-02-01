@@ -75,7 +75,7 @@ export const getBuySellHelpers = (config?: Partial<BuySellConstants>) => {
           : undefined,
         [TRADE_STATUS.STOP_LOSS_2]:
           !isTradeFromToday && opts.movingAvg < opts.trade.price
-            ? opts.trade.price
+            ? Number(opts.trade.price)
             : undefined,
         [TRADE_STATUS.STOP_LOSS_3]:
           !isTradeFromToday && opts.movingAvg >= opts.trade.price

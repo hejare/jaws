@@ -87,6 +87,14 @@ const AssetssList = ({ data }: Props) => {
       render: (_, { currentPrice }) => <PriceDisplay value={currentPrice} />,
     },
     {
+      title: "MA",
+      key: "ma",
+      width: 130,
+      render: (_, { movingAvg }) => (
+        <PriceDisplay value={movingAvg}></PriceDisplay>
+      ),
+    },
+    {
       title: "Change today",
       dataIndex: "change_today",
       width: 200,
@@ -107,7 +115,7 @@ const AssetssList = ({ data }: Props) => {
       title: "Change since entry",
       key: "change_since_entry",
       width: 200,
-      render: ({ _, changeSinceEntry }) => (
+      render: (_, { changeSinceEntry }) => (
         <PercentageDisplay
           indicator={
             changeSinceEntry > 0
@@ -119,6 +127,24 @@ const AssetssList = ({ data }: Props) => {
           value={changeSinceEntry * 100}
         />
       ),
+    },
+
+    {
+      title: "Stop loss",
+      key: "stoploss",
+      render: (_, { stopLossType }) => stopLossType,
+    },
+    {
+      title: "SL Price",
+      key: "stoploss_price",
+      render: (_, { stopLossPrice }) => {
+        return <PriceDisplay value={stopLossPrice}></PriceDisplay>;
+      },
+    },
+    {
+      title: "Profit taken",
+      key: "partial_profit_taken",
+      render: (_, { takenPartialProfit }) => (takenPartialProfit ? "✅" : ""),
     },
     {
       title: "Operations",

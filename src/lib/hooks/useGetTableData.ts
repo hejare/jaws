@@ -11,7 +11,7 @@ import { getBuySellHelpers } from "../buySellHelper/buySellHelper";
 
 export interface PortfolioTableAsset extends TradesDataType {
   percentOfTotalAssets: number;
-  changeSinceEntry?: number;
+  changeSinceEntry: number;
   stopLossType: TRADE_STATUS;
   stopLossPrice: number;
   takePartialProfitPrice: number;
@@ -19,6 +19,8 @@ export interface PortfolioTableAsset extends TradesDataType {
   value: number;
   currentPrice: number;
   changeToday: number;
+  movingAvg: number;
+  takenPartialProfit: boolean;
 }
 
 export const useGetTableData = () => {
@@ -102,20 +104,26 @@ function convertToTableData({
 
   const extendedAssets: PortfolioTableAsset[] = data.map(
     ({ trade, alpacaAsset, movingAvg }) => {
-      const buySellHelpers = getBuySellHelpers();
-      const sellPriceLevels = buySellHelpers.getSellPriceLevels({
-        trade,
-        lastTradePrice: parseFloat(alpacaAsset.current_price || "NaN"),
-        movingAvg,
-        totalAssets: totalPortfolioValue,
-      });
-
       if (!alpacaAsset.current_price) {
         throw new Error("Missing data!");
       }
 
       const avgEntryPrice = parseFloat(alpacaAsset.avg_entry_price);
       const currentPrice = parseFloat(alpacaAsset.current_price);
+
+      const buySellHelpers = getBuySellHelpers();
+      const sellPriceLevels = buySellHelpers.getSellPriceLevels({
+        trade,
+        lastTradePrice: currentPrice,
+        movingAvg,
+        totalAssets: totalPortfolioValue,
+      });
+
+      const stopLossType = [
+        TRADE_STATUS.STOP_LOSS_1,
+        TRADE_STATUS.STOP_LOSS_2,
+        TRADE_STATUS.STOP_LOSS_3,
+      ].find((sl) => sellPriceLevels[sl] !== undefined) as TRADE_STATUS;
 
       return {
         ...trade,
@@ -125,10 +133,15 @@ function convertToTableData({
         value: trade.quantity * currentPrice,
         currentPrice,
         avgEntryPrice,
-        changeToday: alpacaAsset.change_today,
+        changeToday: Number(alpacaAsset.change_today),
+        stopLossPrice: sellPriceLevels[stopLossType] as number,
+        stopLossType,
+        takePartialProfitPrice: sellPriceLevels.PARTIAL_PROFIT_TAKEN as number,
+        movingAvg,
+        takenPartialProfit: trade.status === TRADE_STATUS.PARTIAL_PROFIT_TAKEN,
       };
     },
-  ) as any;
+  );
 
   return {
     investedValue,
