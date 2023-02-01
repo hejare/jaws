@@ -10,7 +10,8 @@
     "lint": "next lint",
     "watch": "tsc -w",
     "test": "jest",
-    "start": "next start"
+    "start": "next start",
+    "audit-fix": "npm_config_yes=true npx yarn-audit-fix"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^12.3.1",
