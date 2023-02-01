@@ -1,12 +1,13 @@
 import { getISOStringForToday, isValidSymbol } from "@jaws/lib/helpers";
-import { convertResult, handleResult } from "@jaws/util";
+import { handleResult } from "@jaws/util";
 import {
   Order,
   RawAccount,
   RawOrder,
+  RawPosition,
 } from "@master-chief/alpaca/@types/entities";
 import { PlaceOrder } from "@master-chief/alpaca/@types/params";
-import fetch, { BodyInit } from "node-fetch";
+import fetch, { BodyInit, RequestInit } from "node-fetch";
 import { Side } from "./alpacaMeta";
 
 const {
@@ -219,57 +220,50 @@ export const getAssetAndOrdersByTicker = async (ticker: string) => {
 
 export const deleteOrder = async (orderId: string) => {
   try {
-    const res = await fetch(
-      `${brokerApiBaseUrl}/trading/accounts/${accountId}/orders/${orderId}`,
+    const res = await sendAlpacaRequest(
+      `trading/accounts/${accountId}/orders/${orderId}`,
       {
         method: "DELETE",
-        headers: {
-          Authorization: `Basic ${base64EncodedKeys}`,
-        },
       },
     );
-    return await handleResult(res);
+
+    return res;
   } catch (e) {
     throw Error(`Unable to delete order - ${e as string}`);
   }
 };
 
 export const getAccountCashBalance = async () => {
-  const res = await fetch(
-    `${brokerApiBaseUrl}/trading/accounts/${accountId}/account`,
-    {
-      headers: {
-        Authorization: `Basic ${base64EncodedKeys}`,
-      },
-    },
-  );
-  const result = await convertResult(res);
+  const result = await getAccount();
   return result.cash;
 };
 
 export const getAccountAssets = async () => {
   // NOTE: "Assets" as we think of it, is actually "positions" in Alpacas terminology
-  const res = await fetch(
-    `${brokerApiBaseUrl}/trading/accounts/${accountId}/positions`,
-    {
-      headers: {
-        Authorization: `Basic ${base64EncodedKeys}`,
-      },
-    },
+  return sendAlpacaRequest<RawPosition[]>(
+    `trading/accounts/${accountId}/positions`,
   );
-  return convertResult(res);
 };
 
 /* The total balance (cash balance + assets value) */
 export const getPortfolioValue = async () => {
-  const res = await fetch(
-    `${brokerApiBaseUrl}/trading/accounts/${accountId}/account`,
-    {
-      headers: {
-        Authorization: `Basic ${base64EncodedKeys}`,
-      },
-    },
-  );
-  const result = await convertResult<RawAccount>(res);
+  const result = await getAccount();
   return result.equity;
 };
+
+async function getAccount() {
+  return sendAlpacaRequest<RawAccount>(
+    `/trading/accounts/${accountId}/account`,
+  );
+}
+
+async function sendAlpacaRequest<T = any>(path: string, options?: RequestInit) {
+  const res = await fetch(`${brokerApiBaseUrl}/${path}`, {
+    ...options,
+    headers: {
+      Authorization: `Basic ${base64EncodedKeys}`,
+    },
+  });
+
+  return handleResult<T>(res);
+}
