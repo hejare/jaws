@@ -10,7 +10,8 @@
     "lint": "next lint",
     "watch": "tsc -w",
     "test": "jest",
-    "start": "next start"
+    "start": "next start",
+    "audit-fix": "npm_config_yes=true npx yarn-audit-fix"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^12.3.1",
@@ -45,7 +46,7 @@
     "firebase": "^9.14.0",
     "firebase-admin": "^11.3.0",
     "next": "^12.3.1",
-    "node-fetch": "2.6.1",
+    "node-fetch": "^2.6.9",
     "rc-table": "^7.28.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
