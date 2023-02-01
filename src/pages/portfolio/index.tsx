@@ -12,7 +12,7 @@ import { getServerSidePropsAllPages } from "@jaws/lib/getServerSidePropsAllPages
 import {
   getAccountAssets,
   getAccountCashBalance,
-} from "../services/backendService";
+} from "@jaws/services/backendService";
 
 // eslint-disable-next-line no-unused-vars
 enum STATUS {
