@@ -8,6 +8,7 @@ module.exports = {
     "eslint:recommended",
     "plugin:react/recommended",
     "plugin:@typescript-eslint/recommended",
+    "plugin:react-hooks/recommended",
   ],
   globals: {
     TradingView: true,
@@ -46,10 +47,9 @@ module.exports = {
         "react/require-default-props": "off",
         "prefer-destructuring": "off",
         "prettier/prettier": "warn",
-        "react-hooks/exhaustive-deps": 0,
         "react/jsx-props-no-spreading": "off",
         "react/react-in-jsx-scope": "off",
-        ignoreRestSiblings: true,
+        ignoreRestSiblings: "off",
         "no-param-reassign": [
           "error",
           {

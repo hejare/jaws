@@ -77,7 +77,7 @@ export const getJawsPortfolio = async () => {
 export const getMovingAverages = async (symbols: string[]) => {
   const symbolsParam = new URLSearchParams(symbols.map((s) => ["symbols", s]));
 
-  const resp = await fetch(`api/data/moving-avg?${symbolsParam}`, {
+  const resp = await fetch(`api/data/moving-avg?${symbolsParam.toString()}`, {
     headers: baseHeaders,
   });
 
@@ -89,6 +89,6 @@ export const getAccountEquity = async () => {
     headers: baseHeaders,
   });
 
-  const equity = handleResult<BrokerAccountEquityResponse>(resp);
-  return parseFloat(equity);
+  const res = await handleResult<BrokerAccountEquityResponse>(resp);
+  return parseFloat(res.equity);
 };

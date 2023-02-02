@@ -36,7 +36,7 @@ export const getBuySellHelpers = (config?: Partial<BuySellConstants>) => {
     }): TRADE_STATUS {
       const sellPrices = this.getSellPriceLevels(opts);
 
-      for (let tradeStatus of [
+      for (const tradeStatus of [
         TRADE_STATUS.STOP_LOSS_1,
         TRADE_STATUS.STOP_LOSS_2,
         TRADE_STATUS.STOP_LOSS_3,
