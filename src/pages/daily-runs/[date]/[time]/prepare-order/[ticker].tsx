@@ -115,7 +115,8 @@ const TickerPage: NextPage = () => {
     setPrice(currentBreakout?.breakoutValue);
   }, [currentBreakout, setPrice]);
 
-  if (!currentBreakout || buyOrder.cashBalance === -1) return null;
+  if (!currentBreakout || buyOrder.cashBalance === -1)
+    return "Loading (or error...)";
 
   const indexCurrentBreakout = allBreakouts.findIndex(
     (breakout) => breakout.tickerRef === ticker,
@@ -143,36 +144,25 @@ const TickerPage: NextPage = () => {
       </NavButton>
       <TickerPageContainer>
         <div style={{ gridArea: "graph" }}>
-          {currentBreakout && (
-            <RatingContainer>
-              <Rating breakoutRef={currentBreakout?.breakoutRef} />
-            </RatingContainer>
-          )}
-          {currentBreakout ? (
-            <JawsTradeViewGraph
-              image={currentBreakout.image}
-              breakoutRef={currentBreakout.breakoutRef}
-              tickerRef={currentBreakout.tickerRef}
-            />
-          ) : (
-            <div>no data...</div>
-          )}
+          <RatingContainer>
+            <Rating breakoutRef={currentBreakout?.breakoutRef} />
+          </RatingContainer>
+          <JawsTradeViewGraph
+            image={currentBreakout.image}
+            breakoutRef={currentBreakout.breakoutRef}
+            tickerRef={currentBreakout.tickerRef}
+          />
         </div>
         <div style={{ gridArea: "sidebar" }}>
           <InfoBar>
             <h2>{ticker}</h2>
-            {currentBreakout && (
-              <>
-                <div>
-                  Breakout value/entry price:{" "}
-                  {handleLimitPrice(currentBreakout.breakoutValue)}
-                </div>
-                <div>Shares/quantity : {buyOrder.quantity}</div>
-                <div>
-                  Size: ${handleLimitPrice(buyOrder.quantity * buyOrder.price)}
-                </div>
-              </>
-            )}
+
+            <div>
+              Breakout value/entry price: $
+              {handleLimitPrice(currentBreakout.breakoutValue)}
+            </div>
+            <div>Cash balance: ${buyOrder.cashBalance}</div>
+            <div>Equity: ${buyOrder.equity}</div>
             <OrderDetailsWrapper
               orderDetails={orderDetails}
               orderStatus={orderStatus}
@@ -182,10 +172,9 @@ const TickerPage: NextPage = () => {
                 currentBreakout && (
                   <div>
                     <BuyTickerButtonWrapper
+                      onPriceChange={setPrice}
                       shares={buyOrder.quantity}
-                      entryPrice={handleLimitPrice(
-                        currentBreakout.breakoutValue,
-                      )}
+                      entryPrice={handleLimitPrice(buyOrder.price)}
                       {...breakouts[0]}
                     />
                   </div>

@@ -8,6 +8,7 @@ export const useComposeBuyOrder = (): {
   setPrice: (price: number) => void;
   cashBalance: number;
   price: number;
+  equity: number;
 } => {
   const [buyOrderDetails, setBuyOrderDetails] = useState<{
     quantity: number;
@@ -17,7 +18,7 @@ export const useComposeBuyOrder = (): {
   const [cashBalance, setCashBalance] = useState<number>(-1);
   const [equity, setEquity] = useState<number>(-1);
 
-  const [inputPrice, setInputPrice] = useState<number>();
+  const [inputPrice, setInputPrice] = useState<number>(-1);
 
   // get account info
   useEffect(() => {
@@ -45,12 +46,16 @@ export const useComposeBuyOrder = (): {
     );
   }, [cashBalance, equity, inputPrice]);
 
-  const setPrice = useCallback((price: number) => setInputPrice(price), []);
+  const setPrice = useCallback(
+    (price: number) => setInputPrice(Math.max(price, 0)),
+    [],
+  );
 
   return {
     ...buyOrderDetails,
     setPrice,
     cashBalance,
-    price: inputPrice || -1,
+    price: inputPrice,
+    equity,
   };
 };
