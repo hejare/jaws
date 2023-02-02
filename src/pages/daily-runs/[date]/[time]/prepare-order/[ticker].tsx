@@ -1,10 +1,3 @@
-import type { NextPage } from "next";
-import { useRouter } from "next/router";
-import fetch from "node-fetch";
-import { useEffect, useState } from "react";
-import styled from "styled-components";
-import { useInterval } from "usehooks-ts";
-import Button from "@jaws/components/atoms/buttons/Button";
 import NavButton from "@jaws/components/atoms/buttons/NavButton";
 import PageContainer from "@jaws/components/atoms/PageContainer";
 import BuyTickerButtonWrapper from "@jaws/components/molecules/BuyTickerButtonWrapper";
@@ -14,18 +7,24 @@ import OrderDetailsWrapper from "@jaws/components/molecules/OrderDetailsWrapper"
 import Rating from "@jaws/components/molecules/Rating";
 import TickerBreakoutList, {
   BreakoutData,
-} from "../../../../../components/organisms/TickerBreakoutList";
+} from "@jaws/components/organisms/TickerBreakoutList";
 import { getServerSidePropsAllPages } from "@jaws/lib/getServerSidePropsAllPages";
 import { ONE_MINUTE_IN_MS } from "@jaws/lib/helpers";
+import { useComposeBuyOrder } from "@jaws/lib/hooks/useComposeBuyOrder";
 import {
   AlpacaOrderType,
   SUMMED_ORDER_STATUS,
-} from "../../../../../services/alpacaMeta";
+} from "@jaws/services/alpacaMeta";
 import * as backendService from "@jaws/services/backendService";
 import { useBreakoutsStore } from "@jaws/store/breakoutsStore";
 import { handleResult } from "@jaws/util";
 import { handleLimitPrice } from "@jaws/util/handleLimitPrice";
-import { handleCalculateQuantity } from "@jaws/util/handleQuantity";
+import type { NextPage } from "next";
+import { useRouter } from "next/router";
+import fetch from "node-fetch";
+import { useEffect, useState } from "react";
+import styled from "styled-components";
+import { useInterval } from "usehooks-ts";
 
 export type MinimalOrderType = {
   qty: string;
@@ -54,22 +53,6 @@ const RatingContainer = styled.div`
   width: 200px;
 `;
 
-const NextBreakOutContainer = styled.div`
-  margin-top: 16px;
-  height: 60px;
-  position: absolute;
-  bottom: 34px;
-  right: 20px;
-`;
-
-const ButtonsContainer = styled.div`
-  width: 100px;
-`;
-
-const StyledButton = styled(Button)`
-  margin-bottom: 8px;
-`;
-
 const TickerPage: NextPage = () => {
   const router = useRouter();
   const { ticker, date, time } = router.query as {
@@ -85,7 +68,9 @@ const TickerPage: NextPage = () => {
       state.setBreakouts,
     ],
   );
-  const [cashBalance, setCashBalance] = useState<number>();
+
+  const { setPrice, ...buyOrder } = useComposeBuyOrder();
+
   const [interval, setInterval] = useState(0);
   const [breakouts, setBreakouts] = useState<BreakoutData[]>([]);
   const [orderStatus, setOrderStatus] = useState<
@@ -101,7 +86,7 @@ const TickerPage: NextPage = () => {
       .then((result) => {
         setAllBreakouts(result.breakouts);
       });
-  }, []);
+  }, [date, setAllBreakouts, time]);
 
   useEffect(() => {
     if (!ticker || Array.isArray(ticker)) {
@@ -115,27 +100,6 @@ const TickerPage: NextPage = () => {
       .catch(console.error);
   }, [ticker]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const balance = await backendService.getAccountCashBalance();
-      setCashBalance(parseFloat(balance));
-    };
-    void fetchData();
-  }, []);
-
-  const handleGetShares = (brokerLimitPrice: number) => {
-    if (cashBalance)
-      return handleCalculateQuantity(brokerLimitPrice, cashBalance);
-    else return 0;
-  };
-
-  const handleGetSize = (breakoutValue: number) => {
-    if (cashBalance) {
-      const shares = handleCalculateQuantity(breakoutValue, cashBalance);
-      return (shares * breakoutValue).toFixed(2);
-    } else return 0;
-  };
-
   useInterval(() => {
     setInterval(ONE_MINUTE_IN_MS);
     void backendService.getAccountOrderStatusByTicker(ticker).then((data) => {
@@ -144,7 +108,15 @@ const TickerPage: NextPage = () => {
     });
   }, interval);
 
-  if (!currentBreakout) return null;
+  useEffect(() => {
+    if (!currentBreakout) {
+      return;
+    }
+    setPrice(currentBreakout?.breakoutValue);
+  }, [currentBreakout, setPrice]);
+
+  if (!currentBreakout || buyOrder.cashBalance === -1) return null;
+
   const indexCurrentBreakout = allBreakouts.findIndex(
     (breakout) => breakout.tickerRef === ticker,
   );
@@ -195,19 +167,10 @@ const TickerPage: NextPage = () => {
                   Breakout value/entry price:{" "}
                   {handleLimitPrice(currentBreakout.breakoutValue)}
                 </div>
-                {cashBalance && (
-                  <>
-                    <div>
-                      Shares/quantity :
-                      {handleGetShares(
-                        handleLimitPrice(currentBreakout.breakoutValue),
-                      )}
-                    </div>
-                    <div>
-                      Size: ${handleGetSize(currentBreakout.breakoutValue)}
-                    </div>
-                  </>
-                )}
+                <div>Shares/quantity : {buyOrder.quantity}</div>
+                <div>
+                  Size: ${handleLimitPrice(buyOrder.quantity * buyOrder.price)}
+                </div>
               </>
             )}
             <OrderDetailsWrapper
@@ -219,9 +182,7 @@ const TickerPage: NextPage = () => {
                 currentBreakout && (
                   <div>
                     <BuyTickerButtonWrapper
-                      shares={handleGetShares(
-                        handleLimitPrice(currentBreakout.breakoutValue),
-                      )}
+                      shares={buyOrder.quantity}
                       entryPrice={handleLimitPrice(
                         currentBreakout.breakoutValue,
                       )}
