@@ -170,7 +170,7 @@ const updateTrade = async (trade: ExtendedTradesDataType) => {
 
 export const performActions = (
   trades: ExtendedTradesDataType[],
-  stopLossLimit: number,
+  totalAssets: number,
 ) => {
   const messageArray: string[] = [];
   trades.forEach((trade) => {
@@ -178,7 +178,7 @@ export const performActions = (
     const buySellHelpers = getBuySellHelpers();
     const newTradeStatus = buySellHelpers.determineNewTradeStatus({
       trade,
-      stopLossMaxAmount: stopLossLimit,
+      totalAssets,
       lastTradePrice: trade.lastTradePrice,
       movingAvg: trade.movingAvg,
     });
@@ -270,18 +270,12 @@ export const triggerStopLossTakeProfit = async () => {
       TRADE_STATUS.PARTIAL_PROFIT_TAKEN,
     );
 
-    const buySellHelper = getBuySellHelpers();
-
     const [newFilledTrades, balance] = await Promise.all([
       populateTradesData(filledTrades),
       alpacaService.getPortfolioValue(),
     ]);
 
-    const stopLossLimit = buySellHelper.getStopLossMaxAmount(
-      parseFloat(balance),
-    );
-
-    return performActions(newFilledTrades, stopLossLimit);
+    return performActions(newFilledTrades, parseFloat(balance));
   } catch (e) {
     console.log(e);
     throw Error(`Unable to handle stop-loss & take-profit ${e as string}`);
