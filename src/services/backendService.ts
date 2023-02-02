@@ -34,7 +34,7 @@ export const getAccountCashBalance = async () => {
     headers: baseHeaders,
   });
   const { balance } = await convertResult<BrokerAccountBalanceResponse>(resp);
-  return balance;
+  return parseFloat(balance);
 };
 
 export const getAccountOrderStatusByTicker = async (ticker: string) => {
@@ -89,5 +89,6 @@ export const getAccountEquity = async () => {
     headers: baseHeaders,
   });
 
-  return handleResult<BrokerAccountEquityResponse>(resp);
+  const equity = handleResult<BrokerAccountEquityResponse>(resp);
+  return parseFloat(equity);
 };
