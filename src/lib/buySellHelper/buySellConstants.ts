@@ -7,4 +7,5 @@ export interface BuySellConstants {
   TAKE_PARTIAL_PROFIT_SELL_PERCENTAGE: number;
   BUY_ORDER_TIME_IN_FORCE: OrderTimeInForce;
   MOVING_AVERAGE_DAY_RANGE: number;
+  BUY_ORDER_EQUITY_PERCENTAGE: number;
 }

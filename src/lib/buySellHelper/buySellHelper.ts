@@ -9,6 +9,7 @@ const DEFAULT_BUY_SELL_CONFIG: BuySellConstants = {
   TAKE_PARTIAL_PROFIT_SELL_PERCENTAGE: 0.5,
   BUY_ORDER_TIME_IN_FORCE: "day",
   MOVING_AVERAGE_DAY_RANGE: 10,
+  BUY_ORDER_EQUITY_PERCENTAGE: 0.1,
 };
 
 export const getBuySellHelpers = (config?: Partial<BuySellConstants>) => {
@@ -83,6 +84,25 @@ export const getBuySellHelpers = (config?: Partial<BuySellConstants>) => {
             : undefined,
         [TRADE_STATUS.PARTIAL_PROFIT_TAKEN]:
           opts.trade.price * _config.TAKE_PARTIAL_PROFIT_INCREASE_FACTOR,
+      };
+    },
+
+    getBuyOrderQuantity: function (opts: {
+      /** The price we want to buy at */
+      entryPrice: number;
+      /** cash + portfolio */
+      equity: number;
+      cashBalance: number;
+    }) {
+      let maxOrderValue = Number(
+        (opts.equity * _config.BUY_ORDER_EQUITY_PERCENTAGE).toFixed(4),
+      );
+
+      maxOrderValue = Math.min(maxOrderValue, opts.cashBalance);
+
+      return {
+        maxOrderValue,
+        quantity: Math.floor(maxOrderValue / opts.entryPrice),
       };
     },
   };
