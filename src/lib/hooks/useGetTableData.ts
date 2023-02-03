@@ -58,7 +58,7 @@ export const useGetTableData = () => {
 
         const tableData = convertToTableData({
           assets,
-          balance: parseFloat(balance),
+          balance,
           data: sortedData,
         });
 

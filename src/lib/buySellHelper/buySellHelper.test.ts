@@ -24,6 +24,7 @@ describe("buySellHelper", () => {
       TAKE_PARTIAL_PROFIT_SELL_PERCENTAGE: 0.5,
       BUY_ORDER_TIME_IN_FORCE: "day",
       MOVING_AVERAGE_DAY_RANGE: 10,
+      BUY_ORDER_EQUITY_PERCENTAGE: 0.1,
     };
 
     expect(helpers1.config).toStrictEqual(defaultConfig);
@@ -288,6 +289,43 @@ describe("buySellHelper", () => {
     expect(levelsYesterdayTradeMA10Above).toEqual({
       [TRADE_STATUS.STOP_LOSS_3]: 21.5,
       [TRADE_STATUS.PARTIAL_PROFIT_TAKEN]: 22,
+    });
+  });
+
+  it("generates the correct buy price + quantity", () => {
+    const helpers = getBuySellHelpers();
+
+    const buyInfo1 = helpers.getBuyOrderQuantity({
+      entryPrice: 25.3,
+      equity: 1000,
+      cashBalance: 500,
+    });
+
+    expect(buyInfo1).toEqual({
+      quantity: 3,
+      maxOrderValue: 100,
+    });
+
+    const buyInfo2 = helpers.getBuyOrderQuantity({
+      entryPrice: 0.023,
+      equity: 3502,
+      cashBalance: 500,
+    });
+
+    expect(buyInfo2).toEqual({
+      quantity: 15226,
+      maxOrderValue: 350.2,
+    });
+
+    const buyInfoLowCash = helpers.getBuyOrderQuantity({
+      entryPrice: 0.023,
+      equity: 3502,
+      cashBalance: 100,
+    });
+
+    expect(buyInfoLowCash).toEqual({
+      quantity: 4347,
+      maxOrderValue: 100,
     });
   });
 });

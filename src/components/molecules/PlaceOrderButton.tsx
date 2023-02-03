@@ -1,13 +1,13 @@
+import { TRADE_SIDE, TRADE_STATUS } from "@jaws/db/tradesMeta";
+import { handleBuyOrder } from "@jaws/lib/brokerHandler";
+import { ONE_MINUTE_IN_MS } from "@jaws/lib/helpers";
+import * as backendService from "@jaws/services/backendService";
+import { useTradesStore } from "@jaws/store/tradesStore";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
+import { useInterval } from "usehooks-ts";
 import Button from "../atoms/buttons/Button";
 import { ButtonsContainer } from "../atoms/ButtonsContainer";
-import { handleBuyOrder } from "@jaws/lib/brokerHandler";
-import { useEffect, useState } from "react";
-import * as backendService from "@jaws/services/backendService";
-import { useInterval } from "usehooks-ts";
-import { ONE_MINUTE_IN_MS } from "@jaws/lib/helpers";
-import { useTradesStore } from "@jaws/store/tradesStore";
-import { TRADE_STATUS, TRADE_SIDE } from "@jaws/db/tradesMeta";
 import Input from "../atoms/Input";
 
 const StyledButton = styled(Button)`
@@ -16,33 +16,30 @@ const StyledButton = styled(Button)`
 
 interface Props {
   ticker: string;
-  entryPrice: number;
+  buyPrice: number;
   quantity: number;
   breakoutRef: string;
   disabled?: boolean;
   onClick?: () => void;
+  onPriceChange: (newPrice: number) => void;
 }
 
 const PlaceOrderButton = ({
   ticker,
-  entryPrice,
+  buyPrice,
   quantity,
   breakoutRef,
   disabled: forceDisabled,
   onClick,
+  onPriceChange,
 }: Props) => {
   const [interval, setInterval] = useState(0);
   const [disabled, setDisabled] = useState(forceDisabled);
-  const [buyPrice, setBuyPrice] = useState(entryPrice);
 
   const [trade, upsertTrade] = useTradesStore((state) => [
     state.trades.find((t) => t.ticker === ticker),
     state.upsertTrade,
   ]);
-
-  useEffect(() => {
-    setBuyPrice(entryPrice);
-  }, [entryPrice]);
 
   useInterval(() => {
     setInterval(ONE_MINUTE_IN_MS);
@@ -65,19 +62,22 @@ const PlaceOrderButton = ({
         setDisabled(false);
       }
     }
-  }, [trade]);
+  }, [forceDisabled, trade]);
 
   const size = (quantity * buyPrice).toFixed(2);
 
   return (
     <ButtonsContainer>
-      <Input
-        value={buyPrice.toString()}
-        type="number"
-        step="0.01"
-        onChange={(e) => setBuyPrice(e.target.value)}
-        title="Price"
-      />
+      <div>
+        <Input
+          value={buyPrice.toString()}
+          type="number"
+          step="0.01"
+          onChange={(e) => onPriceChange(e.target.value)}
+          title="Price"
+        />{" "}
+        <div>Shares/quantity : {quantity}</div>
+      </div>
       <StyledButton
         disabled={disabled}
         onClick={() => {

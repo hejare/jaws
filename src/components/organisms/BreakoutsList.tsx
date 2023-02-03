@@ -4,7 +4,6 @@ import { DailyRunStatus } from "@jaws/db/dailyRunsMeta";
 import { memo } from "react";
 import { useModal } from "use-modal-hook";
 import styled from "styled-components";
-import BreakoutModal from "../molecules/BreakoutModal";
 import ImageModal from "../molecules/ImageModal";
 import Rating from "../molecules/Rating";
 import Button from "../atoms/buttons/Button";
@@ -40,27 +39,6 @@ interface ModalProps {
 }
 
 const BreakoutsList = ({ data, disableBuy, date, time }: Props) => {
-  const TheBreakoutModal = memo(
-    ({
-      isOpen,
-      onClose,
-      image,
-      breakoutRef,
-      breakoutValue,
-      symbol,
-    }: ModalProps) => (
-      <BreakoutModal
-        isOpen={isOpen}
-        onClose={onClose}
-        image={image}
-        breakoutRef={breakoutRef}
-        breakoutValue={breakoutValue}
-        symbol={symbol}
-      />
-    ),
-  );
-  const [showBreakoutModal] = useModal(TheBreakoutModal, {});
-
   const TheImageModal = memo(
     ({ isOpen, onClose, image, breakoutRef }: ModalProps) => (
       <ImageModal

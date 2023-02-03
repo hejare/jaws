@@ -250,7 +250,7 @@ export const getPortfolioValue = async () => {
   return result.equity;
 };
 
-async function getAccount() {
+export async function getAccount() {
   return sendAlpacaRequest<RawAccount>(
     `/trading/accounts/${accountId}/account`,
   );
