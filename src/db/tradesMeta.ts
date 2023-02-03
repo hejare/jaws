@@ -54,9 +54,18 @@ export interface TradesDataType {
   breakoutRef: string;
   alpacaOrderId?: string;
   userRef?: string;
+  sold?: number;
 }
 
 export interface ExtendedTradesDataType extends TradesDataType {
   placed?: number;
   alpacaOrderId?: string;
+  avgEntryPrice?: number;
+  alpacaStopLossOrderId?: string;
+  alpacaTakeProfitOrderId?: string;
+  avgStopLossSellPrice?: number;
+  avgTakeProfitSellPrice?: number;
+  /** timestamp */
+  profitTaken?: number;
+  filledQuantity?: number;
 }

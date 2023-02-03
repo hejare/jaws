@@ -1,4 +1,9 @@
-import { TradesDataType, TRADE_SIDE, TRADE_STATUS } from "@jaws/db/tradesMeta";
+import {
+  ExtendedTradesDataType as DBExtendedTradesDataType,
+  TradesDataType,
+  TRADE_SIDE,
+  TRADE_STATUS,
+} from "@jaws/db/tradesMeta";
 import { getBuySellHelpers } from "@jaws/lib/buySellHelper/buySellHelper";
 import { AlpacaOrderStatusType } from "@jaws/services/alpacaMeta";
 import * as alpacaService from "@jaws/services/alpacaService";
@@ -12,12 +17,11 @@ import {
   getLastTradePrice,
   getSimpleMovingAverage,
 } from "../services/polygonService";
-import { isToday } from "./helpers";
+import { isToday, ONE_DAY_IN_MS } from "./helpers";
 
-interface ExtendedTradesDataType extends TradesDataType {
+interface ExtendedTradesDataType extends DBExtendedTradesDataType {
   lastTradePrice: number;
   movingAvg: number;
-  sold?: number;
 }
 
 export const triggerBuyOrders = async () => {
@@ -66,6 +70,56 @@ export const deleteActiveOrder = async (orderId: string) => {
   }
 };
 
+export const triggerUpdateOpenSellOrders = async () => {
+  // Get un-filled/open trades
+  const trades = (
+    await getTradesByStatus(
+      TRADE_STATUS.STOP_LOSS_1,
+      TRADE_STATUS.STOP_LOSS_2,
+      TRADE_STATUS.STOP_LOSS_3,
+      TRADE_STATUS.PARTIAL_PROFIT_TAKEN,
+    )
+  ).filter((t) => !(t.avgStopLossSellPrice || t.avgTakeProfitSellPrice));
+
+  // Get closed alpaca sell orders
+  const alpacaOrders = (
+    await alpacaService.getOrders({
+      status: "closed",
+      symbols: trades.map((t) => t.ticker),
+      // older orders should have been dealt with already
+      after: new Date(Date.now() - ONE_DAY_IN_MS).toISOString(),
+    })
+  ).filter((order) => order.side === "sell");
+
+  const updatedTrades = trades.map((trade) => {
+    const priceField =
+      trade.status === TRADE_STATUS.PARTIAL_PROFIT_TAKEN
+        ? "avgTakeProfitSellPrice"
+        : "avgStopLossSellPrice";
+
+    const alpacaOrderIdField =
+      trade.status === TRADE_STATUS.PARTIAL_PROFIT_TAKEN
+        ? "alpacaTakeProfitOrderId"
+        : "alpacaStopLossOrderId";
+
+    const alpacaOrder = alpacaOrders.find(
+      (ao) => trade[alpacaOrderIdField] === ao.id,
+    );
+
+    if (!alpacaOrder) {
+      return null;
+    }
+
+    return { ...trade, [priceField]: alpacaOrder.filled_avg_price };
+  });
+
+  await Promise.all(
+    updatedTrades.map((t) => (t ? putTrade(t) : Promise.resolve())),
+  );
+
+  return { updatedTrades, orders: alpacaOrders };
+};
+
 export const triggerUpdateOpenBuyOrders = async () => {
   // Get all "ACTIVE" & "PARTIALLY_FILLED" orders:
   const activeTrades = await getTradesByStatus(TRADE_STATUS.ACTIVE);
@@ -102,7 +156,12 @@ export const triggerUpdateOpenBuyOrders = async () => {
     }
 
     updateTradesPromises.push(
-      putTrade({ ...trade, status: newStatus }).catch((e) => {
+      putTrade({
+        ...trade,
+        status: newStatus,
+        avgEntryPrice: alpacaOrder.filled_avg_price,
+        filledQuantity: alpacaOrder.filled_qty,
+      }).catch((e) => {
         console.log(e);
       }),
     );
@@ -121,7 +180,12 @@ export const triggerUpdateOpenBuyOrders = async () => {
 
     if (alpacaOrder.status === AlpacaOrderStatusType.FILLED) {
       updateTradesPromises.push(
-        putTrade({ ...trade, status: TRADE_STATUS.FILLED }).catch((e) => {
+        putTrade({
+          ...trade,
+          status: TRADE_STATUS.FILLED,
+          avgEntryPrice: alpacaOrder.filled_avg_price,
+          filledQuantity: alpacaOrder.filled_qty,
+        }).catch((e) => {
           console.log(e);
         }),
       );
@@ -153,7 +217,9 @@ export const triggerClearOldBuyOrders = async () => {
   return { readyTrades };
 };
 
-const depopulateTrade = (trade: ExtendedTradesDataType): TradesDataType => {
+const depopulateTrade = (
+  trade: ExtendedTradesDataType,
+): DBExtendedTradesDataType => {
   const { lastTradePrice, movingAvg, ...depopTrade } = trade;
   return depopTrade;
 };
@@ -213,12 +279,16 @@ async function handleStopLossOrder(
   newTradeStatus: TRADE_STATUS,
 ) {
   try {
-    await alpacaService.stopLossSellOrder(trade.ticker, trade.quantity);
+    const res = await alpacaService.stopLossSellOrder(
+      trade.ticker,
+      trade.quantity,
+    );
 
     await updateTrade({
       ...trade,
       status: newTradeStatus,
       sold: Date.now(),
+      alpacaStopLossOrderId: res.id,
     });
   } catch (e) {
     console.log(e);
@@ -241,6 +311,8 @@ const handleTakePartialProfitOrder = async (trade: ExtendedTradesDataType) => {
       ...depopulateTrade(trade),
       quantity: trade.quantity - parseInt(result.qty),
       status: TRADE_STATUS.PARTIAL_PROFIT_TAKEN,
+      alpacaTakeProfitOrderId: result.id,
+      profitTaken: Date.now(),
     });
   } catch (e) {
     console.log(e);

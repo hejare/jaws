@@ -6,7 +6,10 @@ import {
   RawOrder,
   RawPosition,
 } from "@master-chief/alpaca/@types/entities";
-import { PlaceOrder } from "@master-chief/alpaca/@types/params";
+import {
+  GetOrders as AlpacaGetOrdersParams,
+  PlaceOrder,
+} from "@master-chief/alpaca/@types/params";
 import fetch, { BodyInit, RequestInit } from "node-fetch";
 import { Side } from "./alpacaMeta";
 
@@ -95,7 +98,7 @@ export const stopLossSellOrder = async (symbol: string, quantity: number) => {
 
   console.log(`Stop loss on ${symbol}`);
 
-  await postSellOrder({ symbol, quantity });
+  return postSellOrder({ symbol, quantity });
 };
 
 /** Should sell 50% of position */
@@ -153,22 +156,30 @@ export const postBuyBreakoutOrder = async ({
   return postOrder(JSON.stringify(bodyObject));
 };
 
-export const getOrders = async () => {
+export const getOrders = async (
+  opts: Omit<AlpacaGetOrdersParams, "until" | "after"> & {
+    until?: string;
+    after?: string;
+  } = {},
+): Promise<RawOrder[]> => {
+  const defaultParams: AlpacaGetOrdersParams = { status: "all" };
+  const params = new URLSearchParams({
+    ...defaultParams,
+    ...opts,
+  } as Record<string, string>);
+
   try {
-    const res = await fetch(
-      `${brokerApiBaseUrl}/trading/accounts/${accountId}/orders?status=all`,
-      {
-        headers: {
-          Authorization: `Basic ${base64EncodedKeys}`,
-        },
-      },
+    const res = await sendAlpacaRequest(
+      `trading/accounts/${accountId}/orders?${params.toString()}`,
     );
-    return await handleResult(res);
+
+    return res;
   } catch (e) {
-    throw Error(`Unable to get orders - ${e as string}`);
+    throw Error(`Unable to get orders - ${JSON.stringify(e)}`);
   }
 };
 
+// TODO: Use generic getOrders()
 export const getTodaysOrders = async (): Promise<Order[]> => {
   try {
     const res = await fetch(
@@ -195,6 +206,7 @@ export const getTodaysOrders = async (): Promise<Order[]> => {
   }
 };
 
+// TODO: Use generic getOrders()
 export const getOrdersByTicker = async (ticker: string) => {
   try {
     const res = await fetch(
@@ -205,6 +217,7 @@ export const getOrdersByTicker = async (ticker: string) => {
         },
       },
     );
+
     return await handleResult(res);
   } catch (e) {
     throw Error(`Unable to get order - ${e as string}`);

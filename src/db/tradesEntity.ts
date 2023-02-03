@@ -19,13 +19,13 @@ export async function getTrades(ticker: string) {
   const doc = results.docs[0];
   return {
     ...doc.data(),
-  } as TradesDataType;
+  } as ExtendedTradesDataType;
 }
 
 export async function getLatestTrade(ticker: string) {
   const docs = await db.collection("trades").orderBy("created", "desc").get();
 
-  const result: TradesDataType[] = [];
+  const result: ExtendedTradesDataType[] = [];
   docs.forEach((doc: any) => {
     const data = doc.data();
     if (data.ticker === ticker) {
@@ -53,7 +53,7 @@ export async function getTradesByStatus(...status: string[]) {
   if (results.size === 0) {
     return [];
   }
-  return results.docs.map((doc) => doc.data()) as TradesDataType[];
+  return results.docs.map((doc) => doc.data()) as ExtendedTradesDataType[];
 }
 
 export async function getTradeByOrderId(orderId: string) {
@@ -66,7 +66,7 @@ export async function getTradeByOrderId(orderId: string) {
   const doc = results.docs[0];
   return {
     ...doc.data(),
-  } as TradesDataType;
+  } as ExtendedTradesDataType;
 }
 
 export async function getAllTrades() {
@@ -74,5 +74,5 @@ export async function getAllTrades() {
   if (results.size === 0) {
     return [];
   }
-  return results.docs.map((doc) => doc.data()) as TradesDataType[];
+  return results.docs.map((doc) => doc.data()) as ExtendedTradesDataType[];
 }
