@@ -1,6 +1,13 @@
-import fetch, { BodyInit } from "node-fetch";
-import { getISOStringForToday } from "../lib/helpers";
-import { convertResult, handleResult } from "../util";
+import { getISOStringForToday, isValidSymbol } from "@jaws/lib/helpers";
+import { handleResult } from "@jaws/util";
+import {
+  Order,
+  RawAccount,
+  RawOrder,
+  RawPosition,
+} from "@master-chief/alpaca/@types/entities";
+import { PlaceOrder } from "@master-chief/alpaca/@types/params";
+import fetch, { BodyInit, RequestInit } from "node-fetch";
 import { Side } from "./alpacaMeta";
 
 const {
@@ -23,7 +30,7 @@ const getHoldingInTicker = async (ticker: string) => {
 };
 
 /* Used for all orders (both with side "buy" and "sell") */
-const postOrder = async (body: BodyInit) => {
+const postOrder = async (body: BodyInit): Promise<RawOrder> => {
   try {
     const res = await fetch(
       `${brokerApiBaseUrl}/trading/accounts/${accountId}/orders`,
@@ -61,13 +68,7 @@ const getAssetByTicker = async (ticker: string) => {
 
 export const closeOpenPosition = async (symbol: string, percentage: string) => {
   try {
-    if (
-      !symbol ||
-      typeof symbol !== "string" ||
-      symbol.length < 2 ||
-      symbol.length > 5 ||
-      !percentage
-    ) {
+    if (!percentage || !isValidSymbol(symbol)) {
       throw Error;
     }
     const res = await fetch(
@@ -87,62 +88,69 @@ export const closeOpenPosition = async (symbol: string, percentage: string) => {
 };
 
 /* Closes the position (sells 100%). */
-export const stopLossSellOrder = async (symbol: string) => {
-  if (
-    !symbol ||
-    typeof symbol !== "string" ||
-    symbol.length < 2 ||
-    symbol.length > 5
-  ) {
+export const stopLossSellOrder = async (symbol: string, quantity: number) => {
+  if (!isValidSymbol(symbol)) {
     throw Error;
   }
 
   console.log(`Stop loss on ${symbol}`);
-  await deleteOrder(symbol);
+
+  await postSellOrder({ symbol, quantity });
 };
 
-/* This is triggered when price has went up with 10% or more. */
-export const takeProfitSellOrder = (symbol: string, totalQuantity: number) => {
-  if (
-    !symbol ||
-    typeof symbol !== "string" ||
-    symbol.length < 2 ||
-    symbol.length > 5
-  ) {
+/** Should sell 50% of position */
+export const takePartialProfitSellOrder = (
+  symbol: string,
+  quantity: number,
+) => {
+  if (!isValidSymbol(symbol)) {
     throw Error;
   }
 
-  // sell ~50%, floored value to prevent fractional trades.
-  let quantity = 0;
-  quantity = Math.floor(totalQuantity * 0.5);
+  console.log(`Take profit on ${symbol}`);
 
-  const body: BodyInit = JSON.stringify({
-    side: "sell",
+  return postSellOrder({ symbol, quantity });
+};
+
+const postSellOrder = ({
+  symbol,
+  quantity,
+}: {
+  symbol: string;
+  quantity: number;
+}) => {
+  const params: PlaceOrder = {
+    side: Side.SELL,
     symbol: symbol,
     time_in_force: "day",
     qty: quantity,
     type: "market",
-  });
+  };
 
-  console.log(`Take profit on ${symbol}`);
+  const body: BodyInit = JSON.stringify(params);
+
   return postOrder(body);
 };
 
-export const postNewBuyOrder = async (
-  ticker: string,
-  price: number,
-  quantity: number,
-) => {
-  const body: BodyInit = JSON.stringify({
+export const postBuyBreakoutOrder = async ({
+  ticker,
+  price,
+  quantity,
+}: {
+  ticker: string;
+  price: number;
+  quantity: number;
+}) => {
+  const bodyObject: PlaceOrder = {
     symbol: ticker,
-    qty: quantity, // TODO: UNDO OVERRIDING OF QUANTITY: quantity,
-    side: Side.BUY,
+    type: "stop",
+    stop_price: price,
+    side: "buy",
     time_in_force: "day",
-    type: "limit",
-    limit_price: price,
-  });
+    qty: quantity,
+  };
 
-  return postOrder(body);
+  return postOrder(JSON.stringify(bodyObject));
 };
 
 export const getOrders = async () => {
@@ -161,7 +169,7 @@ export const getOrders = async () => {
   }
 };
 
-export const getTodaysOrders = async () => {
+export const getTodaysOrders = async (): Promise<Order[]> => {
   try {
     const res = await fetch(
       `${brokerApiBaseUrl}/trading/accounts/${accountId}/orders?status=all&after=${getISOStringForToday()}`,
@@ -212,57 +220,49 @@ export const getAssetAndOrdersByTicker = async (ticker: string) => {
 
 export const deleteOrder = async (orderId: string) => {
   try {
-    const res = await fetch(
-      `${brokerApiBaseUrl}/trading/accounts/${accountId}/orders/${orderId}`,
+    const res = await sendAlpacaRequest(
+      `trading/accounts/${accountId}/orders/${orderId}`,
       {
         method: "DELETE",
-        headers: {
-          Authorization: `Basic ${base64EncodedKeys}`,
-        },
       },
     );
-    return await handleResult(res);
+
+    return res;
   } catch (e) {
     throw Error(`Unable to delete order - ${e as string}`);
   }
 };
 
 export const getAccountCashBalance = async () => {
-  const res = await fetch(
-    `${brokerApiBaseUrl}/trading/accounts/${accountId}/account`,
-    {
-      headers: {
-        Authorization: `Basic ${base64EncodedKeys}`,
-      },
-    },
-  );
-  const result = await convertResult(res);
+  const result = await getAccount();
   return result.cash;
 };
 
 export const getAccountAssets = async () => {
-  // NOTE: "Assets" as we think of it, is actually "positions" in Alpacas terminology
-  const res = await fetch(
-    `${brokerApiBaseUrl}/trading/accounts/${accountId}/positions`,
-    {
-      headers: {
-        Authorization: `Basic ${base64EncodedKeys}`,
-      },
-    },
+  return sendAlpacaRequest<RawPosition[]>(
+    `trading/accounts/${accountId}/positions`,
   );
-  return convertResult(res);
 };
 
 /* The total balance (cash balance + assets value) */
 export const getPortfolioValue = async () => {
-  const res = await fetch(
-    `${brokerApiBaseUrl}/trading/accounts/${accountId}/account`,
-    {
-      headers: {
-        Authorization: `Basic ${base64EncodedKeys}`,
-      },
-    },
-  );
-  const result = await convertResult(res);
-  return result.portfolio_value;
+  const result = await getAccount();
+  return result.equity;
 };
+
+export async function getAccount() {
+  return sendAlpacaRequest<RawAccount>(
+    `/trading/accounts/${accountId}/account`,
+  );
+}
+
+async function sendAlpacaRequest<T = any>(path: string, options?: RequestInit) {
+  const res = await fetch(`${brokerApiBaseUrl}/${path}`, {
+    ...options,
+    headers: {
+      Authorization: `Basic ${base64EncodedKeys}`,
+    },
+  });
+
+  return handleResult<T>(res);
+}

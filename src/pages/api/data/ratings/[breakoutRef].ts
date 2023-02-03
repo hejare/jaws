@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getRating, postRating, putRating } from "../../../../db/ratingsEntity";
+import { getRating, postRating, putRating } from "@jaws/db/ratingsEntity";
 
 export default async function handler(
   req: NextApiRequest,

@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { deleteTrade, getLatestTrade } from "../../../../db/tradesEntity";
-import { TradesDataType } from "../../../../db/tradesMeta";
+import { deleteTrade, getLatestTrade } from "@jaws/db/tradesEntity";
+import { TradesDataType } from "@jaws/db/tradesMeta";
 
 export default async function handler(
   req: NextApiRequest,

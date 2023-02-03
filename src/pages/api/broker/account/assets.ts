@@ -1,9 +1,10 @@
+import { getAccountAssets } from "@jaws/services/alpacaService";
+import { RawPosition } from "@master-chief/alpaca/@types/entities";
 import { NextApiRequest, NextApiResponse } from "next";
-import { ResponseDataType } from "../../../../db/ResponseDataMeta";
-import { getAccountAssets } from "../../../../services/alpacaService";
+import { ResponseDataType } from "../../ResponseDataMeta";
 
-interface ExtendedResponseDataType extends ResponseDataType {
-  assets?: Record<string, any>;
+export interface BrokerAccountAssetsResponse extends ResponseDataType {
+  assets: RawPosition[];
 }
 
 export default async function handler(
@@ -11,7 +12,9 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   try {
-    const responseData: ExtendedResponseDataType = { status: "INIT" };
+    const responseData: Partial<BrokerAccountAssetsResponse> = {
+      status: "INIT",
+    };
     await getAccountAssets()
       .then((result) => {
         responseData.status = "OK";

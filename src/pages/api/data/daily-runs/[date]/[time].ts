@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getBreakoutsByDailyRun } from "../../../../../db/breakoutsEntity";
-import { getDailyRun } from "../../../../../db/dailyRunsEntity";
-import { getErrors } from "../../../../../db/errorsEntity";
+import { getBreakoutsByDailyRun } from "@jaws/db/breakoutsEntity";
+import { getDailyRun } from "@jaws/db/dailyRunsEntity";
+import { getErrors } from "@jaws/db/errorsEntity";
 import {
   getRatingsForDailyRunAndUser,
   extendBreakoutsWithRatings,

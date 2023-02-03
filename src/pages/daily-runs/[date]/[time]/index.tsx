@@ -3,27 +3,27 @@ import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import fetch from "node-fetch";
-import { handleResult } from "../../../util";
-import { DailyRunDataType } from "../../../db/dailyRunsMeta";
+import { handleResult } from "@jaws/util";
+import { DailyRunDataType } from "@jaws/db/dailyRunsMeta";
 import {
   BreakoutWithRatingDataType,
   ExistingBreakoutDataType,
-} from "../../../db/breakoutsEntity";
-import BreakoutsList from "../../../components/organisms/BreakoutsList";
-import { handleLimitPrice } from "../../../util/handleLimitPrice";
-import { ErrorDataParsedType } from "../../../db/errorsMeta";
+} from "../../../../db/breakoutsEntity";
+import BreakoutsList from "@jaws/components/organisms/BreakoutsList";
+import { handleLimitPrice } from "@jaws/util/handleLimitPrice";
+import { ErrorDataParsedType } from "@jaws/db/errorsMeta";
 import {
   formatDateString,
   formatTimestampToUtc,
   formatTimeString,
-} from "../../../util/handleFormatDateString";
-import { isToday } from "../../../lib/helpers";
-import NavButton from "../../../components/atoms/buttons/NavButton";
-import PageContainer from "../../../components/atoms/PageContainer";
-import { getServerSidePropsAllPages } from "../../../lib/getServerSidePropsAllPages";
-import { useBreakoutsStore } from "../../../store/breakoutsStore";
-import Button from "../../../components/atoms/buttons/Button";
-import { ButtonsContainer } from "../../../components/atoms/ButtonsContainer";
+} from "../../../../util/handleFormatDateString";
+import { isToday } from "@jaws/lib/helpers";
+import NavButton from "@jaws/components/atoms/buttons/NavButton";
+import PageContainer from "@jaws/components/atoms/PageContainer";
+import { getServerSidePropsAllPages } from "@jaws/lib/getServerSidePropsAllPages";
+import { useBreakoutsStore } from "@jaws/store/breakoutsStore";
+import Button from "@jaws/components/atoms/buttons/Button";
+import { ButtonsContainer } from "@jaws/components/atoms/ButtonsContainer";
 
 // eslint-disable-next-line no-unused-vars
 enum STATUS {
@@ -162,6 +162,8 @@ const DailyRun: NextPage = () => {
       )}
       <BreakoutsList
         data={breakoutsData}
+        date={date as string}
+        time={time}
         disableBuy={!isToday(formatDateString(dateString))}
       />
     </PageContainer>

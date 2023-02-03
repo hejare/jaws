@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { triggerDailyrun } from "../../../lib/dailyRunHandler";
+import { triggerDailyrun } from "@jaws/lib/dailyRunHandler";
 
 type ResponseDataType = {
   status: string;

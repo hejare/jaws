@@ -1,56 +1,30 @@
+import { BoldText } from "@jaws/components/atoms/BoldText";
+import PageContainer from "@jaws/components/atoms/PageContainer";
+import TextDisplay from "@jaws/components/atoms/TextDisplay";
+import Widget from "@jaws/components/atoms/Widget";
+import PriceDisplay from "@jaws/components/molecules/PriceDisplay";
+import AssetsList from "@jaws/components/organisms/AssetsList";
+import WidgetGrid from "@jaws/components/organisms/WidgetGrid";
+import { getServerSidePropsAllPages } from "@jaws/lib/getServerSidePropsAllPages";
+import { useGetTableData } from "@jaws/lib/hooks/useGetTableData";
+import { INDICATOR } from "@jaws/lib/priceHandler";
 import type { NextPage } from "next";
-import { useEffect, useState } from "react";
-import fetch from "node-fetch";
-import { handleResult } from "../util";
-import AssetsList from "../components/organisms/AssetsList";
-import PageContainer from "../components/atoms/PageContainer";
-import Widget from "../components/atoms/Widget";
-import TextDisplay from "../components/atoms/TextDisplay";
-import WidgetGrid from "../components/organisms/WidgetGrid";
-import { INDICATOR } from "../lib/priceHandler";
-import { BoldText } from "../components/atoms/BoldText";
-import PriceDisplay from "../components/molecules/PriceDisplay";
-import { getServerSidePropsAllPages } from "../lib/getServerSidePropsAllPages";
-
-// eslint-disable-next-line no-unused-vars
-enum STATUS {
-  LOADING,
-  READY,
-}
 
 const PortfolioPage: NextPage = () => {
-  const [dataFetchStatus, setDataFetchStatus] = useState(STATUS.LOADING);
-  const [data, setData] = useState([]);
-  const [values, setValues] = useState<number[]>([]);
+  const {
+    fetchStatus,
+    assets,
+    investedValue,
+    marketValue,
+    totalPortfolioValue,
+  } = useGetTableData();
 
-  useEffect(() => {
-    fetch("/api/broker/account/assets")
-      .then(handleResult)
-      .then((result) => {
-        const assets = result.assets;
-        const investedValue = assets.reduce(
-          (sum: number, { cost_basis }: { cost_basis: string }) =>
-            sum + parseFloat(cost_basis),
-          0,
-        );
-        const marketValue = assets.reduce(
-          (sum: number, { market_value }: { market_value: string }) =>
-            sum + parseFloat(market_value),
-          0,
-        );
-        setValues([investedValue, marketValue]);
-        setData(assets);
-        setDataFetchStatus(STATUS.READY);
-      })
-      .catch(console.error);
-  }, []);
-
-  if (dataFetchStatus !== STATUS.READY) {
+  if (fetchStatus !== "ok") {
     return <></>;
   }
 
-  const [investedValue, marketValue] = values;
   const valueDiff = marketValue - investedValue;
+
   return (
     <PageContainer>
       <WidgetGrid>
@@ -62,7 +36,7 @@ const PortfolioPage: NextPage = () => {
         </Widget>
         <Widget>
           <TextDisplay>
-            <BoldText>Portfolio</BoldText>
+            <BoldText>Market value</BoldText>
             <div>${marketValue.toFixed()}</div>
           </TextDisplay>
         </Widget>
@@ -76,12 +50,18 @@ const PortfolioPage: NextPage = () => {
           }
         >
           <TextDisplay>
-            <BoldText>{valueDiff > 0 ? "Earn:" : "Loss:"}</BoldText>
+            <BoldText>Profit/loss:</BoldText>
             <PriceDisplay value={valueDiff.toFixed()} />
           </TextDisplay>
         </Widget>
+        <Widget>
+          <TextDisplay>
+            <BoldText>Portfolio</BoldText>
+            <div>${totalPortfolioValue.toFixed()}</div>
+          </TextDisplay>
+        </Widget>
       </WidgetGrid>
-      <AssetsList data={data} />
+      <AssetsList data={assets} />
     </PageContainer>
   );
 };

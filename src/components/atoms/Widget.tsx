@@ -1,6 +1,6 @@
 import React from "react";
 import styled, { css } from "styled-components";
-import { INDICATOR } from "../../lib/priceHandler";
+import { INDICATOR } from "@jaws/lib/priceHandler";
 
 const StyledWidget = styled.div`
   display: flex;

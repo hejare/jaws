@@ -1,7 +1,7 @@
 import fetch, { BodyInit } from "node-fetch";
-import { Order } from "../components/organisms/OrdersList";
-import { TRADE_STATUS, TRADE_SIDE } from "../db/tradesMeta";
-import { convertResult } from "../util";
+import { Order } from "@jaws/components/organisms/OrdersList";
+import { TRADE_STATUS, TRADE_SIDE } from "@jaws/db/tradesMeta";
+import { convertResult } from "@jaws/util";
 
 export const handleBuyOrder = async (
   ticker: string,

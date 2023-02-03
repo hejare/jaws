@@ -1,75 +1,70 @@
 module.exports = {
-  "env": {
-    "node": true,
-    "browser": true,
-    "es2021": true,
+  env: {
+    node: true,
+    browser: true,
+    es2021: true,
   },
-  "extends": [
+  extends: [
     "eslint:recommended",
     "plugin:react/recommended",
     "plugin:@typescript-eslint/recommended",
+    "plugin:react-hooks/recommended",
   ],
-  "globals": {
-    "TradingView": true,
+  globals: {
+    TradingView: true,
   },
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "project": "./tsconfig.lint.json",
+  parser: "@typescript-eslint/parser",
+  parserOptions: {
+    project: "./tsconfig.lint.json",
 
-    "ecmaFeatures": {
-      "tsx": true,
+    ecmaFeatures: {
+      tsx: true,
     },
-    "ecmaVersion": 12,
-    "sourceType": "module",
+    ecmaVersion: 12,
+    sourceType: "module",
   },
-  "plugins": [
-    "react",
-    "@typescript-eslint",
-    "prettier"
-  ],
-  "overrides": [
+  plugins: ["react", "@typescript-eslint", "prettier"],
+  overrides: [
     {
-      "files": ['*.ts', '*.tsx'],
+      files: ["*.ts", "*.tsx"],
 
       // As mentioned in the comments, you should extend TypeScript plugins here,
       // instead of extending them outside the `overrides`.
       // If you don't want to extend any rules, you don't need an `extends` attribute.
-      "extends": [
-        'plugin:@typescript-eslint/recommended',
-        'plugin:@typescript-eslint/recommended-requiring-type-checking',
+      extends: [
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking",
       ],
 
-      "parserOptions": {
-        "project": ['./tsconfig.json'], // Specify it only for TypeScript files
+      parserOptions: {
+        project: ["./tsconfig.json"], // Specify it only for TypeScript files
       },
-      "rules": {
+      rules: {
         "react/prop-types": 0,
-        "no-unused-vars": "warn",
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": ["warn"],
         "no-case-declarations": 0,
         "react/require-default-props": "off",
         "prefer-destructuring": "off",
         "prettier/prettier": "warn",
-        "react-hooks/exhaustive-deps": 0,
         "react/jsx-props-no-spreading": "off",
         "react/react-in-jsx-scope": "off",
+        ignoreRestSiblings: "off",
         "no-param-reassign": [
           "error",
           {
-            "props": false,
+            props: false,
           },
         ],
         "space-before-function-paren": [
           "error",
           {
-            "anonymous": "always",
-            "named": "never",
-            "asyncArrow": "always",
+            anonymous: "always",
+            named: "never",
+            asyncArrow: "always",
           },
         ],
-        "object-curly-spacing": [
-          "error",
-          "always",
-        ],
+        "object-curly-spacing": ["error", "always"],
         // Make async code easier to maintain by highlighting common errors
         "@typescript-eslint/await-thenable": "error",
         "@typescript-eslint/no-floating-promises": "error",
@@ -77,7 +72,7 @@ module.exports = {
         "@typescript-eslint/promise-function-async": [
           "error",
           {
-            "checkArrowFunctions": false,
+            checkArrowFunctions: false,
           },
         ],
         "no-return-await": "off",
@@ -87,13 +82,13 @@ module.exports = {
         "@typescript-eslint/no-explicit-any": [
           "error",
           {
-            "ignoreRestArgs": true,
+            ignoreRestArgs: true,
           },
         ],
         "@typescript-eslint/require-array-sort-compare": [
           "error",
           {
-            "ignoreStringArrays": true,
+            ignoreStringArrays: true,
           },
         ],
         // New rules that should help enforce a consistent code style
@@ -105,15 +100,15 @@ module.exports = {
           "error",
           "always",
           {
-            "exceptAfterOverload": true,
-            "exceptAfterSingleLine": true,
+            exceptAfterOverload: true,
+            exceptAfterSingleLine: true,
           },
         ],
         "@typescript-eslint/member-delimiter-style": "error",
         "@typescript-eslint/member-ordering": [
           "error",
           {
-            "default": [
+            default: [
               "static-field",
               "public-field",
               "protected-field",
@@ -131,6 +126,7 @@ module.exports = {
         ],
         "@typescript-eslint/space-infix-ops": "error",
         "@typescript-eslint/type-annotation-spacing": "error",
+
         // Turn off conflicting rules
         "brace-style": "off",
         "comma-spacing": "off",
@@ -145,9 +141,8 @@ module.exports = {
         "@typescript-eslint/no-unsafe-call": "off",
         "@typescript-eslint/no-unsafe-return": "off",
         "@typescript-eslint/no-explicit-any": "off",
-        "@typescript-eslint/no-misused-promises": "warn"
+        "@typescript-eslint/no-misused-promises": "warn",
       },
-
     },
   ],
 };

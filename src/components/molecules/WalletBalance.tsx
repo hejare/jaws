@@ -1,13 +1,13 @@
+import { getAccountCashBalance } from "@jaws/services/backendService";
 import { useEffect, useState } from "react";
-import { getAccountCashBalance } from "../../services/backendService";
 import { BoldText } from "../atoms/BoldText";
 import TextDisplay from "../atoms/TextDisplay";
 
 const WalletBalance = () => {
   const [walletBalance, setWalletBalance] = useState<string>("checking...");
 
-  const handleSetBalance = (balance: string) => {
-    setWalletBalance(parseFloat(balance).toFixed());
+  const handleSetBalance = (balance: number) => {
+    setWalletBalance(balance.toFixed());
   };
 
   useEffect(() => {

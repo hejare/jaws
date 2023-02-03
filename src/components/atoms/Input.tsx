@@ -1,6 +1,5 @@
-
+import { Theme } from "@jaws/styles/themes";
 import styled from "styled-components";
-import { Theme } from "../../styles/themes";
 
 const EnabledDiv = styled.div`
   padding: 4px;
@@ -25,10 +24,24 @@ interface Props {
   step?: string;
 }
 
-const Input = ({ onChange, value, title, type = "text", step = "1" }: Props) => {
-  return <EnabledDiv>
-    <label>{title}</label>
-    <input style={{ width: '100px' }} onChange={onChange} value={value} type={type} step={step} />
-  </EnabledDiv>;
+const Input = ({
+  onChange,
+  value,
+  title,
+  type = "text",
+  step = "1",
+}: Props) => {
+  return (
+    <EnabledDiv>
+      <label>{title}</label>
+      <input
+        style={{ width: "100px" }}
+        onChange={onChange}
+        value={value}
+        type={type}
+        step={step}
+      />
+    </EnabledDiv>
+  );
 };
 export default Input;

@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
 import { useEffect, useState } from "react";
-import { TickerDataType } from "../../db/tickersMeta";
-import { handleResult } from "../../util";
+import { TickerDataType } from "@jaws/db/tickersMeta";
+import { handleResult } from "@jaws/util";
 
 interface Props {
   id: string;

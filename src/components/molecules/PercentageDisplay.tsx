@@ -1,10 +1,9 @@
 import styled from "styled-components";
-import { INDICATOR } from "../../lib/priceHandler";
-import { handleLimitPrice } from "../../util/handleLimitPrice";
+import { INDICATOR } from "@jaws/lib/priceHandler";
 
 type Props = {
   value: number;
-  indicator: INDICATOR;
+  indicator?: INDICATOR;
 };
 
 const PercentageText = styled.div`
@@ -12,7 +11,7 @@ const PercentageText = styled.div`
     theme.palette.indicator[indicator.toLowerCase()]}}
 `;
 
-const PercentageDisplay = ({ value, indicator }: Props) => {
+const PercentageDisplay = ({ value, indicator = INDICATOR.NEUTRAL }: Props) => {
   return (
     <PercentageText indicator={indicator}>{value.toFixed(2)}%</PercentageText>
   );

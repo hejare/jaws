@@ -9,7 +9,7 @@ import {
   ServiceAccount,
 } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
-import { certJson } from "../services/firebaseCert";
+import { certJson } from "@jaws/services/firebaseCert";
 
 if (!getApps().length) {
   initializeApp({

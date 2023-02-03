@@ -1,6 +1,6 @@
 import { createStore } from "zustand";
 import { deleteCookie } from "cookies-next";
-import { signOutUser } from "../auth/firestoreAuth";
+import { signOutUser } from "@jaws/auth/firestoreAuth";
 
 export type User = {
   userId: string;

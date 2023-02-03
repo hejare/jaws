@@ -1,5 +1,5 @@
 import Table from "../atoms/Table";
-import { DailyRunStatus } from "../../db/dailyRunsMeta";
+import { DailyRunStatus } from "@jaws/db/dailyRunsMeta";
 import NavButton from "../atoms/buttons/NavButton";
 
 // const cancellableStatus = [DailyRunStatus.INITIATED] as const;

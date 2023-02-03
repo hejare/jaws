@@ -4,8 +4,8 @@ import {
   GoogleAuthProvider,
   signOut,
 } from "@firebase/auth";
-import { getApp } from "../auth/initializeFirebase";
-import { ONE_HOUR_IN_MS } from "../lib/helpers";
+import { getApp } from "@jaws/auth/initializeFirebase";
+import { ONE_HOUR_IN_MS } from "@jaws/lib/helpers";
 
 const enabledHejareUsers = [
   "leopold",
@@ -15,6 +15,7 @@ const enabledHejareUsers = [
   "johan.jansson",
   "ella",
   "jesper",
+  "daniel",
 ];
 const enabledExternalEmails = ["albin@theodoratech.se"];
 

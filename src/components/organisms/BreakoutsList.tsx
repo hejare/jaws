@@ -1,14 +1,13 @@
 import getNextJSConfig from "next/config";
 import Table, { Operations } from "../atoms/Table";
-import { DailyRunStatus } from "../../db/dailyRunsMeta";
+import { DailyRunStatus } from "@jaws/db/dailyRunsMeta";
 import { memo } from "react";
 import { useModal } from "use-modal-hook";
 import styled from "styled-components";
-import BreakoutModal from "../molecules/BreakoutModal";
 import ImageModal from "../molecules/ImageModal";
 import Rating from "../molecules/Rating";
 import Button from "../atoms/buttons/Button";
-import { BreakoutStoreType } from "../../store/breakoutsStore";
+import { BreakoutStoreType } from "@jaws/store/breakoutsStore";
 import NavButton from "../atoms/buttons/NavButton";
 import CancelOrderButton from "../molecules/CancelOrderButton";
 
@@ -27,6 +26,8 @@ const StyledImage = styled.img`
 interface Props {
   data: BreakoutStoreType[];
   disableBuy?: boolean;
+  date: string;
+  time: string;
 }
 interface ModalProps {
   breakoutRef: string;
@@ -37,28 +38,7 @@ interface ModalProps {
   symbol: string;
 }
 
-const BreakoutsList = ({ data, disableBuy }: Props) => {
-  const TheBreakoutModal = memo(
-    ({
-      isOpen,
-      onClose,
-      image,
-      breakoutRef,
-      breakoutValue,
-      symbol,
-    }: ModalProps) => (
-      <BreakoutModal
-        isOpen={isOpen}
-        onClose={onClose}
-        image={image}
-        breakoutRef={breakoutRef}
-        breakoutValue={breakoutValue}
-        symbol={symbol}
-      />
-    ),
-  );
-  const [showBreakoutModal] = useModal(TheBreakoutModal, {});
-
+const BreakoutsList = ({ data, disableBuy, date, time }: Props) => {
   const TheImageModal = memo(
     ({ isOpen, onClose, image, breakoutRef }: ModalProps) => (
       <ImageModal
@@ -134,7 +114,9 @@ const BreakoutsList = ({ data, disableBuy }: Props) => {
         <Operations>
           {!disableBuy && (
             <>
-              <NavButton href={`/prepare-order/${item.tickerRef}`}>
+              <NavButton
+                href={`/daily-runs/${date}/${time}/prepare-order/${item.tickerRef}`}
+              >
                 Prepare order
               </NavButton>
               <CancelOrderButton ticker={item.tickerRef} />

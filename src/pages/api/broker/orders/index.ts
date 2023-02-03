@@ -1,8 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { ResponseDataType } from "../../../../db/ResponseDataMeta";
-import { postTrade } from "../../../../db/tradesEntity";
-import { TRADE_STATUS, TRADE_SIDE } from "../../../../db/tradesMeta";
-import * as alpacaService from "../../../../services/alpacaService";
+import { auth } from "@jaws/auth/firebaseAdmin";
+import { postTrade } from "@jaws/db/tradesEntity";
+import { TRADE_SIDE, TRADE_STATUS } from "@jaws/db/tradesMeta";
+import * as alpacaService from "@jaws/services/alpacaService";
+import { ResponseDataType } from "../../ResponseDataMeta";
 
 interface ExtendedResponseDataType extends ResponseDataType {
   orders?: Record<string, any>;
@@ -15,77 +16,16 @@ export default async function handler(
   const { method } = req;
 
   try {
-    const responseData: ExtendedResponseDataType = { status: "INIT" };
+    let responseData: ExtendedResponseDataType;
     switch (method) {
       case "GET":
-        await alpacaService
-          .getOrders()
-          .then((result) => {
-            responseData.status = "OK";
-            responseData.orders = result;
-          })
-          .catch((e) => {
-            responseData.status = "NOK";
-            responseData.message = e.message;
-          });
+        responseData = await getOrders();
         break;
       case "POST":
-        const body = JSON.parse(req.body);
-        const {
-          ticker,
-          side,
-          status,
-          price,
-          quantity,
-          breakoutRef,
-        }: {
-          ticker: string;
-          side: TRADE_SIDE;
-          status: TRADE_STATUS;
-          price: number;
-          quantity: number;
-          breakoutRef: string;
-        } = body;
-
-        responseData.status = "OK";
-        await postTrade({
-          ticker,
-          side,
-          status,
-          price,
-          quantity,
-          created: Date.now(),
-          breakoutRef,
-          userRef: "ludde@hejare.se", // TODO: Extract from auth cookie/token
-        }).catch((e) => {
-          console.log(e);
-          responseData.status = "NOK";
-          responseData.message = e.message;
-        });
-
-        // const created_at = Date.parse(result.created_at).toString(); // result.created_at: '2022-12-05T11:02:02.058370387Z'
-        // await alpacaService
-        //   .postNewBuyOrder(ticker, price, quantity)
-        //   .then(async (result) => {
-        //     const alpacaOrderId = result.id;
-        //     const created_at = Date.parse(result.created_at).toString(); // result.created_at: '2022-12-05T11:02:02.058370387Z'
-        //     await handleSaveOrder(
-        //       ticker,
-        //       type,
-        //       status,
-        //       price,
-        //       quantity,
-        //       alpacaOrderId,
-        //       created_at,
-        //       breakoutRef,
-        //     );
-        //     responseData.status = "OK";
-        //   })
-        //   .catch((e) => {
-        //     console.log(e);
-        //     responseData.status = "NOK";
-        //     responseData.message = e.message;
-        //   });
+        const { email } = await auth.verifyIdToken(
+          req.cookies.idToken as string,
+        );
+        responseData = await createNewTrade(req, email);
         break;
       default:
         throw new Error(`Unsupported method: ${method as string}`);
@@ -104,4 +44,58 @@ export default async function handler(
       error: message,
     });
   }
+}
+
+async function createNewTrade(req: NextApiRequest, email?: string) {
+  const responseData: ExtendedResponseDataType = { status: "INIT" };
+  const body = JSON.parse(req.body);
+  const {
+    ticker,
+    side,
+    status,
+    price,
+    quantity,
+    breakoutRef,
+  }: {
+    ticker: string;
+    side: TRADE_SIDE;
+    status: TRADE_STATUS;
+    price: number;
+    quantity: number;
+    breakoutRef: string;
+  } = body;
+
+  responseData.status = "OK";
+
+  await postTrade({
+    ticker,
+    side,
+    status,
+    price,
+    quantity,
+    created: Date.now(),
+    breakoutRef,
+    userRef: email,
+  }).catch((e) => {
+    console.log(e);
+    responseData.status = "NOK";
+    responseData.message = e.message;
+  });
+
+  return responseData;
+}
+
+async function getOrders() {
+  const responseData: ExtendedResponseDataType = { status: "INIT" };
+  await alpacaService
+    .getOrders()
+    .then((result) => {
+      responseData.status = "OK";
+      responseData.orders = result;
+    })
+    .catch((e) => {
+      responseData.status = "NOK";
+      responseData.message = e.message;
+    });
+  return responseData;
 }

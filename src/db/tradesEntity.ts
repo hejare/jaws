@@ -1,9 +1,5 @@
-import { db } from "../services/firestoreService";
-import {
-  ExtendedTradesDataType,
-  TradesDataType,
-  TRADE_STATUS,
-} from "./tradesMeta";
+import { db } from "@jaws/services/firestoreService";
+import { ExtendedTradesDataType, TradesDataType } from "./tradesMeta";
 
 export async function postTrade(data: TradesDataType) {
   await db.collection("trades").doc(data.breakoutRef).set(data);
@@ -51,9 +47,9 @@ export async function deleteTrade(ref: string) {
   return;
 }
 
-export async function getTradesByStatus(status: TRADE_STATUS) {
+export async function getTradesByStatus(...status: string[]) {
   const query = db.collection("trades");
-  const results = await query.where("status", "==", status).get();
+  const results = await query.where("status", "in", status).get();
   if (results.size === 0) {
     return [];
   }
@@ -71,4 +67,12 @@ export async function getTradeByOrderId(orderId: string) {
   return {
     ...doc.data(),
   } as TradesDataType;
+}
+
+export async function getAllTrades() {
+  const results = await db.collection("trades").get();
+  if (results.size === 0) {
+    return [];
+  }
+  return results.docs.map((doc) => doc.data()) as TradesDataType[];
 }

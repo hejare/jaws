@@ -1,4 +1,3 @@
-import React from "react";
 import PlaceOrderButton from "./PlaceOrderButton";
 
 type Props = {
@@ -11,6 +10,7 @@ type Props = {
   _ref: string;
   shares: number;
   entryPrice: number;
+  onPriceChange: (newPrice: number) => void;
 };
 
 const BuyTickerButtonWrapper = ({
@@ -18,13 +18,15 @@ const BuyTickerButtonWrapper = ({
   tickerRef,
   shares,
   entryPrice,
+  onPriceChange,
 }: Props) => {
   return (
     <PlaceOrderButton
       ticker={tickerRef}
-      entryPrice={entryPrice}
+      buyPrice={entryPrice}
       quantity={shares}
       breakoutRef={_ref}
+      onPriceChange={onPriceChange}
     />
   );
 };

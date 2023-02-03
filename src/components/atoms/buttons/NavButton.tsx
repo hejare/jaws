@@ -8,18 +8,26 @@ interface Props {
   href: string;
   goBack?: boolean;
   className?: string;
+  disabled?: boolean;
 }
 
 const StyledButton = styled(Button)`
   width: fit-content;
 `;
-const NavButton = ({ children, href, goBack, className }: Props) => {
+const NavButton = ({ children, href, goBack, className, disabled }: Props) => {
   const router = useRouter();
 
   if (goBack) {
     return (
       <span onClick={() => router.back()} className={className}>
         <StyledButton>{children}</StyledButton>
+      </span>
+    );
+  }
+  if (disabled) {
+    return (
+      <span className={className}>
+        <StyledButton disabled>{children}</StyledButton>
       </span>
     );
   }

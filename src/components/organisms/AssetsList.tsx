@@ -1,16 +1,15 @@
-import { INDICATOR } from "../../lib/priceHandler";
-import Table, { Operations } from "../atoms/Table";
-import PriceDisplay from "../molecules/PriceDisplay";
-import PercentageDisplay from "../molecules/PercentageDisplay";
-import TradeViewButton from "../atoms/buttons/TradeViewButton";
-import QuantityDisplay from "../molecules/QuantityDisplay";
+import { PortfolioTableAsset } from "@jaws/lib/hooks/useGetTableData";
+import { INDICATOR } from "@jaws/lib/priceHandler";
+import { ColumnsType } from "rc-table/lib/interface";
 import NavButton from "../atoms/buttons/NavButton";
+import TradeViewButton from "../atoms/buttons/TradeViewButton";
+import Table, { Operations } from "../atoms/Table";
+import PercentageDisplay from "../molecules/PercentageDisplay";
+import PriceDisplay from "../molecules/PriceDisplay";
+import QuantityDisplay from "../molecules/QuantityDisplay";
 
-type AssetsListData = {
-  symbol: string;
-};
 interface Props {
-  data: AssetsListData[];
+  data: PortfolioTableAsset[];
 }
 const AssetssList = ({ data }: Props) => {
   const renderTitle = () => {
@@ -25,34 +24,35 @@ const AssetssList = ({ data }: Props) => {
     );
   };
 
-  const columns = [
+  const columns: ColumnsType<PortfolioTableAsset> = [
     {
       title: "Symbol",
-      dataIndex: "symbol",
       key: "symbol",
       width: 200,
-      render: (ticker: string) => (
+      render: (_, { ticker }) => (
         <NavButton href={`/tickers/${ticker}`}>{ticker}</NavButton>
       ),
     },
     {
       title: "Value",
-      dataIndex: "",
       key: "value",
       width: 200,
-      render: ({ avg_entry_price, qty }: any) => (
-        <PriceDisplay value={parseFloat(avg_entry_price) * parseFloat(qty)} />
+      render: (_, { value }) => <PriceDisplay value={value} />,
+    },
+    {
+      title: "% of portfolio",
+      key: "percent_of_total_assets",
+      width: 200,
+      render: (_, { percentOfTotalAssets }) => (
+        <PercentageDisplay value={percentOfTotalAssets} />
       ),
     },
     {
       title: "Value Diff",
-      dataIndex: "",
       key: "valueDiff",
       width: 200,
-      render: ({ avg_entry_price, current_price, qty }: any) => {
-        const diff =
-          (parseFloat(current_price) - parseFloat(avg_entry_price)) *
-          parseFloat(qty);
+      render: (_, { avgEntryPrice, currentPrice, quantity }) => {
+        const diff = (currentPrice - avgEntryPrice) * quantity;
         return (
           <PriceDisplay
             value={diff}
@@ -60,8 +60,8 @@ const AssetssList = ({ data }: Props) => {
               diff > 0
                 ? INDICATOR.POSITIVE
                 : diff === 0
-                  ? INDICATOR.NEUTRAL
-                  : INDICATOR.NEGATIVE
+                ? INDICATOR.NEUTRAL
+                : INDICATOR.NEGATIVE
             }
           />
         );
@@ -69,57 +69,90 @@ const AssetssList = ({ data }: Props) => {
     },
     {
       title: "Qty",
-      dataIndex: "qty",
       key: "qty",
       width: 200,
-      render: (quantity: string) => (
-        <QuantityDisplay value={parseFloat(quantity)} />
-      ),
+      render: (_, { quantity }) => <QuantityDisplay value={quantity} />,
     },
     {
       title: "Entry price",
       dataIndex: "",
-      key: "avg_entry_price",
+      key: "avgEntryPrice",
       width: 200,
-      render: ({ avg_entry_price }: any) => (
-        <PriceDisplay value={parseFloat(avg_entry_price)} />
-      ),
+      render: (_, { avgEntryPrice }) => <PriceDisplay value={avgEntryPrice} />,
     },
     {
-      title: "Price",
-      dataIndex: "",
+      title: "Current price",
       key: "current_price",
       width: 200,
-      render: ({ current_price }: any) => (
-        <PriceDisplay value={parseFloat(current_price)} />
+      render: (_, { currentPrice }) => <PriceDisplay value={currentPrice} />,
+    },
+    {
+      title: "MA",
+      key: "ma",
+      width: 130,
+      render: (_, { movingAvg }) => (
+        <PriceDisplay value={movingAvg}></PriceDisplay>
       ),
     },
     {
-      title: "Change",
+      title: "Change today",
       dataIndex: "change_today",
-      key: "change_today",
       width: 200,
-      render: (change_today: any) => (
+      render: (_, { changeToday }) => (
         <PercentageDisplay
           indicator={
-            change_today > 0
+            changeToday > 0
               ? INDICATOR.POSITIVE
-              : change_today === 0
-                ? INDICATOR.NEUTRAL
-                : INDICATOR.NEGATIVE
+              : changeToday === 0
+              ? INDICATOR.NEUTRAL
+              : INDICATOR.NEGATIVE
           }
-          value={parseFloat(change_today) * 100}
+          value={changeToday * 100}
         />
       ),
     },
     {
+      title: "Change since entry",
+      key: "change_since_entry",
+      width: 200,
+      render: (_, { changeSinceEntry }) => (
+        <PercentageDisplay
+          indicator={
+            changeSinceEntry > 0
+              ? INDICATOR.POSITIVE
+              : changeSinceEntry === 0
+              ? INDICATOR.NEUTRAL
+              : INDICATOR.NEGATIVE
+          }
+          value={changeSinceEntry * 100}
+        />
+      ),
+    },
+
+    {
+      title: "Stop loss",
+      key: "stoploss",
+      render: (_, { stopLossType }) => stopLossType,
+    },
+    {
+      title: "SL Price",
+      key: "stoploss_price",
+      render: (_, { stopLossPrice }) => {
+        return <PriceDisplay value={stopLossPrice}></PriceDisplay>;
+      },
+    },
+    {
+      title: "Profit taken",
+      key: "partial_profit_taken",
+      render: (_, { takenPartialProfit }) => (takenPartialProfit ? "✅" : ""),
+    },
+    {
       title: "Operations",
-      dataIndex: "",
       key: "operations",
       className: "operations",
-      render: ({ symbol }: any) => (
+      render: (_, { ticker }) => (
         <Operations>
-          <TradeViewButton symbol={symbol}>TradeView</TradeViewButton>
+          <TradeViewButton symbol={ticker}>TradeView</TradeViewButton>
         </Operations>
       ),
     },
@@ -129,7 +162,7 @@ const AssetssList = ({ data }: Props) => {
     <Table
       columns={columns}
       data={data}
-      rowKey={({ asset_id }: { asset_id: string }) => asset_id}
+      rowKey={({ breakoutRef }: { breakoutRef: string }) => breakoutRef}
       title={renderTitle}
       footer={renderFooter}
     />
