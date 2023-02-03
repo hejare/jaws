@@ -22,7 +22,6 @@ import { isToday, ONE_DAY_IN_MS } from "./helpers";
 interface ExtendedTradesDataType extends DBExtendedTradesDataType {
   lastTradePrice: number;
   movingAvg: number;
-  sold?: number;
 }
 
 export const triggerBuyOrders = async () => {
@@ -72,6 +71,7 @@ export const deleteActiveOrder = async (orderId: string) => {
 };
 
 export const triggerUpdateOpenSellOrders = async () => {
+  // Get un-filled/open trades
   const trades = (
     await getTradesByStatus(
       TRADE_STATUS.STOP_LOSS_1,
@@ -81,6 +81,7 @@ export const triggerUpdateOpenSellOrders = async () => {
     )
   ).filter((t) => !(t.avgStopLossSellPrice || t.avgTakeProfitSellPrice));
 
+  // Get closed alpaca sell orders
   const alpacaOrders = (
     await alpacaService.getOrders({
       status: "closed",
@@ -112,11 +113,9 @@ export const triggerUpdateOpenSellOrders = async () => {
     return { ...trade, [priceField]: alpacaOrder.filled_avg_price };
   });
 
-  const updateTradesPromises = updatedTrades.map((t) =>
-    t ? putTrade(t) : Promise.resolve(),
+  await Promise.all(
+    updatedTrades.map((t) => (t ? putTrade(t) : Promise.resolve())),
   );
-
-  await Promise.all(updateTradesPromises);
 
   return { updatedTrades, orders: alpacaOrders };
 };
@@ -218,7 +217,9 @@ export const triggerClearOldBuyOrders = async () => {
   return { readyTrades };
 };
 
-const depopulateTrade = (trade: ExtendedTradesDataType): TradesDataType => {
+const depopulateTrade = (
+  trade: ExtendedTradesDataType,
+): DBExtendedTradesDataType => {
   const { lastTradePrice, movingAvg, ...depopTrade } = trade;
   return depopTrade;
 };

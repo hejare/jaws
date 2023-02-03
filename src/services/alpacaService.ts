@@ -168,8 +168,6 @@ export const getOrders = async (
     ...opts,
   } as Record<string, string>);
 
-  console.log("Hej!", { params: params.toString() });
-
   try {
     const res = await sendAlpacaRequest(
       `trading/accounts/${accountId}/orders?${params.toString()}`,
@@ -181,6 +179,7 @@ export const getOrders = async (
   }
 };
 
+// TODO: Use generic getOrders()
 export const getTodaysOrders = async (): Promise<Order[]> => {
   try {
     const res = await fetch(
@@ -207,13 +206,11 @@ export const getTodaysOrders = async (): Promise<Order[]> => {
   }
 };
 
-export const getOrdersByTicker = async (...ticker: string[]) => {
-  const tickers = ticker.join(",");
-  console.log({ tickers });
-
+// TODO: Use generic getOrders()
+export const getOrdersByTicker = async (ticker: string) => {
   try {
     const res = await fetch(
-      `${brokerApiBaseUrl}/trading/accounts/${accountId}/orders?symbols=${tickers}&status=all`, // TODO how handle params?
+      `${brokerApiBaseUrl}/trading/accounts/${accountId}/orders?symbols=${ticker}&status=all`, // TODO how handle params?
       {
         headers: {
           Authorization: `Basic ${base64EncodedKeys}`,
@@ -221,11 +218,7 @@ export const getOrdersByTicker = async (...ticker: string[]) => {
       },
     );
 
-    const handledRes = await handleResult(res);
-
-    console.log({ handledRes });
-
-    return handledRes;
+    return await handleResult(res);
   } catch (e) {
     throw Error(`Unable to get order - ${e as string}`);
   }

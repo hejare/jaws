@@ -54,6 +54,7 @@ export interface TradesDataType {
   breakoutRef: string;
   alpacaOrderId?: string;
   userRef?: string;
+  sold?: number;
 }
 
 export interface ExtendedTradesDataType extends TradesDataType {
