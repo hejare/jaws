@@ -9,7 +9,13 @@ export default async function handler(
   const { query, method } = req;
   let { symbols } = query;
 
-  symbols = symbols && typeof symbols === "string" ? [symbols] : symbols;
+  symbols =
+    symbols && typeof symbols === "string"
+      ? // Netlify incorrectly converts repeated query params to a string
+        // like "VAL1, VAL2" instead of an array ["VAL1", "VAL2"], so we
+        // need to split it here
+        symbols.split(", ")
+      : (symbols as string[]);
 
   if (undefined === symbols) {
     return res
@@ -24,7 +30,7 @@ export default async function handler(
     switch (method) {
       case "GET":
         results = await Promise.all(
-          (symbols as string[]).map((symbol) =>
+          symbols.map((symbol) =>
             getSimpleMovingAverage(
               symbol,
               helpers.config.MOVING_AVERAGE_DAY_RANGE,
