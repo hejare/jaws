@@ -8,6 +8,7 @@ import {
 import { RawPosition } from "@master-chief/alpaca/@types/entities";
 import { useEffect, useState } from "react";
 import { getBuySellHelpers } from "../buySellHelper/buySellHelper";
+import { getDaysDifference } from "../helpers";
 
 export interface PortfolioTableAsset extends TradesDataType {
   percentOfTotalAssets: number;
@@ -21,6 +22,7 @@ export interface PortfolioTableAsset extends TradesDataType {
   changeToday: number;
   movingAvg: number;
   takenPartialProfit: boolean;
+  daysInTrade: number;
 }
 
 export const useGetTableData = () => {
@@ -139,6 +141,7 @@ function convertToTableData({
         takePartialProfitPrice: sellPriceLevels.PARTIAL_PROFIT_TAKEN as number,
         movingAvg,
         takenPartialProfit: trade.status === TRADE_STATUS.PARTIAL_PROFIT_TAKEN,
+        daysInTrade: getDaysDifference(new Date(), new Date(trade.created)),
       };
     },
   );
