@@ -12,7 +12,7 @@ export default async function handler(
   symbols = symbols && typeof symbols === "string" ? [symbols] : symbols;
 
   if (undefined === symbols) {
-    res
+    return res
       .status(400)
       .json({ status: "NOK", message: "Specify at least one symbol" });
   }
@@ -43,8 +43,8 @@ export default async function handler(
         message = e;
       }
     }
-    res.status(500).json({ status: "NOK", message });
+    return res.status(500).json({ status: "NOK", message });
   }
 
-  res.status(200).json(results);
+  return res.status(200).json(results);
 }
