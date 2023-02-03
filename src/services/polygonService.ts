@@ -59,11 +59,7 @@ export const getSimpleMovingAverage = async (
 
   if (!value) {
     throw new Error(
-      `Could not get SMA for ${symbol}. Response: ${JSON.stringify(
-        data,
-        null,
-        2,
-      )}`,
+      `Could not get SMA for ${symbol}. Response: ${JSON.stringify(data)}`,
     );
   }
   return value;

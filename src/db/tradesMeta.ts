@@ -62,4 +62,8 @@ export interface ExtendedTradesDataType extends TradesDataType {
   avgEntryPrice?: number;
   alpacaStopLossOrderId?: string;
   alpacaTakeProfitOrderId?: string;
+  avgStopLossSellPrice?: number;
+  avgTakeProfitSellPrice?: number;
+  /** timestamp */
+  profitTaken?: number;
 }

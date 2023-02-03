@@ -1,5 +1,8 @@
+import {
+  triggerUpdateOpenBuyOrders,
+  triggerUpdateOpenSellOrders,
+} from "@jaws/lib/tradesHandler";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { triggerUpdateOpenBuyOrders } from "@jaws/lib/tradesHandler";
 
 type ResponseDataType = {
   status: string;
@@ -16,10 +19,13 @@ export default async function handler(
     const responseData: ResponseDataType = { status: "INIT" };
     switch (method) {
       case "GET":
-        await triggerUpdateOpenBuyOrders()
-          .then((results) => {
+        await Promise.all([
+          triggerUpdateOpenBuyOrders(),
+          triggerUpdateOpenSellOrders(),
+        ])
+          .then(([buy, sell]) => {
             responseData.status = "OK";
-            responseData.meta = results;
+            responseData.meta = { buy, sell };
           })
           .catch((e) => {
             responseData.status = "NOK";
