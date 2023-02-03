@@ -258,6 +258,7 @@ const handleTakePartialProfitOrder = async (trade: ExtendedTradesDataType) => {
       ...depopulateTrade(trade),
       quantity: trade.quantity - parseInt(result.qty),
       status: TRADE_STATUS.PARTIAL_PROFIT_TAKEN,
+      alpacaTakeProfitOrderId: result.client_order_id,
     });
   } catch (e) {
     console.log(e);
