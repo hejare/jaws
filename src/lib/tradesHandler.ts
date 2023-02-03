@@ -161,6 +161,7 @@ export const triggerUpdateOpenBuyOrders = async () => {
         ...trade,
         status: newStatus,
         avgEntryPrice: alpacaOrder.filled_avg_price,
+        filledQuantity: alpacaOrder.filled_qty,
       }).catch((e) => {
         console.log(e);
       }),
@@ -184,6 +185,7 @@ export const triggerUpdateOpenBuyOrders = async () => {
           ...trade,
           status: TRADE_STATUS.FILLED,
           avgEntryPrice: alpacaOrder.filled_avg_price,
+          filledQuantity: alpacaOrder.filled_qty,
         }).catch((e) => {
           console.log(e);
         }),

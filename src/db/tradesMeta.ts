@@ -66,4 +66,5 @@ export interface ExtendedTradesDataType extends TradesDataType {
   avgTakeProfitSellPrice?: number;
   /** timestamp */
   profitTaken?: number;
+  filledQuantity?: number;
 }
