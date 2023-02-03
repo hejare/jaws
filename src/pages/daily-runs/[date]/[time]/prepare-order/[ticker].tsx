@@ -116,7 +116,7 @@ const TickerPage: NextPage = () => {
   }, [currentBreakout, setPrice]);
 
   if (!currentBreakout || buyOrder.cashBalance === -1)
-    return "Loading (or error...)";
+    return <>Loading (or error...)</>;
 
   const indexCurrentBreakout = allBreakouts.findIndex(
     (breakout) => breakout.tickerRef === ticker,
