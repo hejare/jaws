@@ -55,7 +55,7 @@ export const getSimpleMovingAverage = async (
     limit: 1,
   });
 
-  const value = data.results?.values[0].value;
+  const value = data.results?.values?.[0].value;
 
   if (!value) {
     throw new Error(
