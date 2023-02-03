@@ -59,4 +59,6 @@ export interface TradesDataType {
 export interface ExtendedTradesDataType extends TradesDataType {
   placed?: number;
   alpacaOrderId?: string;
+  avgEntryPrice?: number;
+  alpacaStopLossOrderId?: string;
 }

@@ -95,7 +95,7 @@ export const stopLossSellOrder = async (symbol: string, quantity: number) => {
 
   console.log(`Stop loss on ${symbol}`);
 
-  await postSellOrder({ symbol, quantity });
+  return postSellOrder({ symbol, quantity });
 };
 
 /** Should sell 50% of position */

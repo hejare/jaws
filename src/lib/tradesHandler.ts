@@ -1,4 +1,9 @@
-import { TradesDataType, TRADE_SIDE, TRADE_STATUS } from "@jaws/db/tradesMeta";
+import {
+  ExtendedTradesDataType as DBExtendedTradesDataType,
+  TradesDataType,
+  TRADE_SIDE,
+  TRADE_STATUS,
+} from "@jaws/db/tradesMeta";
 import { getBuySellHelpers } from "@jaws/lib/buySellHelper/buySellHelper";
 import { AlpacaOrderStatusType } from "@jaws/services/alpacaMeta";
 import * as alpacaService from "@jaws/services/alpacaService";
@@ -14,7 +19,7 @@ import {
 } from "../services/polygonService";
 import { isToday } from "./helpers";
 
-interface ExtendedTradesDataType extends TradesDataType {
+interface ExtendedTradesDataType extends DBExtendedTradesDataType {
   lastTradePrice: number;
   movingAvg: number;
   sold?: number;
@@ -102,7 +107,11 @@ export const triggerUpdateOpenBuyOrders = async () => {
     }
 
     updateTradesPromises.push(
-      putTrade({ ...trade, status: newStatus }).catch((e) => {
+      putTrade({
+        ...trade,
+        status: newStatus,
+        avgEntryPrice: alpacaOrder.filled_avg_price,
+      }).catch((e) => {
         console.log(e);
       }),
     );
@@ -121,7 +130,11 @@ export const triggerUpdateOpenBuyOrders = async () => {
 
     if (alpacaOrder.status === AlpacaOrderStatusType.FILLED) {
       updateTradesPromises.push(
-        putTrade({ ...trade, status: TRADE_STATUS.FILLED }).catch((e) => {
+        putTrade({
+          ...trade,
+          status: TRADE_STATUS.FILLED,
+          avgEntryPrice: alpacaOrder.filled_avg_price,
+        }).catch((e) => {
           console.log(e);
         }),
       );
@@ -213,12 +226,16 @@ async function handleStopLossOrder(
   newTradeStatus: TRADE_STATUS,
 ) {
   try {
-    await alpacaService.stopLossSellOrder(trade.ticker, trade.quantity);
+    const res = await alpacaService.stopLossSellOrder(
+      trade.ticker,
+      trade.quantity,
+    );
 
     await updateTrade({
       ...trade,
       status: newTradeStatus,
       sold: Date.now(),
+      alpacaStopLossOrderId: res.client_order_id,
     });
   } catch (e) {
     console.log(e);
