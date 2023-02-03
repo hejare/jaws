@@ -1,4 +1,5 @@
 import { getAllTrades, getTradesByStatus } from "@jaws/db/tradesEntity";
+import { getQueryParamArray } from "@jaws/util/getQueryParamArray";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -6,9 +7,8 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   const { query, method } = req;
-  const { status } = query;
 
-  const statusList = status && typeof status === "string" ? [status] : status;
+  const statusList = getQueryParamArray(query, "status");
 
   let results = {};
 

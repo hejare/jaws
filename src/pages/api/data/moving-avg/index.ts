@@ -1,5 +1,6 @@
 import { getBuySellHelpers } from "@jaws/lib/buySellHelper/buySellHelper";
 import { getSimpleMovingAverage } from "@jaws/services/polygonService";
+import { getQueryParamArray } from "@jaws/util/getQueryParamArray";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -7,15 +8,8 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   const { query, method } = req;
-  let { symbols } = query;
 
-  symbols =
-    symbols && typeof symbols === "string"
-      ? // Netlify incorrectly converts repeated query params to a string
-        // like "VAL1, VAL2" instead of an array ["VAL1", "VAL2"], so we
-        // need to split it here
-        symbols.split(", ")
-      : (symbols as string[]);
+  const symbols = getQueryParamArray(query, "symbols");
 
   if (undefined === symbols) {
     return res
