@@ -2,10 +2,11 @@ import { TradesDataType, TRADE_STATUS } from "@jaws/db/tradesMeta";
 import {
   getAccountAssets,
   getAccountCashBalance,
+  getOrders,
   getJawsPortfolio,
   getMovingAverages,
 } from "@jaws/services/backendService";
-import { RawPosition } from "@master-chief/alpaca/@types/entities";
+import { Order, RawOrder, RawPosition } from "@master-chief/alpaca/@types/entities";
 import { useEffect, useState } from "react";
 import { getBuySellHelpers } from "../buySellHelper/buySellHelper";
 
@@ -23,6 +24,30 @@ export interface PortfolioTableAsset extends TradesDataType {
   takenPartialProfit: boolean;
 }
 
+export const pnlClosedPositions = (orders: RawOrder[]) => {
+  const filledOrdersBySymbol = orders
+    .filter((o) => o.status === "filled")
+    .reduce<Record<string, RawOrder[]>>((map, order: RawOrder) => {
+      if (order.symbol in map) {
+        map[order.symbol].push(order);
+      } else {
+        map[order.symbol] = [order];
+      }
+      return map;
+  }, {});
+
+  return Object.entries(filledOrdersBySymbol).reduce((pnl, [symbol, orders]) => {
+    const netQty = orders.reduce((sum, order) => order.side === "buy" ? sum += parseInt(order.qty) : sum -= parseInt(order.qty), 0);
+    if (netQty === 0) {
+      pnl += orders.reduce((symbolPnl, order) => {
+        const size = parseFloat(order.filled_avg_price) * parseInt(order.qty)
+        return order.side === "buy" ? symbolPnl - size : symbolPnl + size;
+      }, 0);
+    }
+    return pnl;
+  }, 0);
+}
+
 export const useGetTableData = () => {
   const [fetchStatus, setFetchStatus] = useState<"loading" | "ok">("loading");
   const [data, setData] = useState<{
@@ -37,8 +62,32 @@ export const useGetTableData = () => {
       getAccountAssets(),
       getAccountCashBalance(),
       getJawsPortfolio(),
+      getOrders(),
     ])
-      .then(async ([assetsResult, balance, trades]) => {
+      .then(async ([assetsResult, balance, trades, allOrders]) => {
+        const filledOrdersBySymbol = allOrders.orders
+          .filter((o) => o.status === "filled")
+          .reduce<Record<string, RawOrder[]>>((map, order: RawOrder) => {
+            if (order.symbol in map) {
+              map[order.symbol].push(order);
+            } else {
+              map[order.symbol] = [order];
+            }
+            return map;
+        }, {});
+
+        const realizedProfit = Object.entries(filledOrdersBySymbol).reduce((pnl, [symbol, orders]) => {
+          const netQty = orders.reduce((sum, order) => order.side === "buy" ? sum += parseInt(order.qty) : sum -= parseInt(order.qty), 0);
+          if (netQty === 0) {
+            pnl += orders.reduce((symbolPnl, order) => {
+              const size = parseFloat(order.filled_avg_price) * parseInt(order.qty)
+              return order.side === "buy" ? symbolPnl - size : symbolPnl + size;
+            }, 0);
+          }
+          return pnl;
+        }, 0);
+        console.log({realizedProfit})
+
         const assets = assetsResult.assets;
 
         const movingAverages = await getMovingAverages(

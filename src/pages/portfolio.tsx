@@ -60,6 +60,12 @@ const PortfolioPage: NextPage = () => {
             <div>${totalPortfolioValue.toFixed()}</div>
           </TextDisplay>
         </Widget>
+        <Widget>
+          <TextDisplay>
+            <BoldText>P&L YTD</BoldText>
+            <div>${totalPortfolioValue.toFixed()}</div>
+          </TextDisplay>
+        </Widget>
       </WidgetGrid>
       <AssetsList data={assets} />
     </PageContainer>

@@ -13,13 +13,17 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { method } = req;
+  const { method, query } = req;
+  console.log({query})
 
   try {
     let responseData: ExtendedResponseDataType;
     switch (method) {
       case "GET":
-        responseData = await getOrders();
+        responseData = await getOrders({
+          after: query.after as string,
+          status: query.status as 'open' | 'closed' | 'all',
+        });
         break;
       case "POST":
         const { email } = await auth.verifyIdToken(
@@ -85,10 +89,13 @@ async function createNewTrade(req: NextApiRequest, email?: string) {
   return responseData;
 }
 
-async function getOrders() {
+async function getOrders(opts: {
+  after?: string;
+  status?: 'open' | 'closed' | 'all';
+} = {}) {
   const responseData: ExtendedResponseDataType = { status: "INIT" };
   await alpacaService
-    .getOrders()
+    .getOrders(opts)
     .then((result) => {
       responseData.status = "OK";
       responseData.orders = result;

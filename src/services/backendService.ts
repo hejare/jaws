@@ -4,6 +4,8 @@ import { TradesDataType, TRADE_STATUS } from "@jaws/db/tradesMeta";
 import { getToday } from "@jaws/lib/helpers";
 import { BrokerAccountEquityResponse } from "@jaws/pages/api/broker/account/equity";
 import { convertResult, handleResult } from "@jaws/util";
+import { Order } from "@master-chief/alpaca";
+import { RawOrder } from "@master-chief/alpaca/@types/entities";
 import fetch from "node-fetch";
 
 const baseHeaders = { "Content-Type": "application/json" };
@@ -70,8 +72,21 @@ export const getJawsPortfolio = async () => {
       headers: baseHeaders,
     },
   );
-
   return handleResult<TradesDataType[]>(resp);
+};
+
+interface OrdersResult {
+  orders: RawOrder[];
+};
+
+export const getOrders = async () => {
+  const resp = await fetch(
+    `/api/broker/orders?after=${new Date(2022, 12, 31).toISOString()}&status=closed`,
+    {
+      headers: baseHeaders,
+    },
+  );
+  return handleResult<OrdersResult>(resp);
 };
 
 export const getMovingAverages = async (symbols: string[]) => {
