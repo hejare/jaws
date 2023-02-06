@@ -110,7 +110,7 @@ export const triggerUpdateOpenSellOrders = async () => {
       return null;
     }
 
-    return { ...trade, [priceField]: alpacaOrder.filled_avg_price };
+    return { ...trade, [priceField]: parseFloat(alpacaOrder.filled_avg_price) };
   });
 
   await Promise.all(
@@ -159,8 +159,8 @@ export const triggerUpdateOpenBuyOrders = async () => {
       putTrade({
         ...trade,
         status: newStatus,
-        avgEntryPrice: alpacaOrder.filled_avg_price,
-        filledQuantity: alpacaOrder.filled_qty,
+        avgEntryPrice: parseFloat(alpacaOrder.filled_avg_price),
+        filledQuantity: parseInt(alpacaOrder.filled_qty),
       }).catch((e) => {
         console.log(e);
       }),
@@ -183,8 +183,8 @@ export const triggerUpdateOpenBuyOrders = async () => {
         putTrade({
           ...trade,
           status: TRADE_STATUS.FILLED,
-          avgEntryPrice: alpacaOrder.filled_avg_price,
-          filledQuantity: alpacaOrder.filled_qty,
+          avgEntryPrice: parseFloat(alpacaOrder.filled_avg_price),
+          filledQuantity: parseInt(alpacaOrder.filled_qty),
         }).catch((e) => {
           console.log(e);
         }),
@@ -242,12 +242,15 @@ export const performActions = (
   trades.forEach((trade) => {
     const { ticker, breakoutRef } = trade;
     const buySellHelpers = getBuySellHelpers();
-    const newTradeStatus = buySellHelpers.determineNewTradeStatus({
+    const tradeStatusOpts = {
       trade,
       totalAssets,
       lastTradePrice: trade.lastTradePrice,
       movingAvg: trade.movingAvg,
-    });
+    };
+    const newTradeStatus =
+      buySellHelpers.determineNewTradeStatus(tradeStatusOpts);
+    const sellPrices = buySellHelpers.getSellPriceLevels(tradeStatusOpts);
 
     if (newTradeStatus === trade.status) {
       // Stock hasn't triggered any of our stop-loss/take profit rules
@@ -264,7 +267,7 @@ export const performActions = (
       void handleStopLossOrder(trade, newTradeStatus);
       messageArray.push(`Stop loss ${ticker}: breakoutRef: ${breakoutRef}`);
     } else if (TRADE_STATUS.PARTIAL_PROFIT_TAKEN === newTradeStatus) {
-      void handleTakePartialProfitOrder(trade);
+      void handleTakePartialProfitOrder(trade, sellPrices.PARTIAL_PROFIT_TAKEN);
       messageArray.push(`Take profit ${ticker}: breakoutRef: ${breakoutRef}`);
     }
   });
@@ -279,6 +282,8 @@ async function handleStopLossOrder(
   newTradeStatus: TRADE_STATUS,
 ) {
   try {
+    await cancelTakePartialProfitOrder(trade);
+
     const res = await alpacaService.stopLossSellOrder(
       trade.ticker,
       trade.quantity,
@@ -296,7 +301,19 @@ async function handleStopLossOrder(
   }
 }
 
-const handleTakePartialProfitOrder = async (trade: ExtendedTradesDataType) => {
+async function cancelTakePartialProfitOrder(trade: ExtendedTradesDataType) {
+  if (!trade.alpacaTakeProfitOrderId || trade.avgTakeProfitSellPrice) {
+    // No open order to cancel
+    return;
+  }
+
+  return alpacaService.deleteOrder(trade.alpacaTakeProfitOrderId);
+}
+
+const handleTakePartialProfitOrder = async (
+  trade: ExtendedTradesDataType,
+  limitPrice: number,
+) => {
   try {
     const sellQuantity = Math.ceil(
       trade.quantity *
@@ -306,6 +323,7 @@ const handleTakePartialProfitOrder = async (trade: ExtendedTradesDataType) => {
     const result = await alpacaService.takePartialProfitSellOrder(
       trade.ticker,
       sellQuantity,
+      limitPrice,
     );
     await putTrade({
       ...depopulateTrade(trade),

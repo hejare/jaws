@@ -66,7 +66,11 @@ export const getBuySellHelpers = (config?: Partial<BuySellConstants>) => {
       lastTradePrice: number;
       totalAssets: number;
       movingAvg: number;
-    }): { [k in TRADE_STATUS]?: number } {
+    }): {
+      [k in TRADE_STATUS]?: number;
+    } & {
+      [TRADE_STATUS.PARTIAL_PROFIT_TAKEN]: number;
+    } {
       const isTradeFromToday = isToday(opts.trade.created);
       const stopLossMaxAmount = this.getStopLossMaxAmount(opts.totalAssets);
 
