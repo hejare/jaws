@@ -101,10 +101,10 @@ export const stopLossSellOrder = async (symbol: string, quantity: number) => {
   return postSellOrder({ symbol, quantity });
 };
 
-/** Should sell 50% of position */
 export const takePartialProfitSellOrder = (
   symbol: string,
   quantity: number,
+  limitPrice: number,
 ) => {
   if (!isValidSymbol(symbol)) {
     throw Error;
@@ -112,7 +112,18 @@ export const takePartialProfitSellOrder = (
 
   console.log(`Take profit on ${symbol}`);
 
-  return postSellOrder({ symbol, quantity });
+  const params: PlaceOrder = {
+    side: Side.SELL,
+    symbol: symbol,
+    time_in_force: "day",
+    qty: quantity,
+    type: "limit",
+    limit_price: limitPrice,
+  };
+
+  const body: BodyInit = JSON.stringify(params);
+
+  return postOrder(body);
 };
 
 const postSellOrder = ({

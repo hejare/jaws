@@ -242,12 +242,15 @@ export const performActions = (
   trades.forEach((trade) => {
     const { ticker, breakoutRef } = trade;
     const buySellHelpers = getBuySellHelpers();
-    const newTradeStatus = buySellHelpers.determineNewTradeStatus({
+    const tradeStatusOpts = {
       trade,
       totalAssets,
       lastTradePrice: trade.lastTradePrice,
       movingAvg: trade.movingAvg,
-    });
+    };
+    const newTradeStatus =
+      buySellHelpers.determineNewTradeStatus(tradeStatusOpts);
+    const sellPrices = buySellHelpers.getSellPriceLevels(tradeStatusOpts);
 
     if (newTradeStatus === trade.status) {
       // Stock hasn't triggered any of our stop-loss/take profit rules
@@ -264,7 +267,7 @@ export const performActions = (
       void handleStopLossOrder(trade, newTradeStatus);
       messageArray.push(`Stop loss ${ticker}: breakoutRef: ${breakoutRef}`);
     } else if (TRADE_STATUS.PARTIAL_PROFIT_TAKEN === newTradeStatus) {
-      void handleTakePartialProfitOrder(trade);
+      void handleTakePartialProfitOrder(trade, sellPrices.PARTIAL_PROFIT_TAKEN);
       messageArray.push(`Take profit ${ticker}: breakoutRef: ${breakoutRef}`);
     }
   });
@@ -296,7 +299,10 @@ async function handleStopLossOrder(
   }
 }
 
-const handleTakePartialProfitOrder = async (trade: ExtendedTradesDataType) => {
+const handleTakePartialProfitOrder = async (
+  trade: ExtendedTradesDataType,
+  limitPrice: number,
+) => {
   try {
     const sellQuantity = Math.ceil(
       trade.quantity *
@@ -306,6 +312,7 @@ const handleTakePartialProfitOrder = async (trade: ExtendedTradesDataType) => {
     const result = await alpacaService.takePartialProfitSellOrder(
       trade.ticker,
       sellQuantity,
+      limitPrice,
     );
     await putTrade({
       ...depopulateTrade(trade),
