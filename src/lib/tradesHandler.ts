@@ -282,6 +282,8 @@ async function handleStopLossOrder(
   newTradeStatus: TRADE_STATUS,
 ) {
   try {
+    await cancelTakePartialProfitOrder(trade);
+
     const res = await alpacaService.stopLossSellOrder(
       trade.ticker,
       trade.quantity,
@@ -297,6 +299,15 @@ async function handleStopLossOrder(
     console.log(e);
     throw Error(`Error when handling stop-loss order ${e as string}`);
   }
+}
+
+async function cancelTakePartialProfitOrder(trade: ExtendedTradesDataType) {
+  if (!trade.alpacaTakeProfitOrderId || trade.avgTakeProfitSellPrice) {
+    // No open order to cancel
+    return;
+  }
+
+  return alpacaService.deleteOrder(trade.alpacaTakeProfitOrderId);
 }
 
 const handleTakePartialProfitOrder = async (
