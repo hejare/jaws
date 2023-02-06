@@ -130,6 +130,12 @@ const AssetssList = ({ data }: Props) => {
     },
 
     {
+      title: "Days in trade",
+      key: "days_in_trade",
+      render: (_, { daysInTrade }) => daysInTrade,
+    },
+
+    {
       title: "Stop loss",
       key: "stoploss",
       render: (_, { stopLossType }) => stopLossType,

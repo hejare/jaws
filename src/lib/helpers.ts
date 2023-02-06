@@ -81,3 +81,7 @@ export function isValidSymbol(symbol: string): boolean {
       symbol.length <= 5,
   );
 }
+
+export const getDaysDifference = (date1: Date, date2: Date): number => {
+  return Math.floor(Math.abs(Number(date1) - Number(date2)) / ONE_DAY_IN_MS);
+};
