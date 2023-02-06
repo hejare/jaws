@@ -3,7 +3,9 @@ import { BrokerAccountBalanceResponse } from "@jaws/api/broker/account/balance";
 import { TradesDataType, TRADE_STATUS } from "@jaws/db/tradesMeta";
 import { getToday } from "@jaws/lib/helpers";
 import { BrokerAccountEquityResponse } from "@jaws/pages/api/broker/account/equity";
+import { PortfolioHistoryResponse } from "@jaws/pages/api/broker/account/history";
 import { convertResult, handleResult } from "@jaws/util";
+import { GetPortfolioHistory } from "@master-chief/alpaca";
 import fetch from "node-fetch";
 
 const baseHeaders = { "Content-Type": "application/json" };
@@ -91,4 +93,13 @@ export const getAccountEquity = async () => {
 
   const res = await handleResult<BrokerAccountEquityResponse>(resp);
   return parseFloat(res.equity);
+};
+
+export const getPortfolioHistory = async (opts?: GetPortfolioHistory) => {
+  const params = new URLSearchParams(opts as Record<string, string>);
+
+  const resp = await fetch(`/api/broker/account/history?${params.toString()}`);
+  const res = await handleResult<PortfolioHistoryResponse>(resp);
+
+  return res.history;
 };

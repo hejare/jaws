@@ -1,7 +1,9 @@
 import { getISOStringForToday, isValidSymbol } from "@jaws/lib/helpers";
 import { handleResult } from "@jaws/util";
+import { GetPortfolioHistory } from "@master-chief/alpaca";
 import {
   Order,
+  PortfolioHistory,
   RawAccount,
   RawOrder,
   RawPosition,
@@ -266,6 +268,14 @@ export const getPortfolioValue = async () => {
 export async function getAccount() {
   return sendAlpacaRequest<RawAccount>(
     `/trading/accounts/${accountId}/account`,
+  );
+}
+
+export async function getAccountHistory(opts?: GetPortfolioHistory) {
+  const params = new URLSearchParams(opts as Record<string, string>);
+
+  return sendAlpacaRequest<PortfolioHistory>(
+    `trading/accounts/{account_id}/account/portfolio/history?${params.toString()}`,
   );
 }
 
