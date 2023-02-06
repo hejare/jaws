@@ -110,7 +110,7 @@ export const triggerUpdateOpenSellOrders = async () => {
       return null;
     }
 
-    return { ...trade, [priceField]: alpacaOrder.filled_avg_price };
+    return { ...trade, [priceField]: parseFloat(alpacaOrder.filled_avg_price) };
   });
 
   await Promise.all(
@@ -159,8 +159,8 @@ export const triggerUpdateOpenBuyOrders = async () => {
       putTrade({
         ...trade,
         status: newStatus,
-        avgEntryPrice: alpacaOrder.filled_avg_price,
-        filledQuantity: alpacaOrder.filled_qty,
+        avgEntryPrice: parseFloat(alpacaOrder.filled_avg_price),
+        filledQuantity: parseInt(alpacaOrder.filled_qty),
       }).catch((e) => {
         console.log(e);
       }),
@@ -183,8 +183,8 @@ export const triggerUpdateOpenBuyOrders = async () => {
         putTrade({
           ...trade,
           status: TRADE_STATUS.FILLED,
-          avgEntryPrice: alpacaOrder.filled_avg_price,
-          filledQuantity: alpacaOrder.filled_qty,
+          avgEntryPrice: parseFloat(alpacaOrder.filled_avg_price),
+          filledQuantity: parseInt(alpacaOrder.filled_qty),
         }).catch((e) => {
           console.log(e);
         }),

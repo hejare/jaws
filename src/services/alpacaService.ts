@@ -1,7 +1,6 @@
 import { getISOStringForToday, isValidSymbol } from "@jaws/lib/helpers";
 import { handleResult } from "@jaws/util";
 import {
-  Order,
   RawAccount,
   RawOrder,
   RawPosition,
@@ -191,7 +190,7 @@ export const getOrders = async (
 };
 
 // TODO: Use generic getOrders()
-export const getTodaysOrders = async (): Promise<Order[]> => {
+export const getTodaysOrders = async (): Promise<RawOrder[]> => {
   try {
     const res = await fetch(
       `${brokerApiBaseUrl}/trading/accounts/${accountId}/orders?status=all&after=${getISOStringForToday()}`,

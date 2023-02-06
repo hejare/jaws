@@ -138,7 +138,7 @@ function convertToTableData({
         changeToday: Number(alpacaAsset.change_today),
         stopLossPrice: sellPriceLevels[stopLossType] as number,
         stopLossType,
-        takePartialProfitPrice: sellPriceLevels.PARTIAL_PROFIT_TAKEN as number,
+        takePartialProfitPrice: sellPriceLevels.PARTIAL_PROFIT_TAKEN,
         movingAvg,
         takenPartialProfit: trade.status === TRADE_STATUS.PARTIAL_PROFIT_TAKEN,
         daysInTrade: getDaysDifference(new Date(), new Date(trade.created)),
