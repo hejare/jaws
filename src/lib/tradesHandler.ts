@@ -4,7 +4,10 @@ import {
   TRADE_SIDE,
   TRADE_STATUS,
 } from "@jaws/db/tradesMeta";
-import { getBuySellHelpers } from "@jaws/lib/buySellHelper/buySellHelper";
+import {
+  getBuySellHelpers,
+  tradeHasRequiredData,
+} from "@jaws/lib/buySellHelper/buySellHelper";
 import { AlpacaOrderStatusType } from "@jaws/services/alpacaMeta";
 import * as alpacaService from "@jaws/services/alpacaService";
 import {
@@ -242,6 +245,7 @@ export const performActions = (
   trades.forEach((trade) => {
     const { ticker, breakoutRef } = trade;
     const buySellHelpers = getBuySellHelpers();
+    tradeHasRequiredData(trade);
     const tradeStatusOpts = {
       trade,
       totalAssets,

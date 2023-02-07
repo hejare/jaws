@@ -121,3 +121,20 @@ export const getBuySellHelpers = (config?: Partial<BuySellConstants>) => {
     },
   };
 };
+
+export function tradeHasRequiredData(
+  trade: ExtendedTradesDataType,
+): asserts trade is TradesDataWithRequiredProps {
+  const requiredFields: (keyof TradesDataWithRequiredProps)[] = [
+    "avgEntryPrice",
+    "filledQuantity",
+  ];
+
+  const missingFields = requiredFields.filter((k) => !trade[k]);
+
+  if (missingFields.length) {
+    throw new TypeError(
+      `Trade is missing values for: ${missingFields.join(", ")}`,
+    );
+  }
+}

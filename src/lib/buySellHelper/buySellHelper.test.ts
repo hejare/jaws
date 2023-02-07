@@ -1,5 +1,8 @@
 import { TRADE_SIDE, TRADE_STATUS } from "@jaws/db/tradesMeta";
-import { getBuySellHelpers } from "@jaws/lib/buySellHelper/buySellHelper";
+import {
+  getBuySellHelpers,
+  tradeHasRequiredData,
+} from "@jaws/lib/buySellHelper/buySellHelper";
 
 describe("buySellHelper", () => {
   it("calculates stop-loss limit", () => {
@@ -337,5 +340,40 @@ describe("buySellHelper", () => {
       quantity: 4347,
       maxOrderValue: 100,
     });
+  });
+
+  it("checks that trades have required data", () => {
+    const trade = {
+      avgEntryPrice: 20,
+      price: 19.8,
+      quantity: 16,
+      filledQuantity: 15,
+      breakoutRef: "BREAKOUT_REF",
+      created: Date.now(),
+      side: TRADE_SIDE.BUY,
+      status: TRADE_STATUS.FILLED,
+      ticker: "GOOG",
+      alpacaOrderId: "ALPACA_ORDER_ID",
+    };
+
+    expect(() => tradeHasRequiredData(trade)).not.toThrow();
+
+    const { avgEntryPrice, ...missingEntryPrice } = trade;
+
+    expect(() => tradeHasRequiredData(missingEntryPrice)).toThrowError(
+      "Trade is missing values for: avgEntryPrice",
+    );
+
+    const { filledQuantity, ...missingQty } = trade;
+
+    expect(() => tradeHasRequiredData(missingQty)).toThrowError(
+      "Trade is missing values for: filledQuantity",
+    );
+
+    const { filledQuantity: a, avgEntryPrice: b, ...missingBoth } = trade;
+
+    expect(() => tradeHasRequiredData(missingBoth)).toThrowError(
+      "Trade is missing values for: avgEntryPrice, filledQuantity",
+    );
   });
 });
