@@ -121,7 +121,7 @@ function convertToTableData({
 
       const sellPriceLevels = buySellHelpers.getSellPriceLevels({
         trade,
-        lastTradePrice: currentPrice,
+        currentPrice,
         movingAvg,
         totalAssets: totalPortfolioValue,
       });

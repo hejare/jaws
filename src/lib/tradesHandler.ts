@@ -16,14 +16,11 @@ import {
   getTradesByStatus,
   putTrade,
 } from "../db/tradesEntity";
-import {
-  getLastTradePrice,
-  getSimpleMovingAverage,
-} from "../services/polygonService";
+import { getSimpleMovingAverage } from "../services/polygonService";
 import { isToday, ONE_DAY_IN_MS } from "./helpers";
 
 interface ExtendedTradesDataType extends DBExtendedTradesDataType {
-  lastTradePrice: number;
+  currentPrice: number;
   movingAvg: number;
 }
 
@@ -223,7 +220,7 @@ export const triggerClearOldBuyOrders = async () => {
 const depopulateTrade = (
   trade: ExtendedTradesDataType,
 ): DBExtendedTradesDataType => {
-  const { lastTradePrice, movingAvg, ...depopTrade } = trade;
+  const { currentPrice, movingAvg, ...depopTrade } = trade;
   return depopTrade;
 };
 
@@ -249,7 +246,7 @@ export const performActions = (
     const tradeStatusOpts = {
       trade,
       totalAssets,
-      lastTradePrice: trade.lastTradePrice,
+      currentPrice: trade.currentPrice,
       movingAvg: trade.movingAvg,
     };
     const newTradeStatus =
@@ -348,12 +345,23 @@ async function populateTradesData(trades: TradesDataType[]) {
   const populatedArray: ExtendedTradesDataType[] = [];
   await Promise.all(
     trades.map(async (trade) => {
-      const lastTradePrice = await getLastTradePrice(trade.ticker);
+      const alpacaPosition = await alpacaService.getAssetByTicker(trade.ticker);
       const movingAvg = await getSimpleMovingAverage(
         trade.ticker,
         getBuySellHelpers().config.MOVING_AVERAGE_DAY_RANGE,
       );
-      populatedArray.push({ ...trade, lastTradePrice, movingAvg });
+
+      if (!alpacaPosition.current_price) {
+        throw new Error(
+          `Missing alpaca.current_price for symbol ${trade.ticker}`,
+        );
+      }
+
+      populatedArray.push({
+        ...trade,
+        currentPrice: parseFloat(alpacaPosition.current_price),
+        movingAvg,
+      });
     }),
   );
   return populatedArray;

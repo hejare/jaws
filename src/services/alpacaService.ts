@@ -52,7 +52,7 @@ const postOrder = async (body: BodyInit): Promise<RawOrder> => {
   }
 };
 
-const getAssetByTicker = async (ticker: string) => {
+export const getAssetByTicker = async (ticker: string) => {
   try {
     const res = await fetch(
       `${brokerApiBaseUrl}/trading/accounts/${accountId}/positions/${ticker.toUpperCase()}`,
@@ -62,7 +62,7 @@ const getAssetByTicker = async (ticker: string) => {
         },
       },
     );
-    return await handleResult(res);
+    return await handleResult<RawPosition>(res);
   } catch (e: any) {
     console.log(e);
     throw Error(`Unable to get asset for ${ticker} - ${e.message as string}`);

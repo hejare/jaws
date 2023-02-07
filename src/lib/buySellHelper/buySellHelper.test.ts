@@ -59,7 +59,7 @@ describe("buySellHelper", () => {
 
       const tradeTakePartialProfit = helpers1.determineNewTradeStatus({
         trade: todayTrade,
-        lastTradePrice: 25, // up more than 10%
+        currentPrice: 25, // up more than 10%
         movingAvg: 23,
         totalAssets: 10000,
       });
@@ -68,7 +68,7 @@ describe("buySellHelper", () => {
 
       const tradeStopLoss1 = helpers1.determineNewTradeStatus({
         trade: todayTrade,
-        lastTradePrice: 15,
+        currentPrice: 15,
         movingAvg: 23,
         totalAssets: 10000,
       });
@@ -78,7 +78,7 @@ describe("buySellHelper", () => {
       const tradeStopLoss2 = helpers1.determineNewTradeStatus({
         trade: todayTrade,
         // dropped below entry, should be STOP_LOSS_2 on any other day
-        lastTradePrice: 19.5,
+        currentPrice: 19.5,
         movingAvg: 23,
         totalAssets: 10000,
       });
@@ -89,7 +89,7 @@ describe("buySellHelper", () => {
         trade: todayTrade,
         // dropped below movingAvg, should be STOP_LOSS_3 on any other
         // day
-        lastTradePrice: 20.5,
+        currentPrice: 20.5,
         movingAvg: 20.7,
         totalAssets: 10000,
       });
@@ -113,7 +113,7 @@ describe("buySellHelper", () => {
 
       const tradeTakePartialProfit = helpers1.determineNewTradeStatus({
         trade: yesterdayTrade,
-        lastTradePrice: 25, // up more than 10%
+        currentPrice: 25, // up more than 10%
         movingAvg: 23,
         totalAssets: 10000,
       });
@@ -124,7 +124,7 @@ describe("buySellHelper", () => {
       // STOP_LOSS_2
       const tradeStopLoss2_1 = helpers1.determineNewTradeStatus({
         trade: yesterdayTrade,
-        lastTradePrice: 15,
+        currentPrice: 15,
         movingAvg: 19,
         totalAssets: 10000,
       });
@@ -133,7 +133,7 @@ describe("buySellHelper", () => {
 
       const tradeStopLoss2_2 = helpers1.determineNewTradeStatus({
         trade: yesterdayTrade,
-        lastTradePrice: 19.5, // dropped below entry, should be STOP_LOSS_2
+        currentPrice: 19.5, // dropped below entry, should be STOP_LOSS_2
         movingAvg: 18,
         totalAssets: 10000,
       });
@@ -142,7 +142,7 @@ describe("buySellHelper", () => {
 
       const tradeStopLoss3 = helpers1.determineNewTradeStatus({
         trade: yesterdayTrade,
-        lastTradePrice: 20.5, // dropped below movingAvg which is above entry; should be STOP_LOSS_3
+        currentPrice: 20.5, // dropped below movingAvg which is above entry; should be STOP_LOSS_3
         movingAvg: 20.7,
         totalAssets: 10000,
       });
@@ -170,7 +170,7 @@ describe("buySellHelper", () => {
 
     const tradeTakePartialProfit = helpers1.determineNewTradeStatus({
       trade: yesterdayTrade,
-      lastTradePrice: 25, // up more than 10%
+      currentPrice: 25, // up more than 10%
       movingAvg: 23,
       totalAssets: 10000,
     });
@@ -179,7 +179,7 @@ describe("buySellHelper", () => {
 
     const secondStatusCheck = helpers1.determineNewTradeStatus({
       trade: { ...yesterdayTrade, status: TRADE_STATUS.PARTIAL_PROFIT_TAKEN },
-      lastTradePrice: 25, // up more than 10%
+      currentPrice: 25, // up more than 10%
       movingAvg: 23,
       totalAssets: 10000,
     });
@@ -188,7 +188,7 @@ describe("buySellHelper", () => {
 
     const tradeDroppedValue = helpers1.determineNewTradeStatus({
       trade: { ...yesterdayTrade, status: TRADE_STATUS.PARTIAL_PROFIT_TAKEN },
-      lastTradePrice: 21,
+      currentPrice: 21,
       movingAvg: 23,
       totalAssets: 10000,
     });
@@ -217,7 +217,7 @@ describe("buySellHelper", () => {
     // dropped below everything on day 1
     const tradeStopLoss1 = helpers1.determineNewTradeStatus({
       trade: { ...yesterdayTrade, created: Date.now() },
-      lastTradePrice: 15,
+      currentPrice: 15,
       movingAvg: 23,
       totalAssets: 10000,
     });
@@ -227,7 +227,7 @@ describe("buySellHelper", () => {
     // dropped below moving avg AND entry price
     const tradeStopLoss2 = helpers1.determineNewTradeStatus({
       trade: yesterdayTrade,
-      lastTradePrice: 19.5, // dropped below entry, should be STOP_LOSS_2
+      currentPrice: 19.5, // dropped below entry, should be STOP_LOSS_2
       movingAvg: 19.8,
       totalAssets: 10000,
     });
@@ -237,7 +237,7 @@ describe("buySellHelper", () => {
     // only droppped below moving avg
     const tradeStopLoss3 = helpers1.determineNewTradeStatus({
       trade: yesterdayTrade,
-      lastTradePrice: 20.5, // dropped below movingAvg, should be STOP_LOSS_3
+      currentPrice: 20.5, // dropped below movingAvg, should be STOP_LOSS_3
       movingAvg: 20.7,
       totalAssets: 10000,
     });
@@ -269,7 +269,7 @@ describe("buySellHelper", () => {
     const levelsTodayTrade = helpers.getSellPriceLevels({
       trade: todayTrade,
       totalAssets: 3000,
-      lastTradePrice: 20.5,
+      currentPrice: 20.5,
       movingAvg: 21,
     });
 
@@ -282,7 +282,7 @@ describe("buySellHelper", () => {
     const levelsYesterdayTrade = helpers.getSellPriceLevels({
       trade: yesterdayTrade,
       totalAssets: 3000,
-      lastTradePrice: 20.5,
+      currentPrice: 20.5,
       movingAvg: 18,
     });
 
@@ -295,7 +295,7 @@ describe("buySellHelper", () => {
     const levelsYesterdayTradeMA10Above = helpers.getSellPriceLevels({
       trade: yesterdayTrade,
       totalAssets: 3000,
-      lastTradePrice: 22,
+      currentPrice: 22,
       movingAvg: 21.5,
     });
 

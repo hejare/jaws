@@ -37,7 +37,7 @@ export const getBuySellHelpers = (config?: Partial<BuySellConstants>) => {
 
     determineNewTradeStatus: function (opts: {
       trade: TradesDataWithRequiredProps;
-      lastTradePrice: number;
+      currentPrice: number;
       movingAvg: number;
       /** Portfolio value, cash balance + value of investments */
       totalAssets: number;
@@ -49,14 +49,14 @@ export const getBuySellHelpers = (config?: Partial<BuySellConstants>) => {
         TRADE_STATUS.STOP_LOSS_2,
         TRADE_STATUS.STOP_LOSS_3,
       ]) {
-        if (opts.lastTradePrice <= Number(sellPrices[tradeStatus])) {
+        if (opts.currentPrice <= Number(sellPrices[tradeStatus])) {
           return tradeStatus;
         }
       }
 
       if (
         opts.trade.status !== TRADE_STATUS.PARTIAL_PROFIT_TAKEN &&
-        opts.lastTradePrice >= Number(sellPrices.PARTIAL_PROFIT_TAKEN)
+        opts.currentPrice >= Number(sellPrices.PARTIAL_PROFIT_TAKEN)
       ) {
         return TRADE_STATUS.PARTIAL_PROFIT_TAKEN;
       }
@@ -71,7 +71,7 @@ export const getBuySellHelpers = (config?: Partial<BuySellConstants>) => {
      */
     getSellPriceLevels: function (opts: {
       trade: TradesDataWithRequiredProps;
-      lastTradePrice: number;
+      currentPrice: number;
       totalAssets: number;
       movingAvg: number;
     }): {
