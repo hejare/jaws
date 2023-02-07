@@ -1,6 +1,8 @@
 import { handleDeleteOrder } from "@jaws/lib/brokerHandler";
 import { getDateTime } from "@jaws/lib/helpers";
 import { Side } from "@jaws/services/alpacaMeta";
+import { RawOrder } from "@master-chief/alpaca/@types/entities";
+import { ColumnsType } from "rc-table/lib/interface";
 import Button from "../atoms/buttons/Button";
 import Table from "../atoms/Table";
 import PriceDisplay from "../molecules/PriceDisplay";
@@ -15,7 +17,7 @@ const cancellableOrderStatus = [
   "accepted_for_bidding",
 ] as const;
 
-type CancellableOrderStatus = typeof cancellableOrderStatus[number];
+type CancellableOrderStatus = (typeof cancellableOrderStatus)[number];
 
 // statuses from alpaca:
 const nonCancellableOrderStatus = [
@@ -31,7 +33,7 @@ const nonCancellableOrderStatus = [
   "calculated",
 ] as const;
 
-type NonCancellableOrderStatus = typeof nonCancellableOrderStatus[number];
+type NonCancellableOrderStatus = (typeof nonCancellableOrderStatus)[number];
 
 export type OrderStatus = CancellableOrderStatus | NonCancellableOrderStatus;
 
@@ -45,11 +47,8 @@ export interface Order {
   side: Side;
 }
 
-type OrdersListData = {
-  symbol: string;
-};
 interface Props {
-  data: OrdersListData[];
+  data: RawOrder[];
 }
 
 const OrdersList = ({ data }: Props) => {
@@ -61,7 +60,7 @@ const OrdersList = ({ data }: Props) => {
     return <hr />;
   };
 
-  const columns = [
+  const columns: ColumnsType<RawOrder> = [
     {
       title: "Symbol",
       dataIndex: "symbol",
@@ -69,74 +68,52 @@ const OrdersList = ({ data }: Props) => {
       width: 100,
     },
     {
-      title: "Type",
+      title: "Side",
       dataIndex: "side",
       key: "side",
       width: 100,
     },
     {
+      title: "Type",
+      dataIndex: "type",
+      key: "type",
+      width: 100,
+    },
+    {
       title: "Quantity",
-      dataIndex: "",
       key: "qty",
       width: 100,
-      render: ({ notional, qty }: { notional?: string; qty: string }) =>
-        notional ? notional : qty,
+      render: (_, { qty }) => qty,
     },
     {
       title: "Price",
-      dataIndex: "",
       key: "price",
       width: 200,
-      render: ({
-        filled_avg_price: avgPrice,
-        limit_price: limitPrice,
-      }: {
-        filled_avg_price?: string;
-        limit_price: string;
-      }) => {
-        if (avgPrice) {
-          return <PriceDisplay value={parseFloat(avgPrice)} />;
+      render: (_, { filled_avg_price, limit_price, stop_price }) => {
+        const price = filled_avg_price || limit_price || stop_price;
+
+        if (price) {
+          return <PriceDisplay value={parseFloat(price)} />;
         } else {
-          return <PriceDisplay value={parseFloat(limitPrice)} />;
+          // un-filled market order
+          return "";
         }
       },
     },
     {
       title: "Value",
-      dataIndex: "",
       key: "value",
       width: 200,
-      render: ({
-        filled_avg_price: price,
-        limit_price: limitPrice,
-        notional,
-        qty,
-      }: {
-        filled_avg_price: string;
-        notional?: string;
-        limit_price: string;
-        qty: string;
-      }) => {
+      render: (_, { filled_avg_price, limit_price, qty, stop_price }) => {
+        const price = filled_avg_price || limit_price || stop_price;
+
         if (price) {
           return (
-            data && (
-              <PriceDisplay
-                value={
-                  parseFloat(price) * parseFloat(notional ? notional : qty)
-                }
-              />
-            )
+            data && <PriceDisplay value={parseFloat(price) * parseFloat(qty)} />
           );
         } else {
-          return (
-            data && (
-              <PriceDisplay
-                value={
-                  parseFloat(limitPrice) * parseFloat(notional ? notional : qty)
-                }
-              />
-            )
-          );
+          // un-filled market order
+          return "";
         }
       },
     },
@@ -162,16 +139,15 @@ const OrdersList = ({ data }: Props) => {
     },
     {
       title: "Operations",
-      dataIndex: "",
       key: "operations",
-      render: (data: any) => {
+      render: (_, order) => {
         const disabled = (
           nonCancellableOrderStatus as unknown as string[]
-        ).includes(data.status);
+        ).includes(order.status);
         return disabled ? (
           ""
         ) : (
-          <Button onClick={() => handleDeleteOrder(data.id)}>Cancel</Button>
+          <Button onClick={() => handleDeleteOrder(order.id)}>Cancel</Button>
         );
       },
     },

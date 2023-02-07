@@ -8,6 +8,8 @@ declare global {
 
 declare const TradingView = window.TradingView; // ok now
 
+declare type RequireSome<T, K extends keyof T> = T & Required<Pick<T, K>>;
+
 // declare const window: any;
 
 // declare window.TradingView = {

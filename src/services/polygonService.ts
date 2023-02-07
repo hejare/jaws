@@ -3,22 +3,13 @@ import { ITrades, restClient } from "@polygon.io/client-js";
 
 export enum MADays {
   TEN = 10,
+  TWENTY = 20,
   FIFTY = 50,
 }
 
 const { POLYGON_KEY = "[NOT_DEFINED_IN_ENV]" } = process.env;
 
 const polygonRestAPI = restClient(POLYGON_KEY);
-
-export const getLastTradePrice = async (symbol: string): Promise<number> => {
-  return polygonRestAPI.stocks.lastTrade(symbol).then(({ results }) => {
-    if (!results?.p) {
-      throw new Error(`No trade price found for ticker ${symbol}`);
-    }
-
-    return results.p;
-  });
-};
 
 export const getLastTradesMedianPrice = async (symbol: string) => {
   return polygonRestAPI.stocks
@@ -41,6 +32,7 @@ export const getLastTradesMedianPrice = async (symbol: string) => {
       return prices[prices.length / 2 - 1];
     });
 };
+
 /* node-fetch since polygonClient doesn't have support for this endpoint */
 export const getSimpleMovingAverage = async (
   symbol: string,

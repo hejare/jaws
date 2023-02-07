@@ -1,5 +1,8 @@
-import { TradesDataType, TRADE_SIDE, TRADE_STATUS } from "@jaws/db/tradesMeta";
-import { getBuySellHelpers } from "@jaws/lib/buySellHelper/buySellHelper";
+import { TRADE_SIDE, TRADE_STATUS } from "@jaws/db/tradesMeta";
+import {
+  getBuySellHelpers,
+  tradeHasRequiredData,
+} from "@jaws/lib/buySellHelper/buySellHelper";
 
 describe("buySellHelper", () => {
   it("calculates stop-loss limit", () => {
@@ -41,9 +44,11 @@ describe("buySellHelper", () => {
     });
 
     it("should only return some statuses on day 1", () => {
-      const todayTrade: TradesDataType = {
-        price: 20,
-        quantity: 15,
+      const todayTrade = {
+        avgEntryPrice: 20,
+        price: 19.8,
+        filledQuantity: 15,
+        quantity: 16,
         breakoutRef: "BREAKOUT_REF",
         created: Date.now(),
         side: TRADE_SIDE.BUY,
@@ -54,7 +59,7 @@ describe("buySellHelper", () => {
 
       const tradeTakePartialProfit = helpers1.determineNewTradeStatus({
         trade: todayTrade,
-        lastTradePrice: 25, // up more than 10%
+        currentPrice: 25, // up more than 10%
         movingAvg: 23,
         totalAssets: 10000,
       });
@@ -63,7 +68,7 @@ describe("buySellHelper", () => {
 
       const tradeStopLoss1 = helpers1.determineNewTradeStatus({
         trade: todayTrade,
-        lastTradePrice: 15,
+        currentPrice: 15,
         movingAvg: 23,
         totalAssets: 10000,
       });
@@ -73,7 +78,7 @@ describe("buySellHelper", () => {
       const tradeStopLoss2 = helpers1.determineNewTradeStatus({
         trade: todayTrade,
         // dropped below entry, should be STOP_LOSS_2 on any other day
-        lastTradePrice: 19.5,
+        currentPrice: 19.5,
         movingAvg: 23,
         totalAssets: 10000,
       });
@@ -84,7 +89,7 @@ describe("buySellHelper", () => {
         trade: todayTrade,
         // dropped below movingAvg, should be STOP_LOSS_3 on any other
         // day
-        lastTradePrice: 20.5,
+        currentPrice: 20.5,
         movingAvg: 20.7,
         totalAssets: 10000,
       });
@@ -93,9 +98,11 @@ describe("buySellHelper", () => {
     });
 
     it("should only return some statuses on day >1", () => {
-      const yesterdayTrade: TradesDataType = {
-        price: 20,
-        quantity: 15,
+      const yesterdayTrade = {
+        avgEntryPrice: 20,
+        price: 19.8,
+        filledQuantity: 15,
+        quantity: 16,
         breakoutRef: "BREAKOUT_REF",
         created: Date.now() - 60 * 60 * 24 * 1000,
         side: TRADE_SIDE.BUY,
@@ -106,7 +113,7 @@ describe("buySellHelper", () => {
 
       const tradeTakePartialProfit = helpers1.determineNewTradeStatus({
         trade: yesterdayTrade,
-        lastTradePrice: 25, // up more than 10%
+        currentPrice: 25, // up more than 10%
         movingAvg: 23,
         totalAssets: 10000,
       });
@@ -117,7 +124,7 @@ describe("buySellHelper", () => {
       // STOP_LOSS_2
       const tradeStopLoss2_1 = helpers1.determineNewTradeStatus({
         trade: yesterdayTrade,
-        lastTradePrice: 15,
+        currentPrice: 15,
         movingAvg: 19,
         totalAssets: 10000,
       });
@@ -126,7 +133,7 @@ describe("buySellHelper", () => {
 
       const tradeStopLoss2_2 = helpers1.determineNewTradeStatus({
         trade: yesterdayTrade,
-        lastTradePrice: 19.5, // dropped below entry, should be STOP_LOSS_2
+        currentPrice: 19.5, // dropped below entry, should be STOP_LOSS_2
         movingAvg: 18,
         totalAssets: 10000,
       });
@@ -135,7 +142,7 @@ describe("buySellHelper", () => {
 
       const tradeStopLoss3 = helpers1.determineNewTradeStatus({
         trade: yesterdayTrade,
-        lastTradePrice: 20.5, // dropped below movingAvg which is above entry; should be STOP_LOSS_3
+        currentPrice: 20.5, // dropped below movingAvg which is above entry; should be STOP_LOSS_3
         movingAvg: 20.7,
         totalAssets: 10000,
       });
@@ -148,9 +155,11 @@ describe("buySellHelper", () => {
       STOP_LOSS_1_PORTFOLIO_PERCENTAGE: 0.005,
     });
 
-    const yesterdayTrade: TradesDataType = {
-      price: 20,
-      quantity: 15,
+    const yesterdayTrade = {
+      avgEntryPrice: 20,
+      price: 19.8,
+      filledQuantity: 15,
+      quantity: 16,
       breakoutRef: "BREAKOUT_REF",
       created: Date.now() - 60 * 60 * 24 * 1000,
       side: TRADE_SIDE.BUY,
@@ -161,7 +170,7 @@ describe("buySellHelper", () => {
 
     const tradeTakePartialProfit = helpers1.determineNewTradeStatus({
       trade: yesterdayTrade,
-      lastTradePrice: 25, // up more than 10%
+      currentPrice: 25, // up more than 10%
       movingAvg: 23,
       totalAssets: 10000,
     });
@@ -170,7 +179,7 @@ describe("buySellHelper", () => {
 
     const secondStatusCheck = helpers1.determineNewTradeStatus({
       trade: { ...yesterdayTrade, status: TRADE_STATUS.PARTIAL_PROFIT_TAKEN },
-      lastTradePrice: 25, // up more than 10%
+      currentPrice: 25, // up more than 10%
       movingAvg: 23,
       totalAssets: 10000,
     });
@@ -179,7 +188,7 @@ describe("buySellHelper", () => {
 
     const tradeDroppedValue = helpers1.determineNewTradeStatus({
       trade: { ...yesterdayTrade, status: TRADE_STATUS.PARTIAL_PROFIT_TAKEN },
-      lastTradePrice: 21,
+      currentPrice: 21,
       movingAvg: 23,
       totalAssets: 10000,
     });
@@ -192,9 +201,11 @@ describe("buySellHelper", () => {
       STOP_LOSS_1_PORTFOLIO_PERCENTAGE: 0.005,
     });
 
-    const yesterdayTrade: TradesDataType = {
-      price: 20,
-      quantity: 15,
+    const yesterdayTrade = {
+      avgEntryPrice: 20,
+      price: 19.8,
+      filledQuantity: 15,
+      quantity: 16,
       breakoutRef: "BREAKOUT_REF",
       created: Date.now() - 60 * 60 * 24 * 1000,
       side: TRADE_SIDE.BUY,
@@ -206,7 +217,7 @@ describe("buySellHelper", () => {
     // dropped below everything on day 1
     const tradeStopLoss1 = helpers1.determineNewTradeStatus({
       trade: { ...yesterdayTrade, created: Date.now() },
-      lastTradePrice: 15,
+      currentPrice: 15,
       movingAvg: 23,
       totalAssets: 10000,
     });
@@ -216,7 +227,7 @@ describe("buySellHelper", () => {
     // dropped below moving avg AND entry price
     const tradeStopLoss2 = helpers1.determineNewTradeStatus({
       trade: yesterdayTrade,
-      lastTradePrice: 19.5, // dropped below entry, should be STOP_LOSS_2
+      currentPrice: 19.5, // dropped below entry, should be STOP_LOSS_2
       movingAvg: 19.8,
       totalAssets: 10000,
     });
@@ -226,7 +237,7 @@ describe("buySellHelper", () => {
     // only droppped below moving avg
     const tradeStopLoss3 = helpers1.determineNewTradeStatus({
       trade: yesterdayTrade,
-      lastTradePrice: 20.5, // dropped below movingAvg, should be STOP_LOSS_3
+      currentPrice: 20.5, // dropped below movingAvg, should be STOP_LOSS_3
       movingAvg: 20.7,
       totalAssets: 10000,
     });
@@ -237,9 +248,11 @@ describe("buySellHelper", () => {
   it("calculates current stop-loss and take-profit values", () => {
     const helpers = getBuySellHelpers();
 
-    const todayTrade: TradesDataType = {
-      price: 20,
-      quantity: 15,
+    const todayTrade = {
+      avgEntryPrice: 20,
+      price: 19.8,
+      quantity: 16,
+      filledQuantity: 15,
       breakoutRef: "BREAKOUT_REF",
       created: Date.now(),
       side: TRADE_SIDE.BUY,
@@ -248,7 +261,7 @@ describe("buySellHelper", () => {
       alpacaOrderId: "ALPACA_ORDER_ID",
     };
 
-    const yesterdayTrade: TradesDataType = {
+    const yesterdayTrade = {
       ...todayTrade,
       created: Date.now() - 60 * 60 * 24 * 1000,
     };
@@ -256,7 +269,7 @@ describe("buySellHelper", () => {
     const levelsTodayTrade = helpers.getSellPriceLevels({
       trade: todayTrade,
       totalAssets: 3000,
-      lastTradePrice: 20.5,
+      currentPrice: 20.5,
       movingAvg: 21,
     });
 
@@ -269,7 +282,7 @@ describe("buySellHelper", () => {
     const levelsYesterdayTrade = helpers.getSellPriceLevels({
       trade: yesterdayTrade,
       totalAssets: 3000,
-      lastTradePrice: 20.5,
+      currentPrice: 20.5,
       movingAvg: 18,
     });
 
@@ -282,7 +295,7 @@ describe("buySellHelper", () => {
     const levelsYesterdayTradeMA10Above = helpers.getSellPriceLevels({
       trade: yesterdayTrade,
       totalAssets: 3000,
-      lastTradePrice: 22,
+      currentPrice: 22,
       movingAvg: 21.5,
     });
 
@@ -327,5 +340,40 @@ describe("buySellHelper", () => {
       quantity: 4347,
       maxOrderValue: 100,
     });
+  });
+
+  it("checks that trades have required data", () => {
+    const trade = {
+      avgEntryPrice: 20,
+      price: 19.8,
+      quantity: 16,
+      filledQuantity: 15,
+      breakoutRef: "BREAKOUT_REF",
+      created: Date.now(),
+      side: TRADE_SIDE.BUY,
+      status: TRADE_STATUS.FILLED,
+      ticker: "GOOG",
+      alpacaOrderId: "ALPACA_ORDER_ID",
+    };
+
+    expect(() => tradeHasRequiredData(trade)).not.toThrow();
+
+    const { avgEntryPrice, ...missingEntryPrice } = trade;
+
+    expect(() => tradeHasRequiredData(missingEntryPrice)).toThrowError(
+      "Trade is missing values for: avgEntryPrice",
+    );
+
+    const { filledQuantity, ...missingQty } = trade;
+
+    expect(() => tradeHasRequiredData(missingQty)).toThrowError(
+      "Trade is missing values for: filledQuantity",
+    );
+
+    const { filledQuantity: a, avgEntryPrice: b, ...missingBoth } = trade;
+
+    expect(() => tradeHasRequiredData(missingBoth)).toThrowError(
+      "Trade is missing values for: avgEntryPrice, filledQuantity",
+    );
   });
 });

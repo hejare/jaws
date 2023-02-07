@@ -1,4 +1,4 @@
-import { TradesDataType, TRADE_STATUS } from "@jaws/db/tradesMeta";
+import { ExtendedTradesDataType, TRADE_STATUS } from "@jaws/db/tradesMeta";
 import { isToday } from "@jaws/lib/helpers";
 import { BuySellConstants } from "./buySellConstants";
 
@@ -11,6 +11,14 @@ const DEFAULT_BUY_SELL_CONFIG: BuySellConstants = {
   MOVING_AVERAGE_DAY_RANGE: 10,
   BUY_ORDER_EQUITY_PERCENTAGE: 0.1,
 };
+
+/**
+ * Some props are required for our calculations to work
+ */
+type TradesDataWithRequiredProps = RequireSome<
+  ExtendedTradesDataType,
+  "avgEntryPrice" | "filledQuantity"
+>;
 
 export const getBuySellHelpers = (config?: Partial<BuySellConstants>) => {
   const _config = { ...DEFAULT_BUY_SELL_CONFIG, ...config };
@@ -28,8 +36,8 @@ export const getBuySellHelpers = (config?: Partial<BuySellConstants>) => {
       totalAssets * _config.STOP_LOSS_1_PORTFOLIO_PERCENTAGE,
 
     determineNewTradeStatus: function (opts: {
-      trade: TradesDataType;
-      lastTradePrice: number;
+      trade: TradesDataWithRequiredProps;
+      currentPrice: number;
       movingAvg: number;
       /** Portfolio value, cash balance + value of investments */
       totalAssets: number;
@@ -41,14 +49,14 @@ export const getBuySellHelpers = (config?: Partial<BuySellConstants>) => {
         TRADE_STATUS.STOP_LOSS_2,
         TRADE_STATUS.STOP_LOSS_3,
       ]) {
-        if (opts.lastTradePrice <= Number(sellPrices[tradeStatus])) {
+        if (opts.currentPrice <= Number(sellPrices[tradeStatus])) {
           return tradeStatus;
         }
       }
 
       if (
         opts.trade.status !== TRADE_STATUS.PARTIAL_PROFIT_TAKEN &&
-        opts.lastTradePrice >= Number(sellPrices.PARTIAL_PROFIT_TAKEN)
+        opts.currentPrice >= Number(sellPrices.PARTIAL_PROFIT_TAKEN)
       ) {
         return TRADE_STATUS.PARTIAL_PROFIT_TAKEN;
       }
@@ -62,8 +70,8 @@ export const getBuySellHelpers = (config?: Partial<BuySellConstants>) => {
      * transition to.
      */
     getSellPriceLevels: function (opts: {
-      trade: TradesDataType;
-      lastTradePrice: number;
+      trade: TradesDataWithRequiredProps;
+      currentPrice: number;
       totalAssets: number;
       movingAvg: number;
     }): {
@@ -76,18 +84,20 @@ export const getBuySellHelpers = (config?: Partial<BuySellConstants>) => {
 
       return {
         [TRADE_STATUS.STOP_LOSS_1]: isTradeFromToday
-          ? opts.trade.price - stopLossMaxAmount / opts.trade.quantity
+          ? opts.trade.avgEntryPrice -
+            stopLossMaxAmount / opts.trade.filledQuantity
           : undefined,
         [TRADE_STATUS.STOP_LOSS_2]:
-          !isTradeFromToday && opts.movingAvg < opts.trade.price
-            ? Number(opts.trade.price)
+          !isTradeFromToday && opts.movingAvg < opts.trade.avgEntryPrice
+            ? Number(opts.trade.avgEntryPrice)
             : undefined,
         [TRADE_STATUS.STOP_LOSS_3]:
-          !isTradeFromToday && opts.movingAvg >= opts.trade.price
+          !isTradeFromToday && opts.movingAvg >= opts.trade.avgEntryPrice
             ? opts.movingAvg
             : undefined,
         [TRADE_STATUS.PARTIAL_PROFIT_TAKEN]:
-          opts.trade.price * _config.TAKE_PARTIAL_PROFIT_INCREASE_FACTOR,
+          opts.trade.avgEntryPrice *
+          _config.TAKE_PARTIAL_PROFIT_INCREASE_FACTOR,
       };
     },
 
@@ -111,3 +121,20 @@ export const getBuySellHelpers = (config?: Partial<BuySellConstants>) => {
     },
   };
 };
+
+export function tradeHasRequiredData(
+  trade: ExtendedTradesDataType,
+): asserts trade is TradesDataWithRequiredProps {
+  const requiredFields: (keyof TradesDataWithRequiredProps)[] = [
+    "avgEntryPrice",
+    "filledQuantity",
+  ];
+
+  const missingFields = requiredFields.filter((k) => !trade[k]);
+
+  if (missingFields.length) {
+    throw new TypeError(
+      `Trade is missing values for: ${missingFields.join(", ")}`,
+    );
+  }
+}
