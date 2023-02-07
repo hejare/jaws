@@ -1,5 +1,6 @@
 import { getISOStringForToday, isValidSymbol } from "@jaws/lib/helpers";
 import { handleResult } from "@jaws/util";
+import { handleLimitPrice } from "@jaws/util/handleLimitPrice";
 import {
   RawAccount,
   RawOrder,
@@ -47,7 +48,7 @@ const postOrder = async (body: BodyInit): Promise<RawOrder> => {
     return await handleResult(res);
   } catch (e) {
     console.log(e);
-    throw Error(`Unable to post order - ${e as string}`);
+    throw Error(`Unable to post order - ${JSON.stringify(e)}`);
   }
 };
 
@@ -117,7 +118,7 @@ export const takePartialProfitSellOrder = (
     time_in_force: "day",
     qty: quantity,
     type: "limit",
-    limit_price: limitPrice,
+    limit_price: handleLimitPrice(limitPrice),
   };
 
   const body: BodyInit = JSON.stringify(params);
@@ -157,7 +158,7 @@ export const postBuyBreakoutOrder = async ({
   const bodyObject: PlaceOrder = {
     symbol: ticker,
     type: "stop",
-    stop_price: price,
+    stop_price: handleLimitPrice(price),
     side: "buy",
     time_in_force: "day",
     qty: quantity,

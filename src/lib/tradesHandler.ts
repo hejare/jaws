@@ -297,7 +297,7 @@ async function handleStopLossOrder(
     });
   } catch (e) {
     console.log(e);
-    throw Error(`Error when handling stop-loss order ${e as string}`);
+    throw Error(`Error when handling stop-loss order ${JSON.stringify(e)}`);
   }
 }
 
@@ -334,7 +334,9 @@ const handleTakePartialProfitOrder = async (
     });
   } catch (e) {
     console.log(e);
-    throw Error(`Error when handling take-partial-profit order ${e as string}`);
+    throw Error(
+      `Error when handling take-partial-profit order ${JSON.stringify(e)}`,
+    );
   }
 };
 
