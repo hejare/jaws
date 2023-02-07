@@ -1,4 +1,4 @@
-import { TradesDataType, TRADE_SIDE, TRADE_STATUS } from "@jaws/db/tradesMeta";
+import { TRADE_SIDE, TRADE_STATUS } from "@jaws/db/tradesMeta";
 import { getBuySellHelpers } from "@jaws/lib/buySellHelper/buySellHelper";
 
 describe("buySellHelper", () => {
@@ -41,9 +41,11 @@ describe("buySellHelper", () => {
     });
 
     it("should only return some statuses on day 1", () => {
-      const todayTrade: TradesDataType = {
-        price: 20,
-        quantity: 15,
+      const todayTrade = {
+        avgEntryPrice: 20,
+        price: 19.8,
+        filledQuantity: 15,
+        quantity: 16,
         breakoutRef: "BREAKOUT_REF",
         created: Date.now(),
         side: TRADE_SIDE.BUY,
@@ -93,9 +95,11 @@ describe("buySellHelper", () => {
     });
 
     it("should only return some statuses on day >1", () => {
-      const yesterdayTrade: TradesDataType = {
-        price: 20,
-        quantity: 15,
+      const yesterdayTrade = {
+        avgEntryPrice: 20,
+        price: 19.8,
+        filledQuantity: 15,
+        quantity: 16,
         breakoutRef: "BREAKOUT_REF",
         created: Date.now() - 60 * 60 * 24 * 1000,
         side: TRADE_SIDE.BUY,
@@ -148,9 +152,11 @@ describe("buySellHelper", () => {
       STOP_LOSS_1_PORTFOLIO_PERCENTAGE: 0.005,
     });
 
-    const yesterdayTrade: TradesDataType = {
-      price: 20,
-      quantity: 15,
+    const yesterdayTrade = {
+      avgEntryPrice: 20,
+      price: 19.8,
+      filledQuantity: 15,
+      quantity: 16,
       breakoutRef: "BREAKOUT_REF",
       created: Date.now() - 60 * 60 * 24 * 1000,
       side: TRADE_SIDE.BUY,
@@ -192,9 +198,11 @@ describe("buySellHelper", () => {
       STOP_LOSS_1_PORTFOLIO_PERCENTAGE: 0.005,
     });
 
-    const yesterdayTrade: TradesDataType = {
-      price: 20,
-      quantity: 15,
+    const yesterdayTrade = {
+      avgEntryPrice: 20,
+      price: 19.8,
+      filledQuantity: 15,
+      quantity: 16,
       breakoutRef: "BREAKOUT_REF",
       created: Date.now() - 60 * 60 * 24 * 1000,
       side: TRADE_SIDE.BUY,
@@ -237,9 +245,11 @@ describe("buySellHelper", () => {
   it("calculates current stop-loss and take-profit values", () => {
     const helpers = getBuySellHelpers();
 
-    const todayTrade: TradesDataType = {
-      price: 20,
-      quantity: 15,
+    const todayTrade = {
+      avgEntryPrice: 20,
+      price: 19.8,
+      quantity: 16,
+      filledQuantity: 15,
       breakoutRef: "BREAKOUT_REF",
       created: Date.now(),
       side: TRADE_SIDE.BUY,
@@ -248,7 +258,7 @@ describe("buySellHelper", () => {
       alpacaOrderId: "ALPACA_ORDER_ID",
     };
 
-    const yesterdayTrade: TradesDataType = {
+    const yesterdayTrade = {
       ...todayTrade,
       created: Date.now() - 60 * 60 * 24 * 1000,
     };
