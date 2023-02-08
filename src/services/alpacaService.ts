@@ -285,9 +285,14 @@ export async function getAccount() {
 export async function getAccountHistory(opts?: GetPortfolioHistory) {
   const params = new URLSearchParams(opts as Record<string, string>);
 
-  return sendAlpacaRequest<PortfolioHistory>(
-    `trading/accounts/{account_id}/account/portfolio/history?${params.toString()}`,
+  const res = await sendAlpacaRequest<PortfolioHistory>(
+    `trading/accounts/${accountId}/account/portfolio/history?${params.toString()}`,
   );
+
+  return {
+    ...res,
+    timestamp: res.timestamp.map((t) => new Date(t * 1000).toISOString()),
+  };
 }
 
 async function sendAlpacaRequest<T = any>(path: string, options?: RequestInit) {

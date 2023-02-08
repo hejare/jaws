@@ -4,7 +4,7 @@ import { PortfolioHistory } from "@master-chief/alpaca/@types/entities";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export interface PortfolioHistoryResponse extends ResponseDataType {
-  history: PortfolioHistory;
+  history: Omit<PortfolioHistory, "timestamp"> & { timestamp: string[] };
 }
 
 export default async function handler(
