@@ -165,7 +165,7 @@ export const getOrders = async (
   const defaultParams: AlpacaGetOrdersParams = { status: "all" };
   const params = new URLSearchParams({
     ...defaultParams,
-    ...opts,
+    ...clearUndefinedProps(opts),
   } as Record<string, string>);
 
   try {
@@ -278,4 +278,14 @@ async function sendAlpacaRequest<T = any>(path: string, options?: RequestInit) {
   });
 
   return handleResult<T>(res);
+}
+
+function clearUndefinedProps<T extends Record<string | number, any>> (
+  obj: T,
+): T {
+  return Object.entries(obj).reduce(
+    (newObj, [key, value]) =>
+      value === undefined ? newObj : { ...newObj, [key]: value },
+    {},
+  ) as T;
 }

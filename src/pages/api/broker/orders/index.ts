@@ -1,8 +1,8 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import { auth } from "@jaws/auth/firebaseAdmin";
 import { postTrade } from "@jaws/db/tradesEntity";
 import { TRADE_SIDE, TRADE_STATUS } from "@jaws/db/tradesMeta";
 import * as alpacaService from "@jaws/services/alpacaService";
+import type { NextApiRequest, NextApiResponse } from "next";
 import { ResponseDataType } from "../../ResponseDataMeta";
 
 interface ExtendedResponseDataType extends ResponseDataType {
@@ -14,7 +14,7 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   const { method, query } = req;
-  console.log({query})
+  console.log({ query });
 
   try {
     let responseData: ExtendedResponseDataType;
@@ -22,7 +22,7 @@ export default async function handler(
       case "GET":
         responseData = await getOrders({
           after: query.after as string,
-          status: query.status as 'open' | 'closed' | 'all',
+          status: query.status as "open" | "closed" | "all",
         });
         break;
       case "POST":
@@ -89,10 +89,12 @@ async function createNewTrade(req: NextApiRequest, email?: string) {
   return responseData;
 }
 
-async function getOrders(opts: {
-  after?: string;
-  status?: 'open' | 'closed' | 'all';
-} = {}) {
+async function getOrders(
+  opts: {
+    after?: string;
+    status?: "open" | "closed" | "all";
+  } = {},
+) {
   const responseData: ExtendedResponseDataType = { status: "INIT" };
   await alpacaService
     .getOrders(opts)
