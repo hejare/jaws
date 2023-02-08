@@ -1,4 +1,4 @@
-import { TradesDataType, TRADE_STATUS } from "@jaws/db/tradesMeta";
+import { ExtendedTradesDataType, TRADE_STATUS } from "@jaws/db/tradesMeta";
 import {
   getAccountAssets,
   getAccountCashBalance,
@@ -7,10 +7,13 @@ import {
 } from "@jaws/services/backendService";
 import { RawPosition } from "@master-chief/alpaca/@types/entities";
 import { useEffect, useState } from "react";
-import { getBuySellHelpers } from "../buySellHelper/buySellHelper";
+import {
+  getBuySellHelpers,
+  tradeHasRequiredData,
+} from "../buySellHelper/buySellHelper";
 import { getDaysDifference } from "../helpers";
 
-export interface PortfolioTableAsset extends TradesDataType {
+export interface PortfolioTableAsset extends ExtendedTradesDataType {
   percentOfTotalAssets: number;
   changeSinceEntry: number;
   stopLossType: TRADE_STATUS;
@@ -53,7 +56,7 @@ export const useGetTableData = () => {
             ?.ma,
           alpacaAsset: assets.find((a) => a.symbol === trade.ticker),
         })) as {
-          trade: TradesDataType;
+          trade: ExtendedTradesDataType;
           movingAvg: number;
           alpacaAsset: RawPosition;
         }[];
@@ -81,7 +84,7 @@ function convertToTableData({
   assets: RawPosition[];
   balance: number;
   data: {
-    trade: TradesDataType;
+    trade: ExtendedTradesDataType;
     movingAvg: number;
     alpacaAsset: RawPosition;
   }[];
@@ -106,17 +109,19 @@ function convertToTableData({
 
   const extendedAssets: PortfolioTableAsset[] = data.map(
     ({ trade, alpacaAsset, movingAvg }) => {
+      tradeHasRequiredData(trade);
+
       if (!alpacaAsset.current_price) {
         throw new Error("Missing data!");
       }
 
+      const buySellHelpers = getBuySellHelpers();
       const avgEntryPrice = parseFloat(alpacaAsset.avg_entry_price);
       const currentPrice = parseFloat(alpacaAsset.current_price);
 
-      const buySellHelpers = getBuySellHelpers();
       const sellPriceLevels = buySellHelpers.getSellPriceLevels({
         trade,
-        lastTradePrice: currentPrice,
+        currentPrice,
         movingAvg,
         totalAssets: totalPortfolioValue,
       });
@@ -138,7 +143,7 @@ function convertToTableData({
         changeToday: Number(alpacaAsset.change_today),
         stopLossPrice: sellPriceLevels[stopLossType] as number,
         stopLossType,
-        takePartialProfitPrice: sellPriceLevels.PARTIAL_PROFIT_TAKEN as number,
+        takePartialProfitPrice: sellPriceLevels.PARTIAL_PROFIT_TAKEN,
         movingAvg,
         takenPartialProfit: trade.status === TRADE_STATUS.PARTIAL_PROFIT_TAKEN,
         daysInTrade: getDaysDifference(new Date(), new Date(trade.created)),

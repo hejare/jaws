@@ -1,10 +1,10 @@
-import type { NextPage } from "next";
-import OrdersList from "@jaws/components/organisms/OrdersList";
-import { useEffect, useState } from "react";
-import { handleResult } from "@jaws/util";
-import fetch from "node-fetch";
 import PageContainer from "@jaws/components/atoms/PageContainer";
+import OrdersList from "@jaws/components/organisms/OrdersList";
 import { getServerSidePropsAllPages } from "@jaws/lib/getServerSidePropsAllPages";
+import { handleResult } from "@jaws/util";
+import type { NextPage } from "next";
+import fetch from "node-fetch";
+import { useEffect, useState } from "react";
 
 // eslint-disable-next-line no-unused-vars
 enum STATUS {
@@ -25,6 +25,7 @@ const OrdersPage: NextPage = () => {
       })
       .catch(console.error);
   }, []);
+
   return (
     <PageContainer>
       {dataFetchStatus === STATUS.READY && <OrdersList data={data} />}

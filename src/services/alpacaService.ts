@@ -1,8 +1,8 @@
 import { getISOStringForToday, isValidSymbol } from "@jaws/lib/helpers";
 import { handleResult } from "@jaws/util";
+import { handleLimitPrice } from "@jaws/util/handleLimitPrice";
 import { GetPortfolioHistory } from "@master-chief/alpaca";
 import {
-  Order,
   PortfolioHistory,
   RawAccount,
   RawOrder,
@@ -50,11 +50,11 @@ const postOrder = async (body: BodyInit): Promise<RawOrder> => {
     return await handleResult(res);
   } catch (e) {
     console.log(e);
-    throw Error(`Unable to post order - ${e as string}`);
+    throw Error(`Unable to post order - ${JSON.stringify(e)}`);
   }
 };
 
-const getAssetByTicker = async (ticker: string) => {
+export const getAssetByTicker = async (ticker: string) => {
   try {
     const res = await fetch(
       `${brokerApiBaseUrl}/trading/accounts/${accountId}/positions/${ticker.toUpperCase()}`,
@@ -64,7 +64,7 @@ const getAssetByTicker = async (ticker: string) => {
         },
       },
     );
-    return await handleResult(res);
+    return await handleResult<RawPosition>(res);
   } catch (e: any) {
     console.log(e);
     throw Error(`Unable to get asset for ${ticker} - ${e.message as string}`);
@@ -103,10 +103,10 @@ export const stopLossSellOrder = async (symbol: string, quantity: number) => {
   return postSellOrder({ symbol, quantity });
 };
 
-/** Should sell 50% of position */
 export const takePartialProfitSellOrder = (
   symbol: string,
   quantity: number,
+  limitPrice: number,
 ) => {
   if (!isValidSymbol(symbol)) {
     throw Error;
@@ -114,7 +114,18 @@ export const takePartialProfitSellOrder = (
 
   console.log(`Take profit on ${symbol}`);
 
-  return postSellOrder({ symbol, quantity });
+  const params: PlaceOrder = {
+    side: Side.SELL,
+    symbol: symbol,
+    time_in_force: "day",
+    qty: quantity,
+    type: "limit",
+    limit_price: handleLimitPrice(limitPrice),
+  };
+
+  const body: BodyInit = JSON.stringify(params);
+
+  return postOrder(body);
 };
 
 const postSellOrder = ({
@@ -149,7 +160,7 @@ export const postBuyBreakoutOrder = async ({
   const bodyObject: PlaceOrder = {
     symbol: ticker,
     type: "stop",
-    stop_price: price,
+    stop_price: handleLimitPrice(price),
     side: "buy",
     time_in_force: "day",
     qty: quantity,
@@ -182,7 +193,7 @@ export const getOrders = async (
 };
 
 // TODO: Use generic getOrders()
-export const getTodaysOrders = async (): Promise<Order[]> => {
+export const getTodaysOrders = async (): Promise<RawOrder[]> => {
   try {
     const res = await fetch(
       `${brokerApiBaseUrl}/trading/accounts/${accountId}/orders?status=all&after=${getISOStringForToday()}`,

@@ -1,8 +1,8 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import { auth } from "@jaws/auth/firebaseAdmin";
 import { postTrade } from "@jaws/db/tradesEntity";
 import { TRADE_SIDE, TRADE_STATUS } from "@jaws/db/tradesMeta";
 import * as alpacaService from "@jaws/services/alpacaService";
+import type { NextApiRequest, NextApiResponse } from "next";
 import { ResponseDataType } from "../../ResponseDataMeta";
 
 interface ExtendedResponseDataType extends ResponseDataType {
@@ -60,7 +60,7 @@ async function createNewTrade(req: NextApiRequest, email?: string) {
     ticker: string;
     side: TRADE_SIDE;
     status: TRADE_STATUS;
-    price: number;
+    price: string;
     quantity: number;
     breakoutRef: string;
   } = body;
@@ -71,7 +71,7 @@ async function createNewTrade(req: NextApiRequest, email?: string) {
     ticker,
     side,
     status,
-    price,
+    price: parseFloat(price),
     quantity,
     created: Date.now(),
     breakoutRef,

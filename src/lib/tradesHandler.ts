@@ -4,7 +4,10 @@ import {
   TRADE_SIDE,
   TRADE_STATUS,
 } from "@jaws/db/tradesMeta";
-import { getBuySellHelpers } from "@jaws/lib/buySellHelper/buySellHelper";
+import {
+  getBuySellHelpers,
+  tradeHasRequiredData,
+} from "@jaws/lib/buySellHelper/buySellHelper";
 import { AlpacaOrderStatusType } from "@jaws/services/alpacaMeta";
 import * as alpacaService from "@jaws/services/alpacaService";
 import {
@@ -13,14 +16,11 @@ import {
   getTradesByStatus,
   putTrade,
 } from "../db/tradesEntity";
-import {
-  getLastTradePrice,
-  getSimpleMovingAverage,
-} from "../services/polygonService";
+import { getSimpleMovingAverage } from "../services/polygonService";
 import { isToday, ONE_DAY_IN_MS } from "./helpers";
 
 interface ExtendedTradesDataType extends DBExtendedTradesDataType {
-  lastTradePrice: number;
+  currentPrice: number;
   movingAvg: number;
 }
 
@@ -110,7 +110,7 @@ export const triggerUpdateOpenSellOrders = async () => {
       return null;
     }
 
-    return { ...trade, [priceField]: alpacaOrder.filled_avg_price };
+    return { ...trade, [priceField]: parseFloat(alpacaOrder.filled_avg_price) };
   });
 
   await Promise.all(
@@ -159,8 +159,8 @@ export const triggerUpdateOpenBuyOrders = async () => {
       putTrade({
         ...trade,
         status: newStatus,
-        avgEntryPrice: alpacaOrder.filled_avg_price,
-        filledQuantity: alpacaOrder.filled_qty,
+        avgEntryPrice: parseFloat(alpacaOrder.filled_avg_price),
+        filledQuantity: parseInt(alpacaOrder.filled_qty),
       }).catch((e) => {
         console.log(e);
       }),
@@ -183,8 +183,8 @@ export const triggerUpdateOpenBuyOrders = async () => {
         putTrade({
           ...trade,
           status: TRADE_STATUS.FILLED,
-          avgEntryPrice: alpacaOrder.filled_avg_price,
-          filledQuantity: alpacaOrder.filled_qty,
+          avgEntryPrice: parseFloat(alpacaOrder.filled_avg_price),
+          filledQuantity: parseInt(alpacaOrder.filled_qty),
         }).catch((e) => {
           console.log(e);
         }),
@@ -220,7 +220,7 @@ export const triggerClearOldBuyOrders = async () => {
 const depopulateTrade = (
   trade: ExtendedTradesDataType,
 ): DBExtendedTradesDataType => {
-  const { lastTradePrice, movingAvg, ...depopTrade } = trade;
+  const { currentPrice, movingAvg, ...depopTrade } = trade;
   return depopTrade;
 };
 
@@ -242,12 +242,16 @@ export const performActions = (
   trades.forEach((trade) => {
     const { ticker, breakoutRef } = trade;
     const buySellHelpers = getBuySellHelpers();
-    const newTradeStatus = buySellHelpers.determineNewTradeStatus({
+    tradeHasRequiredData(trade);
+    const tradeStatusOpts = {
       trade,
       totalAssets,
-      lastTradePrice: trade.lastTradePrice,
+      currentPrice: trade.currentPrice,
       movingAvg: trade.movingAvg,
-    });
+    };
+    const newTradeStatus =
+      buySellHelpers.determineNewTradeStatus(tradeStatusOpts);
+    const sellPrices = buySellHelpers.getSellPriceLevels(tradeStatusOpts);
 
     if (newTradeStatus === trade.status) {
       // Stock hasn't triggered any of our stop-loss/take profit rules
@@ -264,7 +268,7 @@ export const performActions = (
       void handleStopLossOrder(trade, newTradeStatus);
       messageArray.push(`Stop loss ${ticker}: breakoutRef: ${breakoutRef}`);
     } else if (TRADE_STATUS.PARTIAL_PROFIT_TAKEN === newTradeStatus) {
-      void handleTakePartialProfitOrder(trade);
+      void handleTakePartialProfitOrder(trade, sellPrices.PARTIAL_PROFIT_TAKEN);
       messageArray.push(`Take profit ${ticker}: breakoutRef: ${breakoutRef}`);
     }
   });
@@ -279,6 +283,8 @@ async function handleStopLossOrder(
   newTradeStatus: TRADE_STATUS,
 ) {
   try {
+    await cancelTakePartialProfitOrder(trade);
+
     const res = await alpacaService.stopLossSellOrder(
       trade.ticker,
       trade.quantity,
@@ -292,11 +298,23 @@ async function handleStopLossOrder(
     });
   } catch (e) {
     console.log(e);
-    throw Error(`Error when handling stop-loss order ${e as string}`);
+    throw Error(`Error when handling stop-loss order ${JSON.stringify(e)}`);
   }
 }
 
-const handleTakePartialProfitOrder = async (trade: ExtendedTradesDataType) => {
+async function cancelTakePartialProfitOrder(trade: ExtendedTradesDataType) {
+  if (!trade.alpacaTakeProfitOrderId || trade.avgTakeProfitSellPrice) {
+    // No open order to cancel
+    return;
+  }
+
+  return alpacaService.deleteOrder(trade.alpacaTakeProfitOrderId);
+}
+
+const handleTakePartialProfitOrder = async (
+  trade: ExtendedTradesDataType,
+  limitPrice: number,
+) => {
   try {
     const sellQuantity = Math.ceil(
       trade.quantity *
@@ -306,6 +324,7 @@ const handleTakePartialProfitOrder = async (trade: ExtendedTradesDataType) => {
     const result = await alpacaService.takePartialProfitSellOrder(
       trade.ticker,
       sellQuantity,
+      limitPrice,
     );
     await putTrade({
       ...depopulateTrade(trade),
@@ -316,7 +335,9 @@ const handleTakePartialProfitOrder = async (trade: ExtendedTradesDataType) => {
     });
   } catch (e) {
     console.log(e);
-    throw Error(`Error when handling take-partial-profit order ${e as string}`);
+    throw Error(
+      `Error when handling take-partial-profit order ${JSON.stringify(e)}`,
+    );
   }
 };
 
@@ -324,12 +345,23 @@ async function populateTradesData(trades: TradesDataType[]) {
   const populatedArray: ExtendedTradesDataType[] = [];
   await Promise.all(
     trades.map(async (trade) => {
-      const lastTradePrice = await getLastTradePrice(trade.ticker);
+      const alpacaPosition = await alpacaService.getAssetByTicker(trade.ticker);
       const movingAvg = await getSimpleMovingAverage(
         trade.ticker,
         getBuySellHelpers().config.MOVING_AVERAGE_DAY_RANGE,
       );
-      populatedArray.push({ ...trade, lastTradePrice, movingAvg });
+
+      if (!alpacaPosition.current_price) {
+        throw new Error(
+          `Missing alpaca.current_price for symbol ${trade.ticker}`,
+        );
+      }
+
+      populatedArray.push({
+        ...trade,
+        currentPrice: parseFloat(alpacaPosition.current_price),
+        movingAvg,
+      });
     }),
   );
   return populatedArray;
