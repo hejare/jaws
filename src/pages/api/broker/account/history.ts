@@ -1,6 +1,6 @@
 import { ResponseDataType } from "@jaws/pages/api/ResponseDataMeta";
 import { getAccountHistory } from "@jaws/services/alpacaService";
-import { PortfolioHistory } from "@master-chief/alpaca/@types/entities";
+import { GetPortfolioHistory, PortfolioHistory } from "@master-chief/alpaca";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export interface PortfolioHistoryResponse extends ResponseDataType {
@@ -11,11 +11,13 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
+  const params = req.query as GetPortfolioHistory;
+
   const responseData: Partial<PortfolioHistoryResponse> = {
     status: "INIT",
   };
   try {
-    await getAccountHistory()
+    await getAccountHistory(params)
       .then((result) => {
         responseData.status = "OK";
         responseData.history = result;
