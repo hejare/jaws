@@ -1,10 +1,12 @@
 import { handleDeleteOrder } from "@jaws/lib/brokerHandler";
 import { getDateTime } from "@jaws/lib/helpers";
+import { TableDataRow } from "@jaws/lib/hooks/useGetOrdersTableData";
 import { Side } from "@jaws/services/alpacaMeta";
 import { RawOrder } from "@master-chief/alpaca/@types/entities";
 import { ColumnsType } from "rc-table/lib/interface";
 import Button from "../atoms/buttons/Button";
 import Table from "../atoms/Table";
+import PercentageDisplay from "../molecules/PercentageDisplay";
 import PriceDisplay from "../molecules/PriceDisplay";
 
 // statuses from apaca:
@@ -60,7 +62,7 @@ const OrdersList = ({ data }: Props) => {
     return <hr />;
   };
 
-  const columns: ColumnsType<RawOrder> = [
+  const columns: ColumnsType<TableDataRow> = [
     {
       title: "Symbol",
       dataIndex: "symbol",
@@ -116,6 +118,30 @@ const OrdersList = ({ data }: Props) => {
           return "";
         }
       },
+    },
+    {
+      title: "P/L",
+      key: "profit_loss",
+      width: 100,
+      render: (_, { profit }) =>
+        profit ? <PriceDisplay value={profit} indicatorOrigin={0} /> : "",
+    },
+    {
+      title: "P/L %",
+      key: "profit_loss_percentage",
+      width: 50,
+      render: (_, { profitPercentage }) =>
+        profitPercentage ? (
+          <PercentageDisplay value={profitPercentage} indicatorOrigin={0} />
+        ) : (
+          ""
+        ),
+    },
+    {
+      title: "SL",
+      key: "stop_loss_type",
+      width: 0,
+      render: (_, { tradeStatus }) => tradeStatus,
     },
     {
       title: "Created at",
