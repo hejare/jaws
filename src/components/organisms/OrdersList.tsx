@@ -54,17 +54,13 @@ interface Props {
 }
 
 const OrdersList = ({ data }: Props) => {
-  const renderTitle = () => {
-    return <h2>Order list</h2>;
-  };
-
   const renderFooter = () => {
     return <hr />;
   };
 
   const columns: ColumnsType<TableDataRow> = [
     {
-      title: "Symbol",
+      title: "Ticker",
       dataIndex: "symbol",
       key: "symbol",
       width: 100,
@@ -184,7 +180,6 @@ const OrdersList = ({ data }: Props) => {
       columns={columns}
       data={data}
       rowKey={({ id }: { id: string }) => id}
-      title={renderTitle}
       footer={renderFooter}
     />
   );

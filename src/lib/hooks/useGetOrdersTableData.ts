@@ -9,19 +9,27 @@ export type TableDataRow = RawOrder & {
   tradeStatus?: string;
 };
 
+export type TableFilter = { [k in keyof TableDataRow]?: string };
+
 export const useGetOrdersTableData = (): {
   status: "loading" | "ok";
   orders: TableDataRow[];
+  symbols: string[];
+  filter: TableFilter;
+  setFilter: (filter: TableFilter) => void;
 } => {
   const [dataFetchStatus, setDataFetchStatus] = useState<"loading" | "ok">(
     "loading",
   );
-  const [data, setData] = useState<TableDataRow[]>([]);
+  const [allData, setAllData] = useState<TableDataRow[]>([]);
+  const [filteredData, setFilteredData] = useState<TableDataRow[]>([]);
+  const [filter, setFilter] = useState<TableFilter>({});
+  const [symbols, setSymbols] = useState<string[]>([]);
 
   useEffect(() => {
     Promise.all([getOrders(), getTrades()])
       .then(([{ orders }, trades]) => {
-        const extendedOrders = orders.map((order) => {
+        const extendedOrders = orders.map<TableDataRow>((order) => {
           if (order.side === "buy") {
             return order;
           }
@@ -53,11 +61,34 @@ export const useGetOrdersTableData = (): {
           };
         });
 
-        setData(extendedOrders);
+        setAllData(extendedOrders);
         setDataFetchStatus("ok");
       })
       .catch(console.error);
   }, []);
 
-  return { status: dataFetchStatus, orders: data };
+  useEffect(() => {
+    setFilteredData(
+      allData.filter(
+        (order) =>
+          !Object.entries(filter).some(([prop, value]) =>
+            value ? order[prop as keyof TableFilter] !== value : false,
+          ),
+      ),
+    );
+
+    setSymbols(
+      Array.from(new Set(allData.map((o) => o.symbol))).sort((a, b) =>
+        a.localeCompare(b),
+      ),
+    );
+  }, [allData, filter]);
+
+  return {
+    status: dataFetchStatus,
+    orders: filteredData,
+    setFilter,
+    filter,
+    symbols,
+  };
 };
