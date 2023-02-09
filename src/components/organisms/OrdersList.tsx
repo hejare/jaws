@@ -1,10 +1,12 @@
 import { handleDeleteOrder } from "@jaws/lib/brokerHandler";
 import { getDateTime } from "@jaws/lib/helpers";
+import { TableDataRow } from "@jaws/lib/hooks/useGetOrdersTableData";
 import { Side } from "@jaws/services/alpacaMeta";
 import { RawOrder } from "@master-chief/alpaca/@types/entities";
 import { ColumnsType } from "rc-table/lib/interface";
 import Button from "../atoms/buttons/Button";
 import Table from "../atoms/Table";
+import PercentageDisplay from "../molecules/PercentageDisplay";
 import PriceDisplay from "../molecules/PriceDisplay";
 
 // statuses from apaca:
@@ -52,17 +54,13 @@ interface Props {
 }
 
 const OrdersList = ({ data }: Props) => {
-  const renderTitle = () => {
-    return <h2>Order list</h2>;
-  };
-
   const renderFooter = () => {
     return <hr />;
   };
 
-  const columns: ColumnsType<RawOrder> = [
+  const columns: ColumnsType<TableDataRow> = [
     {
-      title: "Symbol",
+      title: "Ticker",
       dataIndex: "symbol",
       key: "symbol",
       width: 100,
@@ -83,14 +81,14 @@ const OrdersList = ({ data }: Props) => {
       title: "Quantity",
       key: "qty",
       width: 100,
-      render: (_, { qty }) => qty,
+      render: (_, { filled_qty, qty }) => filled_qty || qty,
     },
     {
-      title: "Price",
-      key: "price",
+      title: "Order price",
+      key: "order_price",
       width: 200,
-      render: (_, { filled_avg_price, limit_price, stop_price }) => {
-        const price = filled_avg_price || limit_price || stop_price;
+      render: (_, { stop_price, limit_price }) => {
+        const price = stop_price || limit_price;
 
         if (price) {
           return <PriceDisplay value={parseFloat(price)} />;
@@ -101,21 +99,67 @@ const OrdersList = ({ data }: Props) => {
       },
     },
     {
+      title: "Filled price",
+      key: "price",
+      width: 200,
+      render: (_, { filled_avg_price }) => {
+        if (filled_avg_price) {
+          return <PriceDisplay value={parseFloat(filled_avg_price)} />;
+        } else {
+          // un-filled market order
+          return "";
+        }
+      },
+    },
+    {
       title: "Value",
       key: "value",
       width: 200,
-      render: (_, { filled_avg_price, limit_price, qty, stop_price }) => {
+      render: (
+        _,
+        { filled_avg_price, limit_price, filled_qty, qty, stop_price },
+      ) => {
         const price = filled_avg_price || limit_price || stop_price;
 
         if (price) {
           return (
-            data && <PriceDisplay value={parseFloat(price) * parseFloat(qty)} />
+            <PriceDisplay
+              value={parseFloat(price) * parseFloat(filled_qty || qty)}
+            />
           );
         } else {
           // un-filled market order
           return "";
         }
       },
+    },
+    {
+      title: "P/L",
+      key: "profit_loss",
+      width: 100,
+      render: (_, { profit }) =>
+        profit !== undefined ? (
+          <PriceDisplay value={profit} indicatorOrigin={0} />
+        ) : (
+          ""
+        ),
+    },
+    {
+      title: "P/L %",
+      key: "profit_loss_percentage",
+      width: 50,
+      render: (_, { profitPercentage }) =>
+        profitPercentage !== undefined ? (
+          <PercentageDisplay value={profitPercentage} indicatorOrigin={0} />
+        ) : (
+          ""
+        ),
+    },
+    {
+      title: "SL",
+      key: "stop_loss_type",
+      width: 0,
+      render: (_, { tradeStatus }) => tradeStatus,
     },
     {
       title: "Created at",
@@ -131,6 +175,7 @@ const OrdersList = ({ data }: Props) => {
       width: 200,
       render: (filledAt: string) => getDateTime(filledAt),
     },
+    { title: "Days in trade", dataIndex: "daysInTrade", key: "daysInTrade" },
     {
       title: "Status",
       dataIndex: "status",
@@ -158,7 +203,6 @@ const OrdersList = ({ data }: Props) => {
       columns={columns}
       data={data}
       rowKey={({ id }: { id: string }) => id}
-      title={renderTitle}
       footer={renderFooter}
     />
   );

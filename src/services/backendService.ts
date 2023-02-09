@@ -1,9 +1,10 @@
 import { BrokerAccountAssetsResponse } from "@jaws/api/broker/account/assets";
 import { BrokerAccountBalanceResponse } from "@jaws/api/broker/account/balance";
-import { TradesDataType, TRADE_STATUS } from "@jaws/db/tradesMeta";
+import { ExtendedTradesDataType, TRADE_STATUS } from "@jaws/db/tradesMeta";
 import { getToday } from "@jaws/lib/helpers";
 import { BrokerAccountEquityResponse } from "@jaws/pages/api/broker/account/equity";
 import { convertResult, handleResult } from "@jaws/util";
+import { RawOrder } from "@master-chief/alpaca/@types/entities";
 import fetch from "node-fetch";
 
 const baseHeaders = { "Content-Type": "application/json" };
@@ -71,7 +72,15 @@ export const getJawsPortfolio = async () => {
     },
   );
 
-  return handleResult<TradesDataType[]>(resp);
+  return handleResult<ExtendedTradesDataType[]>(resp);
+};
+
+export const getTrades = async () => {
+  const resp = await fetch(`/api/data/trades`, {
+    headers: baseHeaders,
+  });
+
+  return handleResult<ExtendedTradesDataType[]>(resp);
 };
 
 export const getMovingAverages = async (symbols: string[]) => {
@@ -91,4 +100,10 @@ export const getAccountEquity = async () => {
 
   const res = await handleResult<BrokerAccountEquityResponse>(resp);
   return parseFloat(res.equity);
+};
+
+export const getOrders = () => {
+  return fetch("/api/broker/orders").then((res) =>
+    handleResult<{ orders: RawOrder[] }>(res),
+  );
 };

@@ -1,34 +1,35 @@
 import PageContainer from "@jaws/components/atoms/PageContainer";
 import OrdersList from "@jaws/components/organisms/OrdersList";
 import { getServerSidePropsAllPages } from "@jaws/lib/getServerSidePropsAllPages";
-import { handleResult } from "@jaws/util";
+import { useGetOrdersTableData } from "@jaws/lib/hooks/useGetOrdersTableData";
 import type { NextPage } from "next";
-import fetch from "node-fetch";
-import { useEffect, useState } from "react";
+import styled from "styled-components";
 
-// eslint-disable-next-line no-unused-vars
-enum STATUS {
-  LOADING,
-  READY,
-}
+const Header = styled.div`
+  width: 100%;
+`;
 
 const OrdersPage: NextPage = () => {
-  const [dataFetchStatus, setDataFetchStatus] = useState(STATUS.LOADING);
-  const [data, setData] = useState([]);
-
-  useEffect(() => {
-    fetch("/api/broker/orders")
-      .then(handleResult)
-      .then((result) => {
-        setData(result.orders);
-        setDataFetchStatus(STATUS.READY);
-      })
-      .catch(console.error);
-  }, []);
+  const { status, orders, setFilter, filter, symbols } =
+    useGetOrdersTableData();
 
   return (
     <PageContainer>
-      {dataFetchStatus === STATUS.READY && <OrdersList data={data} />}
+      <Header>
+        <h2>Order list</h2>
+        <select
+          onChange={(e) => setFilter({ symbol: e.target.value })}
+          value={filter.symbol}
+        >
+          <option value="">All tickers</option>
+          {symbols.map((a) => (
+            <option value={a} key={a}>
+              {a}
+            </option>
+          ))}
+        </select>
+      </Header>
+      {status === "ok" && <OrdersList data={orders} />}
     </PageContainer>
   );
 };
