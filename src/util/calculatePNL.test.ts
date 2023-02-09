@@ -5,7 +5,7 @@ import { calculatePNL } from "./calculatePNL";
 
 describe("calculatePNL", () => {
   it("calculates PNL for empty list", () => {
-    const todayDate = new Date(2023, 1, 3, 17, 0, 0);
+    const todayDate = new Date(2023, 1, 20, 17, 0, 0);
     const startDate = new Date(Number(todayDate) - ONE_DAY_IN_MS * 21);
     const endDate = todayDate;
 
@@ -19,9 +19,9 @@ describe("calculatePNL", () => {
   });
 
   it.each(getTestData())(
-    "calculates PNL correctly",
+    "calculates PNL correctly (%#)",
     (orders, trades, result) => {
-      const todayDate = new Date(2023, 1, 3, 17, 0, 0);
+      const todayDate = new Date(2023, 1, 21, 17, 0, 0);
       const startDate = new Date(Number(todayDate) - ONE_DAY_IN_MS * 21);
       const endDate = todayDate;
 
@@ -32,11 +32,14 @@ describe("calculatePNL", () => {
         trades: trades as ExtendedTradesDataType[],
       });
 
-      expect(pnl).toStrictEqual(result);
+      const { buyValue, profit, profitPercentage } = result;
+
+      expect(pnl).toStrictEqual(expect.objectContaining({ buyValue, profit }));
+      expect(pnl.profitPercentage).toBeCloseTo(profitPercentage, 4);
     },
   );
 
-  it("ignores orders outside the period", () => {});
+  it("ignores trades whose orders lie outside the period", () => {});
 });
 
 function getTestData(): [
@@ -45,6 +48,7 @@ function getTestData(): [
   { profit: number; profitPercentage: number; buyValue: number },
 ][] {
   return [
+    [[], [], { profit: 0, profitPercentage: 0, buyValue: 0 }],
     [
       [
         {
@@ -75,6 +79,62 @@ function getTestData(): [
         },
       ],
       { profit: 20, profitPercentage: 0.1, buyValue: 200 },
+    ],
+
+    [
+      [
+        {
+          symbol: "AAPL",
+          qty: "2",
+          side: "buy",
+          filled_avg_price: "100",
+          status: "filled",
+          filled_at: new Date(2023, 1, 3, 17, 0, 0).toISOString(),
+          id: "ID1",
+        },
+        {
+          symbol: "AAPL",
+          qty: "1",
+          side: "buy",
+          filled_avg_price: "100",
+          status: "filled",
+          filled_at: new Date(2023, 1, 4, 17, 0, 0).toISOString(),
+          id: "ID2",
+        },
+        {
+          symbol: "AAPL",
+          qty: "2",
+          side: "sell",
+          filled_avg_price: "110",
+          status: "filled",
+          filled_at: new Date(2023, 1, 4, 17, 0, 0).toISOString(),
+          id: "ID3",
+        },
+        {
+          symbol: "AAPL",
+          qty: "1",
+          side: "sell",
+          filled_avg_price: "110",
+          status: "filled",
+          filled_at: new Date(2023, 1, 8, 17, 0, 0).toISOString(),
+          id: "ID4",
+        },
+      ],
+      [
+        {
+          alpacaOrderId: "ID1",
+          alpacaStopLossOrderId: "ID3",
+          //   alpacaTakeProfitOrderId: "b2e74a80-05ba-47d2-97ae-ab415921aace",
+          ticker: "AAPL",
+        },
+        {
+          alpacaOrderId: "ID2",
+          alpacaStopLossOrderId: "ID4",
+          //   alpacaTakeProfitOrderId: "b2e74a80-05ba-47d2-97ae-ab415921aace",
+          ticker: "AAPL",
+        },
+      ],
+      { profit: 30, profitPercentage: 0.136363, buyValue: 220 },
     ],
   ];
 }
