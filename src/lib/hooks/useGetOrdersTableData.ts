@@ -1,12 +1,14 @@
-import { ExtendedTradesDataType } from "@jaws/db/tradesMeta";
+import { ExtendedTradesDataType, TRADE_STATUS } from "@jaws/db/tradesMeta";
 import { getOrders, getTrades } from "@jaws/services/backendService";
 import { RawOrder } from "@master-chief/alpaca/@types/entities";
 import { useEffect, useState } from "react";
+import { getDaysDifference } from "../helpers";
 
 export type TableDataRow = RawOrder & {
   profit?: number;
   profitPercentage?: number;
   tradeStatus?: string;
+  daysInTrade?: number;
 };
 
 export type TableFilter = { [k in keyof TableDataRow]?: string };
@@ -36,28 +38,39 @@ export const useGetOrdersTableData = (): {
 
           const trade = trades.find(
             (t) =>
-              order.id ===
-              (t.alpacaStopLossOrderId || t.alpacaTakeProfitOrderId),
+              order.id === t.alpacaStopLossOrderId ||
+              order.id === t.alpacaTakeProfitOrderId,
           ) as Required<ExtendedTradesDataType>;
 
           if (!trade) {
             return order;
           }
 
+          const orderTradeType =
+            order.id === trade.alpacaStopLossOrderId
+              ? "STOP_LOSS"
+              : "TAKE_PROFIT";
+
           const profit =
-            (trade.avgStopLossSellPrice || trade.avgTakeProfitSellPrice) *
-              parseFloat(order.filled_qty) -
+            parseFloat(order.filled_avg_price) * parseFloat(order.filled_qty) -
             trade.avgEntryPrice * parseFloat(order.filled_qty);
 
           return {
             ...order,
-            tradeStatus: trade.status
+            tradeStatus: (orderTradeType === "STOP_LOSS"
+              ? trade.status
+              : TRADE_STATUS.PARTIAL_PROFIT_TAKEN
+            )
               .split("_")
               .reduce((acc, w) => acc + w[0], ""),
             profit,
             profitPercentage:
               (profit / (trade.avgEntryPrice * parseFloat(order.filled_qty))) *
               100,
+            daysInTrade: getDaysDifference(
+              new Date(order.filled_at),
+              new Date(trade.created),
+            ),
           };
         });
 

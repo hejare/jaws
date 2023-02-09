@@ -81,14 +81,14 @@ const OrdersList = ({ data }: Props) => {
       title: "Quantity",
       key: "qty",
       width: 100,
-      render: (_, { qty }) => qty,
+      render: (_, { filled_qty, qty }) => filled_qty || qty,
     },
     {
-      title: "Price",
-      key: "price",
+      title: "Order price",
+      key: "order_price",
       width: 200,
-      render: (_, { filled_avg_price, limit_price, stop_price }) => {
-        const price = filled_avg_price || limit_price || stop_price;
+      render: (_, { stop_price, limit_price }) => {
+        const price = stop_price || limit_price;
 
         if (price) {
           return <PriceDisplay value={parseFloat(price)} />;
@@ -99,15 +99,33 @@ const OrdersList = ({ data }: Props) => {
       },
     },
     {
+      title: "Filled price",
+      key: "price",
+      width: 200,
+      render: (_, { filled_avg_price }) => {
+        if (filled_avg_price) {
+          return <PriceDisplay value={parseFloat(filled_avg_price)} />;
+        } else {
+          // un-filled market order
+          return "";
+        }
+      },
+    },
+    {
       title: "Value",
       key: "value",
       width: 200,
-      render: (_, { filled_avg_price, limit_price, qty, stop_price }) => {
+      render: (
+        _,
+        { filled_avg_price, limit_price, filled_qty, qty, stop_price },
+      ) => {
         const price = filled_avg_price || limit_price || stop_price;
 
         if (price) {
           return (
-            data && <PriceDisplay value={parseFloat(price) * parseFloat(qty)} />
+            <PriceDisplay
+              value={parseFloat(price) * parseFloat(filled_qty || qty)}
+            />
           );
         } else {
           // un-filled market order
@@ -120,14 +138,18 @@ const OrdersList = ({ data }: Props) => {
       key: "profit_loss",
       width: 100,
       render: (_, { profit }) =>
-        profit ? <PriceDisplay value={profit} indicatorOrigin={0} /> : "",
+        profit !== undefined ? (
+          <PriceDisplay value={profit} indicatorOrigin={0} />
+        ) : (
+          ""
+        ),
     },
     {
       title: "P/L %",
       key: "profit_loss_percentage",
       width: 50,
       render: (_, { profitPercentage }) =>
-        profitPercentage ? (
+        profitPercentage !== undefined ? (
           <PercentageDisplay value={profitPercentage} indicatorOrigin={0} />
         ) : (
           ""
@@ -153,6 +175,7 @@ const OrdersList = ({ data }: Props) => {
       width: 200,
       render: (filledAt: string) => getDateTime(filledAt),
     },
+    { title: "Days in trade", dataIndex: "daysInTrade", key: "daysInTrade" },
     {
       title: "Status",
       dataIndex: "status",
