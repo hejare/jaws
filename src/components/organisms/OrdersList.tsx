@@ -8,6 +8,7 @@ import Button from "../atoms/buttons/Button";
 import Table from "../atoms/Table";
 import PercentageDisplay from "../molecules/PercentageDisplay";
 import PriceDisplay from "../molecules/PriceDisplay";
+import TradingViewModalButton from "../molecules/TradingViewModalButton";
 
 // statuses from apaca:
 const cancellableOrderStatus = [
@@ -196,6 +197,11 @@ const OrdersList = ({ data }: Props) => {
           <Button onClick={() => handleDeleteOrder(order.id)}>Cancel</Button>
         );
       },
+    },
+    {
+      title: "TradingView",
+      key: "tradingview",
+      render: (_, { symbol }) => <TradingViewModalButton symbol={symbol} />,
     },
   ];
 
