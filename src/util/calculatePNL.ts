@@ -22,14 +22,19 @@ export const calculatePNL = ({
     tradeHasAlpacaIds(trade);
 
     const buyOrder = parseAlpacaOrder(ordersById[trade.alpacaOrderId][0]);
-    const sellOrder = parseAlpacaOrder(
-      ordersById[
-        trade.alpacaStopLossOrderId || trade.alpacaTakeProfitOrderId
-      ][0],
-    );
+
+    const takeProfitOrder = trade.alpacaTakeProfitOrderId
+      ? parseAlpacaOrder(ordersById[trade.alpacaTakeProfitOrderId][0])
+      : { filled_qty: 0, filled_avg_price: 0 };
+    const stopLossOrder = trade.alpacaStopLossOrderId
+      ? parseAlpacaOrder(ordersById[trade.alpacaStopLossOrderId][0])
+      : { filled_qty: 0, filled_avg_price: 0 };
 
     const buyValue = buyOrder.filled_avg_price * buyOrder.filled_qty;
-    const profit = sellOrder.filled_avg_price * sellOrder.filled_qty - buyValue;
+    const profit =
+      takeProfitOrder.filled_avg_price * takeProfitOrder.filled_qty +
+      stopLossOrder.filled_avg_price * stopLossOrder.filled_qty -
+      buyValue;
 
     return {
       profit,

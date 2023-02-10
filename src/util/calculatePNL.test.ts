@@ -85,7 +85,7 @@ function getTestData(): [
       [
         {
           symbol: "AAPL",
-          qty: "2",
+          filled_qty: "2",
           side: "buy",
           filled_avg_price: "100",
           status: "filled",
@@ -94,7 +94,7 @@ function getTestData(): [
         },
         {
           symbol: "AAPL",
-          qty: "1",
+          filled_qty: "1",
           side: "buy",
           filled_avg_price: "100",
           status: "filled",
@@ -103,7 +103,7 @@ function getTestData(): [
         },
         {
           symbol: "AAPL",
-          qty: "2",
+          filled_qty: "2",
           side: "sell",
           filled_avg_price: "110",
           status: "filled",
@@ -112,7 +112,7 @@ function getTestData(): [
         },
         {
           symbol: "AAPL",
-          qty: "1",
+          filled_qty: "1",
           side: "sell",
           filled_avg_price: "110",
           status: "filled",
@@ -134,7 +134,71 @@ function getTestData(): [
           ticker: "AAPL",
         },
       ],
-      { profit: 30, profitPercentage: 0.136363, buyValue: 220 },
+      { profit: 30, profitPercentage: 0.1, buyValue: 300 },
+    ],
+    [
+      [
+        {
+          symbol: "AAPL",
+          filled_qty: "2",
+          side: "buy",
+          filled_avg_price: "100",
+          status: "filled",
+          filled_at: new Date(2023, 1, 3, 17, 0, 0).toISOString(),
+          id: "ID1",
+        },
+        {
+          symbol: "AAPL",
+          filled_qty: "1",
+          side: "buy",
+          filled_avg_price: "100",
+          status: "filled",
+          filled_at: new Date(2023, 1, 4, 17, 0, 0).toISOString(),
+          id: "ID2",
+        },
+        {
+          symbol: "AAPL",
+          filled_qty: "1",
+          side: "sell",
+          filled_avg_price: "110",
+          status: "filled",
+          filled_at: new Date(2023, 1, 4, 17, 0, 0).toISOString(),
+          id: "ID3",
+        },
+        {
+          symbol: "AAPL",
+          filled_qty: "1",
+          side: "sell",
+          filled_avg_price: "105",
+          status: "filled",
+          filled_at: new Date(2023, 1, 8, 17, 0, 0).toISOString(),
+          id: "ID4",
+        },
+        {
+          symbol: "AAPL",
+          filled_qty: "1",
+          side: "sell",
+          filled_avg_price: "105",
+          status: "filled",
+          filled_at: new Date(2023, 1, 8, 17, 0, 0).toISOString(),
+          id: "ID5",
+        },
+      ],
+      [
+        {
+          alpacaOrderId: "ID2",
+          alpacaStopLossOrderId: "ID4",
+          //   alpacaTakeProfitOrderId: "b2e74a80-05ba-47d2-97ae-ab415921aace",
+          ticker: "AAPL",
+        },
+        {
+          alpacaOrderId: "ID1",
+          alpacaTakeProfitOrderId: "ID3",
+          alpacaStopLossOrderId: "ID5",
+          ticker: "AAPL",
+        },
+      ],
+      { profit: 20, profitPercentage: 0.0667, buyValue: 300 },
     ],
   ];
 }
