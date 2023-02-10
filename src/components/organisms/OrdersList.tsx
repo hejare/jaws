@@ -8,6 +8,7 @@ import Button from "../atoms/buttons/Button";
 import Table from "../atoms/Table";
 import PercentageDisplay from "../molecules/PercentageDisplay";
 import PriceDisplay from "../molecules/PriceDisplay";
+import TradingViewModalButton from "../molecules/TradingViewModalButton";
 
 // statuses from apaca:
 const cancellableOrderStatus = [
@@ -81,7 +82,8 @@ const OrdersList = ({ data }: Props) => {
       title: "Quantity",
       key: "qty",
       width: 100,
-      render: (_, { filled_qty, qty }) => filled_qty || qty,
+      render: (_, { filled_at, filled_qty, qty }) =>
+        filled_at ? filled_qty : qty,
     },
     {
       title: "Order price",
@@ -117,15 +119,21 @@ const OrdersList = ({ data }: Props) => {
       width: 200,
       render: (
         _,
-        { filled_avg_price, limit_price, filled_qty, qty, stop_price },
+        {
+          filled_avg_price,
+          limit_price,
+          filled_qty,
+          qty,
+          stop_price,
+          filled_at,
+        },
       ) => {
         const price = filled_avg_price || limit_price || stop_price;
+        const quantity = filled_at ? filled_qty : qty;
 
         if (price) {
           return (
-            <PriceDisplay
-              value={parseFloat(price) * parseFloat(filled_qty || qty)}
-            />
+            <PriceDisplay value={parseFloat(price) * parseFloat(quantity)} />
           );
         } else {
           // un-filled market order
@@ -195,6 +203,11 @@ const OrdersList = ({ data }: Props) => {
           <Button onClick={() => handleDeleteOrder(order.id)}>Cancel</Button>
         );
       },
+    },
+    {
+      title: "TradingView",
+      key: "tradingview",
+      render: (_, { symbol }) => <TradingViewModalButton symbol={symbol} />,
     },
   ];
 

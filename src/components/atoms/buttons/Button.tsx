@@ -1,6 +1,6 @@
+import { Theme } from "@jaws/styles/themes";
 import styled from "styled-components";
 import { SpinnerBar } from "../SpinnerBar";
-import { Theme } from "@jaws/styles/themes";
 
 const EnabledDiv = styled.div`
   padding: 4px;
@@ -18,7 +18,7 @@ const EnabledDiv = styled.div`
 
   ::after {
     content: "";
-    position: inherit;
+    position: absolute;
     z-index: -1;
     width: 100%;
     height: 100%;

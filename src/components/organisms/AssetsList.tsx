@@ -2,11 +2,11 @@ import { PortfolioTableAsset } from "@jaws/lib/hooks/useGetTableData";
 import { INDICATOR } from "@jaws/lib/priceHandler";
 import { ColumnsType } from "rc-table/lib/interface";
 import NavButton from "../atoms/buttons/NavButton";
-import TradeViewButton from "../atoms/buttons/TradeViewButton";
 import Table, { Operations } from "../atoms/Table";
 import PercentageDisplay from "../molecules/PercentageDisplay";
 import PriceDisplay from "../molecules/PriceDisplay";
 import QuantityDisplay from "../molecules/QuantityDisplay";
+import TradingViewModalButton from "../molecules/TradingViewModalButton";
 
 interface Props {
   data: PortfolioTableAsset[];
@@ -158,7 +158,7 @@ const AssetssList = ({ data }: Props) => {
       className: "operations",
       render: (_, { ticker }) => (
         <Operations>
-          <TradeViewButton symbol={ticker}>TradeView</TradeViewButton>
+          <TradingViewModalButton symbol={ticker} />
         </Operations>
       ),
     },

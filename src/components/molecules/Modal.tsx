@@ -1,11 +1,11 @@
 import * as React from "react";
 import styled from "styled-components";
-import Button from "../atoms/buttons/Button";
 import { useLockedBody, useOnClickOutside } from "usehooks-ts";
+import Button from "../atoms/buttons/Button";
 
 const ContentContainer = styled.div`
   display: flex;
-  height: -webkit-fill-available;
+  height: 100%;
 `;
 
 const CancelButtonContainer = styled.div`
@@ -15,6 +15,7 @@ const CancelButtonContainer = styled.div`
   align-items: center;
   width: 100%;
   top: -24px;
+  z-index: 1;
 `;
 
 const Box = styled.div`
@@ -37,10 +38,11 @@ const ModalContent = styled.div`
   bottom: 0;
   left: 0;
   right: 0;
+  z-index: 1;
 `;
 
 const CircularButton = styled(Button)`
-  border-radius: 50%;
+  border-radius: 50px;
   display: inline-block;
   height: 50px;
   width: 50px;
