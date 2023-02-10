@@ -15,6 +15,7 @@ const CancelButtonContainer = styled.div`
   align-items: center;
   width: 100%;
   top: -24px;
+  z-index: 1;
 `;
 
 const Box = styled.div`
@@ -41,7 +42,7 @@ const ModalContent = styled.div`
 `;
 
 const CircularButton = styled(Button)`
-  border-radius: 50%;
+  border-radius: 50px;
   display: inline-block;
   height: 50px;
   width: 50px;
