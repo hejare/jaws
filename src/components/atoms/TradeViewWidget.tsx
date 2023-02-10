@@ -2,13 +2,11 @@ import { useEffect } from "react";
 import styled from "styled-components";
 
 const WidgetContainer = styled.div`
-  height: -webkit-fill-available;
-  width: -webkit-fill-available;
   height: 100%;
+  width: 100%;
 `;
 const Widget = styled.div`
-  height: -webkit-fill-available;
-  width: -webkit-fill-available;
+  height: 100%;
 `;
 
 export const TradeViewWidget = ({ ticker }: { ticker: string }) => {

@@ -1,11 +1,11 @@
 import * as React from "react";
 import styled from "styled-components";
-import Button from "../atoms/buttons/Button";
 import { useLockedBody, useOnClickOutside } from "usehooks-ts";
+import Button from "../atoms/buttons/Button";
 
 const ContentContainer = styled.div`
   display: flex;
-  height: -webkit-fill-available;
+  height: 100%;
 `;
 
 const CancelButtonContainer = styled.div`
