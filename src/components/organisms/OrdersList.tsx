@@ -81,7 +81,8 @@ const OrdersList = ({ data }: Props) => {
       title: "Quantity",
       key: "qty",
       width: 100,
-      render: (_, { filled_qty, qty }) => filled_qty || qty,
+      render: (_, { filled_at, filled_qty, qty }) =>
+        filled_at ? filled_qty : qty,
     },
     {
       title: "Order price",
