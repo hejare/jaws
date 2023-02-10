@@ -17,6 +17,7 @@ const PortfolioPage: NextPage = () => {
     investedValue,
     marketValue,
     totalPortfolioValue,
+    cashBalance,
   } = useGetTableData();
 
   if (fetchStatus !== "ok") {
@@ -50,14 +51,20 @@ const PortfolioPage: NextPage = () => {
           }
         >
           <TextDisplay>
-            <BoldText>Profit/loss:</BoldText>
+            <BoldText>Invest. P/L:</BoldText>
             <PriceDisplay value={valueDiff.toFixed()} />
           </TextDisplay>
         </Widget>
         <Widget>
           <TextDisplay>
-            <BoldText>Portfolio</BoldText>
+            <BoldText>Equity</BoldText>
             <div>${totalPortfolioValue.toFixed()}</div>
+          </TextDisplay>
+        </Widget>
+        <Widget>
+          <TextDisplay>
+            <BoldText>Cash</BoldText>
+            <div>${cashBalance.toFixed()}</div>
           </TextDisplay>
         </Widget>
       </WidgetGrid>
