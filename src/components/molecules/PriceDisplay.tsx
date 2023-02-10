@@ -11,6 +11,7 @@ type Props = {
   value: number | string;
   indicator?: INDICATOR;
   variant?: PRICE_DISPLAY_VARIANTS;
+  indicatorOrigin?: number;
 };
 
 const PriceText = styled.span`
@@ -35,6 +36,7 @@ const PriceDisplay = ({
   value: inputValue,
   indicator = INDICATOR.NEUTRAL,
   variant = PRICE_DISPLAY_VARIANTS.BOX,
+  indicatorOrigin,
 }: Props) => {
   let char = "";
   const value =
@@ -42,8 +44,20 @@ const PriceDisplay = ({
   if (value < 0) {
     char = "-";
   }
+
+  let indicatorValue = indicator;
+
+  if (indicatorOrigin !== undefined) {
+    indicatorValue =
+      value > indicatorOrigin
+        ? INDICATOR.POSITIVE
+        : value < indicatorOrigin
+        ? INDICATOR.NEGATIVE
+        : INDICATOR.NEUTRAL;
+  }
+
   return (
-    <PriceText indicator={indicator} variant={variant}>
+    <PriceText indicator={indicatorValue} variant={variant}>
       {char}${Math.abs(handleLimitPrice(value))}
     </PriceText>
   );
