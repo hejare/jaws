@@ -119,15 +119,21 @@ const OrdersList = ({ data }: Props) => {
       width: 200,
       render: (
         _,
-        { filled_avg_price, limit_price, filled_qty, qty, stop_price },
+        {
+          filled_avg_price,
+          limit_price,
+          filled_qty,
+          qty,
+          stop_price,
+          filled_at,
+        },
       ) => {
         const price = filled_avg_price || limit_price || stop_price;
+        const quantity = filled_at ? filled_qty : qty;
 
         if (price) {
           return (
-            <PriceDisplay
-              value={parseFloat(price) * parseFloat(filled_qty || qty)}
-            />
+            <PriceDisplay value={parseFloat(price) * parseFloat(quantity)} />
           );
         } else {
           // un-filled market order
