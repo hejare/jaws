@@ -1,25 +1,25 @@
 export function calculateNAV({
-  positions,
+  numShares,
   equity,
+  cashFlow,
 }: {
-  positions: { qty: string }[];
+  /**
+   * Number of shares outsanding (of Jaws account)
+   */
+  numShares: number;
+  /**
+   * Cash + market value
+   */
   equity: number;
-}): number {
-  return equity / positions.reduce((sum, p) => parseInt(p.qty) + sum, 0);
-}
+  /**
+   * How much cash has been added (or withdrawn) since the last NAV
+   * calculation. This cash flow should already be included in `equity`
+   */
+  cashFlow: number;
+}): { NAV: number; newNumShares: number } {
+  const navWithoutCashflow = (equity - cashFlow) / numShares;
+  const newNumShares = numShares + cashFlow / navWithoutCashflow;
+  const newNAV = equity / newNumShares;
 
-export function calculateHistoricalNAV(
-  days: {
-    positions: {
-      long_qty: string;
-    }[];
-    equity: number;
-  }[],
-): number[] {
-  return days.map((day) =>
-    calculateNAV({
-      positions: day.positions.map(({ long_qty: qty }) => ({ qty })),
-      equity: day.equity,
-    }),
-  );
+  return { NAV: newNAV, newNumShares };
 }
