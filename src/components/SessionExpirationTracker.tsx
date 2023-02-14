@@ -1,6 +1,8 @@
 import { refresh } from "@jaws/auth/firestoreAuth";
 import { ONE_HOUR_IN_MS, SESSION_LENGTH_IN_MS } from "@jaws/lib/helpers";
+import { useAccountStore } from "@jaws/store/account/accountContext";
 import { setCookies } from "cookies-next";
+import { useState } from "react";
 import { useClickAnyWhere, useInterval } from "usehooks-ts";
 
 export interface Props {
@@ -9,7 +11,7 @@ export interface Props {
 
 export const SessionExpirationTracker = ({ children }: Props) => {
   const [interval, setInterval] = useState(SESSION_LENGTH_IN_MS);
-  const [user, setUser, logoutUser] = useStore(store, (state) => [
+  const [user, setUser, logoutUser] = useAccountStore((state) => [
     state.user,
     state.setUser,
     state.logoutUser,
