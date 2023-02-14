@@ -9,11 +9,12 @@ import {
   RawPosition,
 } from "@master-chief/alpaca/@types/entities";
 import {
+  GetAccountActivities,
   GetOrders as AlpacaGetOrdersParams,
   PlaceOrder,
 } from "@master-chief/alpaca/@types/params";
 import fetch, { BodyInit, RequestInit } from "node-fetch";
-import { Side } from "./alpacaMeta";
+import { RawActivity, Side } from "./alpacaMeta";
 
 const {
   ALPACA_API_KEY_ID = "[NOT_DEFINED_IN_ENV]",
@@ -271,7 +272,7 @@ export const getAccountAssets = async () => {
 };
 
 /* The total balance (cash balance + assets value) */
-export const getPortfolioValue = async () => {
+export const getEquity = async () => {
   const result = await getAccount();
   return result.equity;
 };
@@ -293,6 +294,17 @@ export async function getAccountHistory(opts?: GetPortfolioHistory) {
     ...res,
     timestamp: res.timestamp.map((t) => new Date(t * 1000).toISOString()),
   };
+}
+
+export async function getAccountActivities({
+  activity_type,
+  ...params
+}: GetAccountActivities = {}) {
+  const searchParams = new URLSearchParams(params as Record<string, string>);
+
+  return sendAlpacaRequest<RawActivity[]>(
+    `accounts/activities/${activity_type || ""}?${searchParams.toString()}`,
+  );
 }
 
 async function sendAlpacaRequest<T = any>(path: string, options?: RequestInit) {
