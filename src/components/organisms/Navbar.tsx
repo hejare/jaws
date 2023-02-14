@@ -1,14 +1,13 @@
 import { signInWithGoogle } from "@jaws/auth/firestoreAuth";
 import { getToday } from "@jaws/lib/helpers";
-import { AccountContext } from "@jaws/store/account/accountContext";
+import { useAccountStore } from "@jaws/store/account/accountContext";
 import { User } from "@jaws/store/account/accountStore";
 import { Theme } from "@jaws/styles/themes";
 import { setCookies } from "cookies-next";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
-import { useStore } from "zustand";
 import Button from "../atoms/buttons/Button";
 
 const NavBarContainer = styled.div`
@@ -76,10 +75,7 @@ const Navbar = () => {
     setPathName(router.pathname);
   }, [router]);
 
-  const store = useContext(AccountContext);
-  if (!store) throw new Error("Missing AccountContext.Provider in the tree");
-  const [isLoggedIn, setIsLoggedIn, setUser, logoutUser] = useStore(
-    store,
+  const [isLoggedIn, setIsLoggedIn, setUser, logoutUser] = useAccountStore(
     (state) => [
       state.isLoggedIn,
       state.setIsLoggedIn,
