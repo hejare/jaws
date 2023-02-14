@@ -1,15 +1,15 @@
-import Link from "next/link";
-import React, { useContext, useEffect, useState } from "react";
-import styled, { css } from "styled-components";
-import { getToday } from "@jaws/lib/helpers";
-import { Theme } from "@jaws/styles/themes";
-import { useRouter } from "next/router";
-import { User } from "@jaws/store/accountStore";
 import { signInWithGoogle } from "@jaws/auth/firestoreAuth";
-import Button from "../atoms/buttons/Button";
+import { getToday } from "@jaws/lib/helpers";
+import { AccountContext } from "@jaws/store/account/accountContext";
+import { User } from "@jaws/store/account/accountStore";
+import { Theme } from "@jaws/styles/themes";
 import { setCookies } from "cookies-next";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useContext, useEffect, useState } from "react";
+import styled, { css } from "styled-components";
 import { useStore } from "zustand";
-import { AccountContext } from "@jaws/store/accountContext";
+import Button from "../atoms/buttons/Button";
 
 const NavBarContainer = styled.div`
   display: flex;
