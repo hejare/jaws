@@ -1,7 +1,7 @@
 import { signInWithGoogle } from "@jaws/auth/firestoreAuth";
 import { getToday } from "@jaws/lib/helpers";
-import { AccountContext } from "@jaws/store/accountContext";
-import { User } from "@jaws/store/accountStore";
+import { AccountContext } from "@jaws/store/account/accountContext";
+import { User } from "@jaws/store/account/accountStore";
 import { Theme } from "@jaws/styles/themes";
 import { setCookies } from "cookies-next";
 import Link from "next/link";

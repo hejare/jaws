@@ -1,6 +1,6 @@
-import { getCookie } from "cookies-next";
 import { auth } from "@jaws/auth/firebaseAdmin";
-import { User } from "@jaws/store/accountStore";
+import { User } from "@jaws/store/account/accountStore";
+import { getCookie } from "cookies-next";
 
 export const getServerSidePropsAllPages = async ({
   req,
