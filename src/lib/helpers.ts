@@ -8,6 +8,21 @@ function addZero(value: number) {
   return value < 10 ? `0${value}` : value;
 }
 
+export const getDateString = ({
+  date,
+  withDashes,
+}: {
+  date: Date;
+  withDashes: boolean;
+}) => {
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+
+  return [date.getFullYear(), addZero(month), addZero(day)].join(
+    withDashes ? "-" : "",
+  );
+};
+
 export const getToday = () => {
   const now = new Date();
   const nowDate = now.getDate();
