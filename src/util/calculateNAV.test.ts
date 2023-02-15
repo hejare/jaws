@@ -6,7 +6,11 @@ describe("calculateNAV", () => {
     const numShares = 535.2;
     const cashFlow = 0;
 
-    const { NAV, newNumShares } = calculateNAV({ equity, numShares, cashFlow });
+    const { NAV, newNumShares } = calculateNAV({
+      equity,
+      numShares,
+      netDeposits: cashFlow,
+    });
 
     expect(NAV).toBeCloseTo(98.74);
     expect(newNumShares).toBe(numShares);
@@ -17,7 +21,11 @@ describe("calculateNAV", () => {
     const numShares = 535.2;
     const cashFlow = 1000;
 
-    const { NAV, newNumShares } = calculateNAV({ equity, numShares, cashFlow });
+    const { NAV, newNumShares } = calculateNAV({
+      equity,
+      numShares,
+      netDeposits: cashFlow,
+    });
 
     expect(NAV).toBeCloseTo(98.74);
     expect(newNumShares).toBeCloseTo(545.33);
@@ -28,7 +36,11 @@ describe("calculateNAV", () => {
     const numShares = 535.2;
     const cashFlow = -1000;
 
-    const { NAV, newNumShares } = calculateNAV({ equity, numShares, cashFlow });
+    const { NAV, newNumShares } = calculateNAV({
+      equity,
+      numShares,
+      netDeposits: cashFlow,
+    });
 
     expect(NAV).toBeCloseTo(98.74);
     expect(newNumShares).toBeCloseTo(525.07);
@@ -42,21 +54,35 @@ describe("calculateNAV", () => {
     const { NAV: NAV1 } = calculateNAV({
       equity: equities[0],
       numShares: startNumShares,
-      cashFlow: 0,
+      netDeposits: 0,
     });
 
-    expect(NAV1).toBe(500);
+    expect(NAV1).toEqual(500);
 
     const { NAV: NAV2, newNumShares } = calculateNAV({
       equity: equities[1],
       numShares: startNumShares,
-      cashFlow: cashFlowDay2,
+      netDeposits: cashFlowDay2,
     });
 
-    expect(NAV2 / NAV1).toBe(1.02); // 2% increase in NAV
+    expect(NAV2 / NAV1).toEqual(1.02); // 2% increase in NAV
 
-    // Cash flow means buying or selling at the "new" NAV price, in this
-    // case when the equity was 51000
-    expect(newNumShares).toBeCloseTo(startNumShares + cashFlowDay2 / NAV2);
+    // Deposits means buying or selling at the "new" NAV price, in this
+    // case when the equity was 51000. We should have created as many
+    // new shares as can be bought for $1000 with the new price:
+    //
+    // newly_created_shares
+    //            = 1000 (deposit) / (51000 (eq) / 100 (shares))
+    //            = 1000 / 510
+    //            = 1.96
+    //
+    // new_num_shares = start_num_shares + 1.96
+    //                = 100 + 1.96
+    //                = 101.96
+    //
+    // new_nav = 52000 (new eq) / 101.96 (new number of shares)
+    //         = 510
+    expect(newNumShares).toBeCloseTo(101.96);
+    expect(NAV2).toBeCloseTo(510);
   });
 });

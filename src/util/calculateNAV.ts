@@ -1,7 +1,7 @@
 export function calculateNAV({
   numShares,
   equity,
-  cashFlow,
+  netDeposits,
 }: {
   /**
    * Number of shares outsanding (of Jaws account)
@@ -15,10 +15,20 @@ export function calculateNAV({
    * How much cash has been added (or withdrawn) since the last NAV
    * calculation. This cash flow should already be included in `equity`
    */
-  cashFlow: number;
-}): { NAV: number; newNumShares: number } {
-  const navWithoutCashflow = (equity - cashFlow) / numShares;
-  const newNumShares = numShares + cashFlow / navWithoutCashflow;
+  netDeposits: number;
+}): {
+  /**
+   * New NAV
+   */
+  NAV: number;
+  /**
+   * How many shares exist including newly created or removed shares due
+   * to deposits/withdrawals
+   */
+  newNumShares: number;
+} {
+  const navWithoutCashDiff = (equity - netDeposits) / numShares;
+  const newNumShares = numShares + netDeposits / navWithoutCashDiff;
   const newNAV = equity / newNumShares;
 
   return { NAV: newNAV, newNumShares };
