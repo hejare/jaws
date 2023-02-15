@@ -6,9 +6,9 @@ export async function getDailyStats({
   accountId,
 }: {
   /** Format: YYYY-MM-DD (inclusive) */
-  startDate?: string;
+  startDate: string;
   /** Format: YYYY-MM-DD (inclusive) */
-  endDate?: string;
+  endDate: string;
   accountId: string;
 }) {
   return (
@@ -17,6 +17,7 @@ export async function getDailyStats({
       .where("accountId", "==", accountId)
       .where("date", ">=", startDate)
       .where("date", "<=", endDate)
+      .orderBy("date", "asc")
       .get()
   ).docs.map((doc) => doc.data()) as DailyStats[];
 }
