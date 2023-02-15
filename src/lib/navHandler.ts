@@ -1,28 +1,75 @@
+import { getDailyStats, upsertDailyStats } from "@jaws/db/dailyStatsEntity";
 import { RawActivity } from "@jaws/services/alpacaMeta";
 import * as alpacaService from "@jaws/services/alpacaService";
-import { getTodayWithDashes } from "./helpers";
+import { calculateNAV } from "@jaws/util/calculateNAV";
+import { getDateString, getTodayWithDashes, ONE_DAY_IN_MS } from "./helpers";
 
-export const calculateTodaysNAV = async () => {
+export type DayDateString = ``;
+
+export const calculateTodaysNAV = async (accountId: string) => {
   const todayDate = getTodayWithDashes();
+  const yesterdaysDate = getDateString({
+    date: new Date(Number(new Date(todayDate)) - ONE_DAY_IN_MS),
+    withDashes: true,
+  });
 
-  const [equity, cashTransactions] = await Promise.all([
-    alpacaService.getEquity(),
-    alpacaService.getAccountActivities({
-      activity_type: "TRANS",
-      date: todayDate,
-    }),
-  ]);
+  const [equity, cashActivities, [{ debugInfo, ...yesterdayStats }]] =
+    await Promise.all([
+      alpacaService.getEquity(),
+      alpacaService.getAccountActivities({
+        activity_type: "TRANS",
+        date: todayDate,
+      }),
+      getDailyStats({
+        startDate: yesterdaysDate,
+        endDate: yesterdaysDate,
+        accountId,
+      }),
+    ]);
 
-  isNonTradeActivities(cashTransactions);
+  isNonTradeActivities(cashActivities);
 
-  const cashFlow = cashTransactions
+  const netDeposits = cashActivities
     .filter((ct) => ct.status !== "canceled")
     .reduce((sum, ct) => sum + parseFloat(ct.net_amount), 0);
 
-  return { equity, cashTransactions, cashFlow };
+  const NAV = calculateNAV({
+    numShares: yesterdayStats.shares,
+    equity: parseFloat(equity),
+    netDeposits,
+  });
+
+  return {
+    equity,
+    cashActivities,
+    netDeposits,
+    yesterdayStats,
+    ...NAV,
+    todayDate,
+    yesterdaysDate,
+  };
 };
 
-export const saveTodaysNAV = () => {};
+export const saveTodaysNAV = async () => {
+  // TODO: Do for all accounts
+  const {
+    NAV: nav,
+    todayDate: date,
+    newNumShares: shares,
+    ...debugInfo
+  } = await calculateTodaysNAV("hejare");
+
+  await upsertDailyStats({
+    nav,
+    accountId: "hejare",
+    date,
+    shares,
+    /** TODO: Remove when not needed anymore :) */
+    debugInfo,
+  });
+
+  return { nav, date, shares, ...debugInfo };
+};
 
 function isNonTradeActivities(
   activities: RawActivity[],
