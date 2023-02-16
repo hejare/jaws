@@ -1,5 +1,4 @@
 import { getDailyStats } from "@jaws/db/dailyStatsEntity";
-import { getTodayWithDashes } from "@jaws/lib/helpers";
 import { NextApiRequest, NextApiResponse } from "next";
 import { ResponseDataType } from "../../ResponseDataMeta";
 
@@ -9,14 +8,14 @@ interface DailyStatsResponseData {
 }
 
 export interface DailyStatsResponse extends ResponseDataType {
-  data?: DailyStatsResponseData | DailyStatsResponseData[];
+  data: DailyStatsResponseData[];
 }
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const response: DailyStatsResponse = { status: "INIT" };
+  const response: DailyStatsResponse = { status: "INIT", data: [] };
 
   // TODO: get from middleware
   const accountId = "hejare";
@@ -27,19 +26,7 @@ export default async function handler(
     }
 
     const dates = getValidDateRange(req.query);
-
-    if (dates) {
-      response.data = await getStats({ ...dates, accountId });
-    } else {
-      response.data = await getStats(
-        {
-          startDate: getTodayWithDashes(),
-          endDate: getTodayWithDashes(),
-          accountId,
-        },
-        true,
-      );
-    }
+    response.data = await getStats({ ...dates, accountId });
 
     response.status = "OK";
     return res.status(200).json(response);
@@ -50,38 +37,27 @@ export default async function handler(
   }
 }
 
-async function getStats(
-  params: {
-    startDate: string;
-    endDate: string;
-    accountId: string;
-  },
-  justOne?: boolean,
-) {
+async function getStats(params: {
+  startDate: string;
+  endDate: string;
+  accountId: string;
+}) {
   const stats = (await getDailyStats(params)).map(({ nav, date }) => ({
     nav,
     date,
   }));
-  return justOne ? stats[0] : stats;
+  return stats;
 }
 
-function getValidDateRange(dates: {
-  startDate?: string;
-  endDate?: string;
-}): { startDate: string; endDate: string } | undefined {
+function getValidDateRange(dates: { startDate?: string; endDate?: string }): {
+  startDate: string;
+  endDate: string;
+} {
   if (
-    typeof dates.startDate === "string" ||
-    typeof dates.endDate === "string"
+    !(typeof dates.startDate === "string" && typeof dates.endDate === "string")
   ) {
-    if (
-      typeof dates.startDate !== "string" ||
-      typeof dates.endDate !== "string"
-    ) {
-      throw new Error("Need two dates for date range");
-    } else {
-      return { ...dates } as { startDate: string; endDate: string };
-    }
+    throw new Error("Need two dates for date range");
+  } else {
+    return { ...dates } as { startDate: string; endDate: string };
   }
-
-  return;
 }
