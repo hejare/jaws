@@ -38,8 +38,6 @@ describe("calculatePNL", () => {
       expect(pnl.profitPercentage).toBeCloseTo(profitPercentage, 4);
     },
   );
-
-  it("ignores trades whose orders lie outside the period", () => {});
 });
 
 function getTestData(): [
