@@ -5,6 +5,7 @@ import { GetPortfolioHistory } from "@master-chief/alpaca";
 import {
   PortfolioHistory,
   RawAccount,
+  RawBar,
   RawOrder,
   RawPosition,
 } from "@master-chief/alpaca/@types/entities";
@@ -19,6 +20,8 @@ import { RawActivity, Side } from "./alpacaMeta";
 const {
   ALPACA_API_KEY_ID = "[NOT_DEFINED_IN_ENV]",
   ALPACA_API_KEY_VALUE = "[NOT_DEFINED_IN_ENV]",
+  ALPACA_MARKET_API_KEY = "[NOT_DEFINED_IN_ENV]",
+  ALPACA_MARKET_API_KEY_SECRET = "[NOT_DEFINED_IN_ENV]",
 } = process.env;
 
 const buff = Buffer.from(
@@ -27,8 +30,14 @@ const buff = Buffer.from(
 );
 const base64EncodedKeys = buff.toString("base64");
 
+const base64EncodedMarketKeys = Buffer.from(
+  `${ALPACA_MARKET_API_KEY}:${ALPACA_MARKET_API_KEY_SECRET}`,
+  "utf-8",
+).toString("base64");
+
 const accountId = "b75acdbc-3fb6-3fb3-b253-b0bf7d86b8bb"; // public info
 const brokerApiBaseUrl = "https://broker-api.sandbox.alpaca.markets/v1";
+const marketDataApiBaseUrl = "https://data.alpaca.markets/v2";
 
 const getHoldingInTicker = async (ticker: string) => {
   const assetInfo = await getAssetByTicker(ticker);
@@ -305,6 +314,32 @@ export async function getAccountActivities({
   return sendAlpacaRequest<RawActivity[]>(
     `accounts/activities/${activity_type || ""}?${searchParams.toString()}`,
   );
+}
+
+export async function getTickerBars(
+  symbols: string[],
+  dates: { startDate: string; endDate: string },
+) {
+  const params = new URLSearchParams({
+    timeframe: "23Hour",
+    start: dates.startDate,
+    end: dates.endDate,
+  });
+
+  const res = await fetch(
+    `${marketDataApiBaseUrl}/stocks/bars?${params.toString()}&symbols=${symbols.join(
+      ",",
+    )}`,
+    {
+      headers: {
+        "APCA-API-KEY-ID": ALPACA_MARKET_API_KEY,
+        "APCA-API-SECRET-KEY": ALPACA_MARKET_API_KEY_SECRET,
+        content: "application/json",
+      },
+    },
+  );
+
+  return handleResult<{ bars: { [k: string]: RawBar[] } }>(res);
 }
 
 async function sendAlpacaRequest<T = any>(path: string, options?: RequestInit) {

@@ -5,6 +5,7 @@ import { PortfolioHistoryResponse } from "@jaws/api/broker/account/history";
 import { DailyStatsResponse } from "@jaws/api/data/daily-stats";
 import { ExtendedTradesDataType, TRADE_STATUS } from "@jaws/db/tradesMeta";
 import { getToday } from "@jaws/lib/helpers";
+import { BarsResponse } from "@jaws/pages/api/market/bars";
 import { convertResult, handleResult } from "@jaws/util";
 import { GetPortfolioHistory } from "@master-chief/alpaca";
 import { RawOrder } from "@master-chief/alpaca/@types/entities";
@@ -129,4 +130,22 @@ export const getDailyStats = async (dates: {
   ).then((res) => handleResult<DailyStatsResponse>(res));
 
   return response.data;
+};
+
+export const getTickerBars = async (opts: {
+  symbols: string[];
+  startDate: string;
+  endDate: string;
+}) => {
+  const params = new URLSearchParams([
+    ...opts.symbols.map((s) => ["symbols", s]),
+    ["startDate", opts.startDate],
+    ["endDate", opts.endDate],
+  ]);
+
+  const response = await fetch(`api/market/bars?${params.toString()}`).then(
+    (res) => handleResult<BarsResponse>(res),
+  );
+
+  return response.bars;
 };
