@@ -46,7 +46,7 @@ export function StatsCompare() {
 
     void Promise.all([
       getDailyStats(dateRange),
-      getTickerBars({ symbols: ["SPY", "SDY", "IWM"], ...dateRange }),
+      getTickerBars({ symbols: ["SPY", "VTHR", "QQQ"], ...dateRange }),
     ]).then(([jawsStats, tickerStats]) => {
       setIsLoading(false);
       setStats([
