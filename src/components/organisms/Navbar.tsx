@@ -101,6 +101,9 @@ const Navbar = () => {
         <LogoContainer />
       </Link>
       <LinksContainer>
+        <Link href={`/`} passHref>
+          <NavBarItem active={pathName === "/"}>Dashboard</NavBarItem>
+        </Link>
         <Link href={`/daily-runs/${today}`} passHref>
           <NavBarItem active={pathName.startsWith("/daily-runs")}>
             Todays run
