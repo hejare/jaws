@@ -1,12 +1,13 @@
 import { getDateString, ONE_DAY_IN_MS } from "@jaws/lib/helpers";
-import { getDailyStats } from "@jaws/services/backendService";
+import { getDailyStats, getTickerBars } from "@jaws/services/backendService";
 import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import PercentageDisplay from "../molecules/PercentageDisplay";
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ loading: boolean }>`
   display: flex;
   margin-bottom: 15px;
+  opacity: ${(props) => (props.loading ? 0.7 : 1)};
 `;
 
 const StatWrapper = styled.div`
@@ -26,7 +27,9 @@ export function StatsCompare() {
     endDate: string;
   }>();
 
-  const [stats, setStats] = useState<{ name: string; nav: number }[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const [stats, setStats] = useState<{ ticker: string; nav: number }[]>([]);
 
   const ranges = useMemo(getRanges, []);
 
@@ -39,25 +42,35 @@ export function StatsCompare() {
       return;
     }
 
-    setStats([]);
+    setIsLoading(true);
 
-    void Promise.all([getDailyStats(dateRange)]).then(([jawsStats]) => {
+    void Promise.all([
+      getDailyStats(dateRange),
+      getTickerBars({ symbols: ["SPY", "SDY", "IWM"], ...dateRange }),
+    ]).then(([jawsStats, tickerStats]) => {
+      setIsLoading(false);
       setStats([
         {
-          name: "Jaws",
+          ticker: "Jaws NAV",
           nav:
             (jawsStats[jawsStats.length - 1].nav / jawsStats[0].nav - 1) * 100,
         },
+        ...Object.entries(tickerStats).map(([ticker, bars]) => {
+          return {
+            ticker,
+            nav: (bars[bars.length - 1].c / bars[0].c - 1) * 100,
+          };
+        }),
       ]);
     });
   }, [dateRange]);
 
   return (
-    <Wrapper>
+    <Wrapper loading={isLoading}>
       <>
         <label>
-          NAV:{" "}
           <select
+            disabled={isLoading}
             onChange={(e: any) => {
               setDateRange(ranges[e.target.value][1]);
             }}
@@ -70,8 +83,8 @@ export function StatsCompare() {
           </select>
         </label>
         {stats.map((stat) => (
-          <StatWrapper key={stat.name}>
-            <span>{stat.name} • </span>
+          <StatWrapper key={stat.ticker}>
+            <span>{stat.ticker} • </span>
             <PercentageDisplay value={stat.nav} indicatorOrigin={0} />
           </StatWrapper>
         ))}
@@ -91,8 +104,7 @@ type RangeName =
 type DateRanges = [RangeName, { startDate: string; endDate: string }][];
 
 function getRanges(): DateRanges {
-  const yesterday = new Date();
-  const yesterdayMs = Number(yesterday);
+  const yesterdayMs = Number(new Date()) - ONE_DAY_IN_MS;
 
   const ranges = {
     Yesterday: new Date(yesterdayMs - ONE_DAY_IN_MS),
@@ -107,7 +119,7 @@ function getRanges(): DateRanges {
     name as RangeName,
     {
       startDate: getDateString({ date, withDashes: true }),
-      endDate: getDateString({ date: yesterday, withDashes: true }),
+      endDate: getDateString({ date: new Date(yesterdayMs), withDashes: true }),
     },
   ]);
 }
