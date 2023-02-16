@@ -10,14 +10,7 @@ export const convertResult = async <T = any>(result: Response): Promise<T> => {
 };
 
 export const handleResult = async <T = any>(result: Response) => {
-  try {
-    const data = await convertResult<T>(result);
-    const reason = { error: data };
-    return result.ok
-      ? await Promise.resolve(data)
-      : await Promise.reject(reason);
-  } catch (error) {
-    const reason = { error };
-    return Promise.reject(reason);
-  }
+  const data = await convertResult<T>(result);
+
+  return result.ok ? Promise.resolve(data) : Promise.reject(data);
 };

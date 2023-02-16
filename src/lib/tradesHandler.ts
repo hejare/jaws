@@ -376,7 +376,7 @@ export const triggerStopLossTakeProfit = async () => {
 
     const [newFilledTrades, balance] = await Promise.all([
       populateTradesData(filledTrades),
-      alpacaService.getPortfolioValue(),
+      alpacaService.getEquity(),
     ]);
 
     return performActions(newFilledTrades, parseFloat(balance));

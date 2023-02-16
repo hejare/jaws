@@ -2,6 +2,7 @@ import { ExtendedTradesDataType, TRADE_STATUS } from "@jaws/db/tradesMeta";
 import {
   getAccountAssets,
   getAccountCashBalance,
+  getAccountEquity,
   getJawsPortfolio,
   getMovingAverages,
 } from "@jaws/services/backendService";
@@ -35,6 +36,7 @@ export const useGetTableData = () => {
     investedValue: number;
     marketValue: number;
     totalPortfolioValue: number;
+    cashBalance: number;
   }>({} as any);
 
   useEffect(() => {
@@ -42,8 +44,9 @@ export const useGetTableData = () => {
       getAccountAssets(),
       getAccountCashBalance(),
       getJawsPortfolio(),
+      getAccountEquity(),
     ])
-      .then(async ([assetsResult, balance, trades]) => {
+      .then(async ([assetsResult, cashBalance, trades, equity]) => {
         const assets = assetsResult.assets;
 
         const movingAverages = await getMovingAverages(
@@ -62,12 +65,16 @@ export const useGetTableData = () => {
         }[];
 
         const tableData = convertToTableData({
-          assets,
-          balance,
+          equity,
           data: sortedData,
         });
 
-        setData(tableData);
+        setData({
+          assets: tableData,
+          cashBalance,
+          totalPortfolioValue: equity,
+          ...calculateAssetValues(assets),
+        });
         setFetchStatus("ok");
       })
       .catch(console.error);
@@ -77,36 +84,16 @@ export const useGetTableData = () => {
 };
 
 function convertToTableData({
-  assets,
-  balance,
+  equity,
   data,
 }: {
-  assets: RawPosition[];
-  balance: number;
+  equity: number;
   data: {
     trade: ExtendedTradesDataType;
     movingAvg: number;
     alpacaAsset: RawPosition;
   }[];
-}): {
-  marketValue: number;
-  investedValue: number;
-  assets: PortfolioTableAsset[];
-  totalPortfolioValue: number;
-} {
-  const investedValue = assets.reduce(
-    (sum: number, { cost_basis }) => sum + parseFloat(cost_basis),
-    0,
-  );
-
-  const marketValue: number = assets.reduce(
-    (sum: number, { market_value }) =>
-      sum + (market_value ? parseFloat(market_value) : 0),
-    0,
-  );
-
-  const totalPortfolioValue = balance + marketValue;
-
+}): PortfolioTableAsset[] {
   const extendedAssets: PortfolioTableAsset[] = data.map(
     ({ trade, alpacaAsset, movingAvg }) => {
       tradeHasRequiredData(trade);
@@ -123,7 +110,7 @@ function convertToTableData({
         trade,
         currentPrice,
         movingAvg,
-        totalAssets: totalPortfolioValue,
+        totalAssets: equity,
       });
 
       const stopLossType = [
@@ -134,8 +121,7 @@ function convertToTableData({
 
       return {
         ...trade,
-        percentOfTotalAssets:
-          ((avgEntryPrice * trade.quantity) / totalPortfolioValue) * 100,
+        percentOfTotalAssets: ((avgEntryPrice * trade.quantity) / equity) * 100,
         changeSinceEntry: (currentPrice - avgEntryPrice) / avgEntryPrice,
         value: trade.quantity * currentPrice,
         currentPrice,
@@ -151,10 +137,23 @@ function convertToTableData({
     },
   );
 
-  return {
-    investedValue,
-    marketValue,
-    assets: extendedAssets,
-    totalPortfolioValue,
-  };
+  return extendedAssets;
+}
+
+function calculateAssetValues(assets: RawPosition[]): {
+  investedValue: number;
+  marketValue: number;
+} {
+  const investedValue = assets.reduce(
+    (sum: number, { cost_basis }) => sum + parseFloat(cost_basis),
+    0,
+  );
+
+  const marketValue: number = assets.reduce(
+    (sum: number, { market_value }) =>
+      sum + (market_value ? parseFloat(market_value) : 0),
+    0,
+  );
+
+  return { investedValue, marketValue };
 }

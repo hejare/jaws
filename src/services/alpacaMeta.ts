@@ -1,3 +1,5 @@
+import { RawActivity as AlpacaRawActivity } from "@master-chief/alpaca/@types/entities";
+
 export enum SUMMED_ORDER_STATUS {
   FILLED = "FILLED",
   IN_PROGRESS = "IN_PROGRESS",
@@ -81,3 +83,8 @@ export const orderStatusesInProgress = [
   AlpacaOrderStatusType.PENDING_CANCEL,
   AlpacaOrderStatusType.PENDING_REPLACE,
 ];
+
+export type RawActivity = AlpacaRawActivity & {
+  status: "executed" | "correct" | "canceled";
+  net_amount?: string;
+};
