@@ -1,9 +1,10 @@
 import { BrokerAccountAssetsResponse } from "@jaws/api/broker/account/assets";
 import { BrokerAccountBalanceResponse } from "@jaws/api/broker/account/balance";
+import { BrokerAccountEquityResponse } from "@jaws/api/broker/account/equity";
+import { PortfolioHistoryResponse } from "@jaws/api/broker/account/history";
+import { DailyStatsResponse } from "@jaws/api/data/daily-stats";
 import { ExtendedTradesDataType, TRADE_STATUS } from "@jaws/db/tradesMeta";
 import { getToday } from "@jaws/lib/helpers";
-import { BrokerAccountEquityResponse } from "@jaws/pages/api/broker/account/equity";
-import { PortfolioHistoryResponse } from "@jaws/pages/api/broker/account/history";
 import { convertResult, handleResult } from "@jaws/util";
 import { GetPortfolioHistory } from "@master-chief/alpaca";
 import { RawOrder } from "@master-chief/alpaca/@types/entities";
@@ -117,4 +118,15 @@ export const getOrders = () => {
   return fetch("/api/broker/orders").then((res) =>
     handleResult<{ orders: RawOrder[] }>(res),
   );
+};
+
+export const getDailyStats = async (dates: {
+  startDate: string;
+  endDate: string;
+}): Promise<DailyStatsResponse["data"]> => {
+  const response = await fetch(
+    "api/data/daily-stats?" + new URLSearchParams(dates).toString(),
+  ).then((res) => handleResult<DailyStatsResponse>(res));
+
+  return response.data;
 };

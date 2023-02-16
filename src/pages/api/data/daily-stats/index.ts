@@ -8,9 +8,9 @@ interface DailyStatsResponseData {
   date: string;
 }
 
-export type DailyStatsResponse = ResponseDataType & {
+export interface DailyStatsResponse extends ResponseDataType {
   data?: DailyStatsResponseData | DailyStatsResponseData[];
-};
+}
 
 export default async function handler(
   req: NextApiRequest,
