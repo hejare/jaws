@@ -16,8 +16,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { query } = req;
-
   const response: DailyStatsResponse = { status: "INIT" };
 
   // TODO: get from middleware
@@ -28,32 +26,27 @@ export default async function handler(
       throw new Error(`Method not supported: ${req.method || "none"}`);
     }
 
-    let startDate: string, endDate: string;
-    if (
-      typeof query.startDate === "string" ||
-      typeof query.endDate === "string"
-    ) {
-      if (
-        typeof query.startDate !== "string" ||
-        typeof query.endDate !== "string"
-      ) {
-        throw new Error("Need two dates for date range");
-      }
+    const dates = getValidDateRange(req.query);
 
-      startDate = query.startDate;
-      endDate = query.endDate;
-      response.data = await getStats({ startDate, endDate, accountId });
+    if (dates) {
+      response.data = await getStats({ ...dates, accountId });
     } else {
-      startDate = endDate = getTodayWithDashes();
-      response.data = await getStats({ startDate, endDate, accountId }, true);
+      response.data = await getStats(
+        {
+          startDate: getTodayWithDashes(),
+          endDate: getTodayWithDashes(),
+          accountId,
+        },
+        true,
+      );
     }
 
     response.status = "OK";
     return res.status(200).json(response);
 
     // const nav =
-  } catch (error) {
-    res.status(500).json({ status: "NOK", message: JSON.stringify(error) });
+  } catch (error: any) {
+    res.status(500).json({ status: "NOK", message: error.message || error });
   }
 }
 
@@ -70,4 +63,25 @@ async function getStats(
     date,
   }));
   return justOne ? stats[0] : stats;
+}
+
+function getValidDateRange(dates: {
+  startDate?: string;
+  endDate?: string;
+}): { startDate: string; endDate: string } | undefined {
+  if (
+    typeof dates.startDate === "string" ||
+    typeof dates.endDate === "string"
+  ) {
+    if (
+      typeof dates.startDate !== "string" ||
+      typeof dates.endDate !== "string"
+    ) {
+      throw new Error("Need two dates for date range");
+    } else {
+      return { ...dates } as { startDate: string; endDate: string };
+    }
+  }
+
+  return;
 }
