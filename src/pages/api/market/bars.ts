@@ -1,4 +1,5 @@
 import { getTickerBars } from "@jaws/services/alpacaService";
+import { getQueryParamArray } from "@jaws/util/getQueryParamArray";
 import { RawBar } from "@master-chief/alpaca/@types/entities";
 import { NextApiRequest, NextApiResponse } from "next";
 import { ResponseDataType } from "../ResponseDataMeta";
@@ -13,7 +14,7 @@ export default async function handler(
 ) {
   try {
     const dates = getValidDateRange(req.query);
-    const symbols = req.query.symbols as string[];
+    const symbols = getQueryParamArray(req.query, "symbols") as string[];
 
     const bars = await getTickerBars(symbols, dates);
 
