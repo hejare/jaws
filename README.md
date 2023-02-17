@@ -25,7 +25,7 @@ This is a blank project for Jaws with TypeScript.
 ## Firebase Cloud Firestore
 
 - Link to [project console](https://console.firebase.google.com/u/0/project/jaws-sharkster/overview)
-- hej@hejare.se for login if you're not Leo, Gustaf or Anna
+- jaws@skojinnovation.se for login if you're not Leo, Gustaf or Anna
 
 ## Cron jobs
 
