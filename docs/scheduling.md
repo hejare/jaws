@@ -24,3 +24,8 @@
 - Takes all "FILLED" trades, and on each trade, checks if it is stop-loss or take-profit. Then, performs stop-loss and/or take-profit actions accordingly.
 - If stop-loss, field "sold" is created with timestamp.
 - If take-profit, a new trade with _**side = trade**_ is added to the database. The inital trade entity is kept but the fields quantity and status are updated. Status is updated to keep track on what breakouts we already have taken profit on.
+
+**api/triggers/trigger-calculate-daily-stats**
+
+- Runs at 23:00
+- Calculates stats after the market is closed and save to `daily-stats` in Firestore
