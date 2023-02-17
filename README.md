@@ -30,7 +30,7 @@ This is a blank project for Jaws with TypeScript.
 ## Cron jobs
 
 - Cron jobs for triggering jaws are setup with [cron-job.org](https://console.cron-job.org/).
-- Login with hej@hejare.se email adress to view, edit and create new cron jobs
+- Login with jaws@skojinnovation.se email adress to view, edit and create new cron jobs
 - [Info](docs/scheduling.md) about what each cron job does and when it is triggered
 
 ## _Further Documentation_
