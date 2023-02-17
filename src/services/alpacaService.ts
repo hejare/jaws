@@ -321,7 +321,7 @@ export async function getTickerBars(
   dates: { startDate: string; endDate: string },
 ) {
   const params = new URLSearchParams({
-    timeframe: "23Hour",
+    timeframe: "1Day",
     start: dates.startDate,
     end: dates.endDate,
   });
@@ -339,7 +339,13 @@ export async function getTickerBars(
     },
   );
 
-  return handleResult<{ bars: { [k: string]: RawBar[] } }>(res);
+  const data = await handleResult<{ bars: { [k: string]: RawBar[] } }>(res);
+
+  if (!Object.keys(data.bars).length) {
+    console.log({ data, dates, status: res.status, ok: res.ok });
+  }
+
+  return data;
 }
 
 async function sendAlpacaRequest<T = any>(path: string, options?: RequestInit) {
