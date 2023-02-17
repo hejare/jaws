@@ -13,6 +13,8 @@ export default async function handler(
     limit: 9999,
   });
 
+  const activities = await alpacaService.getAllaciafaifgneif();
+
   const startCash = 50000;
   const lastDate = "2023-02-16";
 
@@ -50,7 +52,11 @@ export default async function handler(
   });
 
   const ordersBuy = orders
-    .filter((o) => o.side === "buy" && o.status === "filled")
+    .filter(
+      (o) =>
+        o.side === "buy" &&
+        (o.status === "filled" || o.status === "partially_filled"),
+    )
     .reduce(
       (acc, o) =>
         acc + parseFloat(o.filled_avg_price) * parseFloat(o.filled_qty),
@@ -58,7 +64,11 @@ export default async function handler(
     );
 
   const ordersSell = orders
-    .filter((o) => o.side === "sell" && o.status === "filled")
+    .filter(
+      (o) =>
+        o.side === "sell" &&
+        (o.status === "filled" || o.status === "partially_filled"),
+    )
     .reduce(
       (acc, o) =>
         acc + parseFloat(o.filled_avg_price) * parseFloat(o.filled_qty),
@@ -67,9 +77,26 @@ export default async function handler(
 
   const cashDiff = ordersSell - ordersBuy;
 
+  const activitiesBuy = activities
+    .filter((a: any) => a.side === "buy" && a.activity_type === "FILL")
+    .reduce((acc, a: any) => acc + parseFloat(a.price) * parseFloat(a.qty), 0);
+
+  const activitiesSell = activities
+    .filter((a: any) => a.side === "sell" && a.activity_type === "FILL")
+    .reduce((acc, a: any) => acc + parseFloat(a.price) * parseFloat(a.qty), 0);
+
+  const activitiesDiff = activitiesSell - activitiesBuy;
+
   // CASH DIFF DOES NOT CORRELATE WITH CURRENT CASH !!!!!!!
 
-  res.status(200).json({ ordersBuy, ordersSell, cashDiff, orders });
+  res.status(200).json({
+    ordersBuy,
+    ordersSell,
+    cashDiff,
+    orders,
+    activities,
+    activitiesDiff,
+  });
   return;
 
   const ordersByDate = groupBy(

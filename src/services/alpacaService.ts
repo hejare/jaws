@@ -316,6 +316,25 @@ export async function getAccountActivities({
   );
 }
 
+export async function getAllaciafaifgneif() {
+  let length = 100;
+  let acc: RawActivity[] = [];
+  let id = "";
+
+  while (length === 100) {
+    const res = await sendAlpacaRequest<RawActivity[]>(
+      `accounts/activities${id ? `?page_token=${id}` : ""}`,
+    );
+
+    length = res.length;
+    id = res[res.length - 1].id;
+
+    acc = [...acc, ...res];
+  }
+
+  return acc;
+}
+
 export async function getTickerBars(
   symbols: string[],
   dates: { startDate: string; endDate: string },
