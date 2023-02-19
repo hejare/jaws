@@ -16,7 +16,11 @@ export async function getDailyStats({
     await db
       .collection("daily-stats")
       .where("accountId", "==", accountId)
-      .where("date", ">=", new firestore.Timestamp(startDate.getTime() / 1000, 0))
+      .where(
+        "date",
+        ">=",
+        new firestore.Timestamp(startDate.getTime() / 1000, 0),
+      )
       .where("date", "<=", new firestore.Timestamp(endDate.getTime() / 1000, 0))
       .orderBy("date", "asc")
       .get()

@@ -51,7 +51,10 @@ function getValidDateRange(dates: { startDate?: string; endDate?: string }): {
   startDate: Date;
   endDate: Date;
 } {
-  if (typeof dates.startDate === "string" && typeof dates.endDate === "string") {
+  if (
+    typeof dates.startDate === "string" &&
+    typeof dates.endDate === "string"
+  ) {
     return {
       startDate: new Date(Date.parse(dates.startDate)),
       endDate: new Date(Date.parse(dates.endDate)),

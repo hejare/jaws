@@ -19,9 +19,9 @@ const ContentContainer = styled.div`
 
 // Avoids this warning https://github.com/vercel/next.js/issues/12863
 const ClientRenderedChart = dynamic(
-  () => import('@jaws/components/molecules/NavChart'),
-  { ssr: false }
-)
+  () => import("@jaws/components/molecules/NavChart"),
+  { ssr: false },
+);
 
 function StartPage() {
   const [triggerRunEnabled, setTriggerRunEnabled] = useState<boolean>(false);
