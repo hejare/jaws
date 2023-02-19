@@ -4,9 +4,14 @@ import {
   Line,
   LineChart,
   Tooltip,
+  TooltipProps,
   XAxis,
   YAxis,
 } from "recharts";
+import {
+  NameType,
+  ValueType,
+} from "recharts/types/component/DefaultTooltipContent";
 
 type NavStatsResult = {
   status: string;
@@ -52,16 +57,12 @@ const RechartNavChart = () => {
     active,
     payload,
     label,
-  }: {
-    active: boolean;
-    payload: [{ value: string }];
-    label: string;
-  }) => {
-    if (active && payload && payload.length) {
+  }: TooltipProps<number, NameType>) => {
+    if (active && payload && payload.length && payload[0].value) {
       return (
         <div style={{ backgroundColor: "#000", padding: 10, borderRadius: 20 }}>
           <p>{label}</p>
-          <p>{parseFloat(payload[0].value).toFixed(2)}</p>
+          <p>{payload[0].value.toFixed(2)}</p>
         </div>
       );
     }
@@ -82,7 +83,15 @@ const RechartNavChart = () => {
     >
       <XAxis dataKey="date" angle={-45} textAnchor="end" />
       <YAxis dataKey="nav" />
-      <Tooltip content={<CustomTooltip />} />
+      <Tooltip
+        content={
+          <CustomTooltip
+            active={undefined}
+            payload={undefined}
+            label={undefined}
+          />
+        }
+      />
       <CartesianGrid stroke="#d0e0e0" />
       <Line type="monotone" dataKey="nav" stroke="#ff7300" yAxisId={0} />
     </LineChart>
