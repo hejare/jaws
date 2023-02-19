@@ -1,30 +1,25 @@
-import { getDailyStats, upsertDailyStats } from "@jaws/db/dailyStatsEntity";
+import { generateDocId, getStatByDocId, upsertDailyStats } from "@jaws/db/dailyStatsEntity";
 import { RawActivity } from "@jaws/services/alpacaMeta";
 import * as alpacaService from "@jaws/services/alpacaService";
 import { calculateNAV } from "@jaws/util/calculateNAV";
-import { getDateString, getTodayWithDashes, ONE_DAY_IN_MS } from "./helpers";
+import { firestore } from "firebase-admin";
+import { ONE_DAY_IN_MS } from "./helpers";
 
 export type DayDateString = ``;
 
 export const calculateTodaysNAV = async (accountId: string) => {
-  const todayDate = getTodayWithDashes();
-  const yesterdaysDate = getDateString({
-    date: new Date(Number(new Date(todayDate)) - ONE_DAY_IN_MS),
-    withDashes: true,
-  });
+  const todayDate = new Date();
+  todayDate.setUTCHours(0, 0, 0, 0);
+  const yesterdaysDate = new Date(todayDate.getTime() - ONE_DAY_IN_MS);
 
-  const [equity, cashActivities, [{ debugInfo, ...yesterdayStats }]] =
+  const [equity, cashActivities, { debugInfo, ...yesterdayStats }] =
     await Promise.all([
       alpacaService.getEquity(),
       alpacaService.getAccountActivities({
         activity_type: "TRANS",
-        date: todayDate,
+        date: todayDate.toISOString().split("T")[0],
       }),
-      getDailyStats({
-        startDate: yesterdaysDate,
-        endDate: yesterdaysDate,
-        accountId,
-      }),
+      getStatByDocId(generateDocId(accountId, new firestore.Timestamp(yesterdaysDate.getTime() / 1000, 0)))
     ]);
 
   isNonTradeActivities(cashActivities);
@@ -62,7 +57,7 @@ export const saveTodaysNAV = async () => {
   await upsertDailyStats({
     nav,
     accountId: "hejare",
-    date,
+    date: new firestore.Timestamp(date.getTime() / 1000, 0),
     shares,
     /** TODO: Remove when not needed anymore :) */
     debugInfo,
