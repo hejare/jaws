@@ -51,6 +51,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-spinners": "^0.13.6",
+    "recharts": "^2.4.3",
     "source-map-support": "^0.5.21",
     "styled-components": "^5.3.6",
     "use-modal-hook": "^2.1.2",
