@@ -27,10 +27,15 @@ export async function getDailyStats({
   ).docs.map((doc) => doc.data()) as DailyStats[];
 }
 
-export async function getStatByDocId(docId: string) {
+export async function getLastDocument(accountId: string) {
   return (
-    await db.collection("daily-stats").doc(docId).get()
-  ).data() as DailyStats;
+    await db
+      .collection("daily-stats")
+      .where("accountId", "==", accountId)
+      .orderBy("date", "desc")
+      .limit(1)
+      .get()
+  ).docs.map((doc) => doc.data())[0] as DailyStats;
 }
 
 export async function upsertDailyStats(stats: DailyStats) {

@@ -1,6 +1,5 @@
 import {
-  generateDocId,
-  getStatByDocId,
+  getLastDocument,
   upsertDailyStats,
 } from "@jaws/db/dailyStatsEntity";
 import { RawActivity } from "@jaws/services/alpacaMeta";
@@ -23,12 +22,7 @@ export const calculateTodaysNAV = async (accountId: string) => {
         activity_type: "TRANS",
         date: todayDate.toISOString().split("T")[0],
       }),
-      getStatByDocId(
-        generateDocId(
-          accountId,
-          new firestore.Timestamp(yesterdaysDate.getTime() / 1000, 0),
-        ),
-      ),
+      getLastDocument(accountId),
     ]);
 
   isNonTradeActivities(cashActivities);
