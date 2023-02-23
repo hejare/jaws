@@ -118,8 +118,8 @@ function getRanges(): DateRanges {
   return Object.entries(ranges).map(([name, date]) => [
     name as RangeName,
     {
-      startDate: getDateString({ date, withDashes: true }),
-      endDate: getDateString({ date: new Date(yesterdayMs), withDashes: true }),
+      startDate: getDateString({ date, withDashes: true }) + "T00:00:00.000Z",
+      endDate: getDateString({ date: new Date(yesterdayMs), withDashes: true }) + "T23:59:59.000Z",
     },
   ]);
 }
