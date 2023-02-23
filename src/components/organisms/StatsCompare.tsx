@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import PercentageDisplay from "../molecules/PercentageDisplay";
 
-const Wrapper = styled.div<{ loading: boolean }>`
+const Wrapper = styled.div<{ loading: number }>`
   display: flex;
   margin-bottom: 15px;
   opacity: ${(props) => (props.loading ? 0.7 : 1)};
@@ -27,7 +27,7 @@ export function StatsCompare() {
     endDate: string;
   }>();
 
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<number>(1);
 
   const [stats, setStats] = useState<{ ticker: string; nav: number }[]>([]);
 
@@ -42,13 +42,13 @@ export function StatsCompare() {
       return;
     }
 
-    setIsLoading(true);
+    setIsLoading(1);
 
     void Promise.all([
       getDailyStats(dateRange),
       getTickerBars({ symbols: ["SPY", "VTHR", "QQQ"], ...dateRange }),
     ]).then(([jawsStats, tickerStats]) => {
-      setIsLoading(false);
+      setIsLoading(0);
       setStats([
         {
           ticker: "Jaws NAV",
@@ -70,7 +70,7 @@ export function StatsCompare() {
       <>
         <label>
           <select
-            disabled={isLoading}
+            disabled={!!isLoading}
             onChange={(e: any) => {
               setDateRange(ranges[e.target.value][1]);
             }}

@@ -4,7 +4,7 @@ import { ResponseDataType } from "../../ResponseDataMeta";
 
 interface DailyStatsResponseData {
   nav: number;
-  date: string;
+  date: Date;
 }
 
 export interface DailyStatsResponse extends ResponseDataType {
@@ -30,34 +30,36 @@ export default async function handler(
 
     response.status = "OK";
     return res.status(200).json(response);
-
-    // const nav =
   } catch (error: any) {
     res.status(500).json({ status: "NOK", message: error.message || error });
   }
 }
 
 async function getStats(params: {
-  startDate: string;
-  endDate: string;
+  startDate: Date;
+  endDate: Date;
   accountId: string;
 }) {
   const stats = (await getDailyStats(params)).map(({ nav, date }) => ({
     nav,
-    date,
+    date: date.toDate(),
   }));
   return stats;
 }
 
 function getValidDateRange(dates: { startDate?: string; endDate?: string }): {
-  startDate: string;
-  endDate: string;
+  startDate: Date;
+  endDate: Date;
 } {
   if (
-    !(typeof dates.startDate === "string" && typeof dates.endDate === "string")
+    typeof dates.startDate === "string" &&
+    typeof dates.endDate === "string"
   ) {
-    throw new Error("Need two dates for date range");
+    return {
+      startDate: new Date(Date.parse(dates.startDate)),
+      endDate: new Date(Date.parse(dates.endDate)),
+    };
   } else {
-    return { ...dates } as { startDate: string; endDate: string };
+    throw new Error("Need two dates for date range");
   }
 }
