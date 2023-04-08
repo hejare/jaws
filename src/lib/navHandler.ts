@@ -1,7 +1,4 @@
-import {
-  getLastDocument,
-  upsertDailyStats,
-} from "@jaws/db/dailyStatsEntity";
+import { getLastDocument, upsertDailyStats } from "@jaws/db/dailyStatsEntity";
 import { RawActivity } from "@jaws/services/alpacaMeta";
 import * as alpacaService from "@jaws/services/alpacaService";
 import { calculateNAV } from "@jaws/util/calculateNAV";

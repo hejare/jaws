@@ -119,7 +119,9 @@ function getRanges(): DateRanges {
     name as RangeName,
     {
       startDate: getDateString({ date, withDashes: true }) + "T00:00:00.000Z",
-      endDate: getDateString({ date: new Date(yesterdayMs), withDashes: true }) + "T23:59:59.000Z",
+      endDate:
+        getDateString({ date: new Date(yesterdayMs), withDashes: true }) +
+        "T23:59:59.000Z",
     },
   ]);
 }
