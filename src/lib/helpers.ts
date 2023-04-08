@@ -100,3 +100,45 @@ export function isValidSymbol(symbol: string): boolean {
 export const getDaysDifference = (date1: Date, date2: Date): number => {
   return Math.floor(Math.abs(Number(date1) - Number(date2)) / ONE_DAY_IN_MS);
 };
+
+export const calculateMean = (values: number[]): number => {
+  return values.reduce((a, b) => a + b, 0) / values.length;
+};
+
+export const calculateStandardDeviation = (values: number[]) => {
+  return Math.sqrt(calculateVariance(values));
+}
+
+export const calculateVariance = (values: number[]) => {
+  const mean = calculateMean(values);
+  const squareDiffs = values.map((value) => {
+    const diff = value - mean;
+    const sqrDiff = diff * diff;
+    return sqrDiff;
+  });
+
+  return calculateMean(squareDiffs);
+}
+
+export const calculateStandardDeviationForPeriod = (values: number[], period: number) => {
+  const standardDeviation = calculateStandardDeviation(values);
+  return standardDeviation * Math.sqrt(period);
+}
+
+export const transformToLogReturns = (stockPrices: number[]): number[] => {
+  const logReturns: number[] = [];
+  for (let i = 0; i < stockPrices.length-1; i++) {
+    const periodReturn = Math.log(stockPrices[i+1] / stockPrices[i]);
+    logReturns.push(periodReturn);
+  }
+  return logReturns;
+};
+
+export const riskFreeRate = (oneYearTreasuryYield: number, inflationRate: number) => {
+  return oneYearTreasuryYield - inflationRate;
+};
+
+export const calculateVolatility = (stockPrices: number[], period: number) => {
+  const logReturns = transformToLogReturns(stockPrices);
+  return calculateStandardDeviationForPeriod(logReturns, period);
+}
