@@ -107,7 +107,7 @@ export const calculateMean = (values: number[]): number => {
 
 export const calculateStandardDeviation = (values: number[]) => {
   return Math.sqrt(calculateVariance(values));
-}
+};
 
 export const calculateVariance = (values: number[]) => {
   const mean = calculateMean(values);
@@ -118,27 +118,33 @@ export const calculateVariance = (values: number[]) => {
   });
 
   return calculateMean(squareDiffs);
-}
+};
 
-export const calculateStandardDeviationForPeriod = (values: number[], period: number) => {
+export const calculateStandardDeviationForPeriod = (
+  values: number[],
+  period: number,
+) => {
   const standardDeviation = calculateStandardDeviation(values);
   return standardDeviation * Math.sqrt(period);
-}
+};
 
 export const transformToLogReturns = (stockPrices: number[]): number[] => {
   const logReturns: number[] = [];
-  for (let i = 0; i < stockPrices.length-1; i++) {
-    const periodReturn = Math.log(stockPrices[i+1] / stockPrices[i]);
+  for (let i = 0; i < stockPrices.length - 1; i++) {
+    const periodReturn = Math.log(stockPrices[i + 1] / stockPrices[i]);
     logReturns.push(periodReturn);
   }
   return logReturns;
 };
 
-export const riskFreeRate = (oneYearTreasuryYield: number, inflationRate: number) => {
+export const riskFreeRate = (
+  oneYearTreasuryYield: number,
+  inflationRate: number,
+) => {
   return oneYearTreasuryYield - inflationRate;
 };
 
 export const calculateVolatility = (stockPrices: number[], period: number) => {
   const logReturns = transformToLogReturns(stockPrices);
   return calculateStandardDeviationForPeriod(logReturns, period);
-}
+};

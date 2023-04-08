@@ -16,15 +16,13 @@ const ContentContainer = styled.div`
 `;
 
 // Avoids this warning https://github.com/vercel/next.js/issues/12863
-const NavChart = dynamic(
-  () => import("@jaws/components/molecules/NavChart"),
-  { ssr: false },
-);
+const NavChart = dynamic(() => import("@jaws/components/molecules/NavChart"), {
+  ssr: false,
+});
 
-const VolChart = dynamic(
-  () => import("@jaws/components/molecules/VolChart"),
-  { ssr: false },
-);
+const VolChart = dynamic(() => import("@jaws/components/molecules/VolChart"), {
+  ssr: false,
+});
 
 function StartPage() {
   const [triggerRunEnabled, setTriggerRunEnabled] = useState<boolean>(false);
