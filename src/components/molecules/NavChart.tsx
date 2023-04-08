@@ -141,45 +141,62 @@ const RechartNavChart = () => {
     return null;
   };
 
+  const chartDataMin = Math.min(
+    ...chartData.map((data) => data.jaws),
+    ...chartData.map((data) => data.spy),
+    ...chartData.map((data) => data.vthr),
+    ...chartData.map((data) => data.qqq)
+  );
+
+  const chartDataMax = Math.max(
+    ...chartData.map((data) => data.jaws),
+    ...chartData.map((data) => data.spy),
+    ...chartData.map((data) => data.vthr),
+    ...chartData.map((data) => data.qqq)
+  );
+
   return (
-    <LineChart
-      width={1000}
-      height={800}
-      data={chartData}
-      margin={{ top: 50, right: 20, left: 20, bottom: 50 }}
-      style={{
-        backgroundColor: "#ffffff",
-        borderRadius: "20px",
-        margin: "20px 20px"
-      }}
-    >
-      <XAxis dataKey="date" angle={-45} textAnchor="end" />
-      <YAxis
-        dataKey="jaws"
-        type="number"
-        domain={['dataMin -3', 'dataMax + 3']}
-        tickFormatter={(tick: any, index: number) => tick.toFixed(2).toString()} />
-      <Legend verticalAlign="top" />
-      <Tooltip
-        offset={40}
-        content={
-          <CustomTooltip
-            active={undefined}
-            payload={undefined}
-            label={undefined}
-          />
-        }
-      />
-      <CartesianGrid stroke="#d0e0e0" />
-      { chartData.length > 0 && (
-        <>
-          <Line name="JAWS" type="monotone" dataKey="jaws" stroke="#71b16b" yAxisId={0} activeDot={{ r: 8 }} />
-          <Line name="SPY" type="monotone" dataKey="spy" stroke="#8884d8" yAxisId={0} />
-          <Line name="VTHR" type="monotone" dataKey="vthr" stroke="#FF0000" yAxisId={0} />
-          <Line name="QQQ" type="monotone" dataKey="qqq" stroke="#000000" yAxisId={0} />
-        </>
-      )}
-    </LineChart>
+    <>
+      <h2>NAV performace of Sharkster compared to indeces</h2>
+      <LineChart
+        width={1000}
+        height={800}
+        data={chartData}
+        margin={{ top: 50, right: 20, left: 20, bottom: 50 }}
+        style={{
+          backgroundColor: "#ffffff",
+          borderRadius: "20px",
+          margin: "20px 20px"
+        }}
+      >
+        <XAxis dataKey="date" angle={-45} textAnchor="end" />
+        <YAxis
+          dataKey="jaws"
+          type="number"
+          domain={[chartDataMin*0.999, chartDataMax*1.001]}
+          tickFormatter={(tick: any, index: number) => tick.toFixed(2).toString()} />
+        <Legend verticalAlign="top" />
+        <Tooltip
+          offset={40}
+          content={
+            <CustomTooltip
+              active={undefined}
+              payload={undefined}
+              label={undefined}
+            />
+          }
+        />
+        <CartesianGrid stroke="#d0e0e0" />
+        { chartData.length > 0 && (
+          <>
+            <Line name="JAWS" type="monotone" dataKey="jaws" stroke="#71b16b" yAxisId={0} activeDot={{ r: 8 }} />
+            <Line name="SPY" type="monotone" dataKey="spy" stroke="#8884d8" yAxisId={0} />
+            <Line name="VTHR" type="monotone" dataKey="vthr" stroke="#FF0000" yAxisId={0} />
+            <Line name="QQQ" type="monotone" dataKey="qqq" stroke="#000000" yAxisId={0} />
+          </>
+        )}
+      </LineChart>
+    </>
   );
 };
 
