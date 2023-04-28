@@ -78,7 +78,7 @@ const DailyRunsDate: NextPage = () => {
           Go back
         </NavButton>
         <NavButton href="/daily-runs">List All Daily Runs</NavButton>
-        {isToday(formatDateString(date)) && <TriggerDailyRunButton />}
+        <TriggerDailyRunButton />
       </ButtonsContainer>
       {dataFetchStatus === STATUS.READY && <DailyRunsList data={data} />}
     </PageContainer>
